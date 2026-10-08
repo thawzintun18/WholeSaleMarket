@@ -11,7 +11,7 @@ class CropController extends Controller
     //directPage
     public function directPage()
     {
-        return view('wholeSaleMarket.crop.create');
+        return view('crops.index');
     }
 
     //create
@@ -111,6 +111,7 @@ class CropController extends Controller
         $crops = Crop::orderBy('created_at', 'desc')->get();
 
         return view('wholeSaleMarket.crop.list', compact('crops'));
+        // return view('crops/index');
 
     }
 

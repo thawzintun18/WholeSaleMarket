@@ -47,11 +47,17 @@
                 <!-- Form -->
                 <div class="crop-form-body">
 
-                    <form id="cropForm" action="{{ route('Crop#create') }}" method="POST">
+                    <form id="editCropForm" action="" method="">
 
                         @csrf
 
-                        <input type="hidden" id="crop_id" value="{{ $crop->id }}">
+                        {{-- <input type="hidden" id="crop_id" value="{{ $crop->id }}"> --}}
+
+                        <input type="hidden" id="edit_crop_id" value="{{ $crop->id }}" name="crop_id">
+
+                        <input type="hidden" id="edit_server_id" value="{{ $crop->id }}" name="server_id">
+
+                        <input type="hidden" id="edit_client_uuid" value="{{ $crop->client_uuid }}" name="client_uuid">
 
                         <div class="row g-4">
 
@@ -69,7 +75,7 @@
                                         <i class="bi bi-flower1"></i>
                                     </span>
 
-                                    <input type="text" name="crop_name" id="crop_name"
+                                    <input type="text" name="crop_name" id="edit_crop_name"
                                         value="{{ old('crop_name', $crop->crop_name) }}"
                                         class="form-control myanmar-input @error('crop_name') is-invalid @enderror"
                                         placeholder="ဥပမာ - ဆန်၊ ပြောင်း၊ နှမ်း">
@@ -99,7 +105,7 @@
                                         <i class="bi bi-cash-stack"></i>
                                     </span>
 
-                                    <input type="number" name="commission_amount" id="commission_amount"
+                                    <input type="number" name="commission_amount" id="edit_commission_amount"
                                         value="{{ old('commission_amount', $crop->commission_amount) }}" min="0"
                                         class="form-control @error('commission_amount') is-invalid @enderror"
                                         placeholder="ဥပမာ - 500">
@@ -129,7 +135,7 @@
                                         <i class="bi bi-box-seam"></i>
                                     </span>
 
-                                    <input type="number" name="quantity_per_basket" id="quantity_per_basket"
+                                    <input type="number" name="quantity_per_basket" id="edit_quantity_per_basket"
                                         value="{{ old('quantity_per_basket', $crop->quantity_per_basket) }}" min="1"
                                         class="form-control @error('quantity_per_basket') is-invalid @enderror"
                                         placeholder="ဥပမာ - 20">
@@ -159,7 +165,7 @@
                                         <i class="bi bi-rulers"></i>
                                     </span>
 
-                                    <select name="unit" id="unit"
+                                    <select name="unit" id="edit_unit"
                                         class="form-select @error('unit') is-invalid @enderror">
 
                                         <option value="" disabled {{ old('unit') ? '' : 'selected' }}>
@@ -212,251 +218,307 @@
 
 @section('OnlineOffline')
     <script>
-        //IndexedDB Setup
-        const DB_NAME = 'WholeSaleMarketDB';
-        const DB_VERSION = 1;
+        // const DB_NAME = 'WholeSaleMarketDB';
+        // const DB_VERSION = 3;
 
-        let db = null;
+        // let db = null;
 
+        // DB ဖွင့်နေချိန်မှာ request များစွာ မဖွင့်အောင်
+        // let dbPromise = null;
 
-        // ======================================
-        // Open IndexedDB
-        // ======================================
+        // async function openDatabaseUpdate() {
 
-        const request = indexedDB.open(
-            DB_NAME,
-            DB_VERSION
-        );
+        //     if (db) {
+        //         return db;
+        //     }
 
+        //     if (dbPromise) {
+        //         return dbPromise;
+        //     }
 
-        request.onupgradeneeded = function(event) {
+        //     dbPromise = new Promise((resolve, reject) => {
 
-            db = event.target.result;
+        //         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
+        //         request.onsuccess = function(event) {
 
-            // ================================
-            // Crops Store
-            // ================================
+        //             db = event.target.result;
 
-            if (!db.objectStoreNames.contains('crops')) {
+        //             console.log('IndexedDB Connected');
 
-                const cropStore =
-                    db.createObjectStore(
-                        'crops', {
-                            keyPath: 'local_id'
-                        }
-                    );
+        //             resolve(db);
+        //         };
 
-                cropStore.createIndex(
-                    'client_uuid',
-                    'client_uuid', {
-                        unique: true
-                    }
+        //         request.onerror = function(event) {
+
+        //             console.error(
+        //                 'IndexedDB Error:',
+        //                 event.target.error
+        //             );
+
+        //             dbPromise = null;
+
+        //             reject(event.target.error);
+        //         };
+
+        //     });
+
+        //     return dbPromise;
+        // }
+
+        // =========================================================
+        // Ensure IndexedDB Connection
+        // =========================================================
+
+        // async function ensureDBUpdate() {
+
+        //     // DB ဖွင့်ပြီးသားဆိုရင်
+        //     if (db) {
+        //         return db;
+        //     }
+
+        //     // DB မဖွင့်ရသေးရင် Open လုပ်မယ်
+        //     return await openDatabaseUpdate();
+        // }
+
+        //form submit
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const editForm =
+                document.getElementById('editCropForm');
+
+            if (!editForm) {
+
+                console.error(
+                    'editCropForm မတွေ့ပါ။'
                 );
 
-                cropStore.createIndex(
-                    'sync_status',
-                    'sync_status', {
-                        unique: false
-                    }
-                );
+                return;
             }
 
 
-            // ================================
-            // Sync Queue
-            // ================================
+            editForm.addEventListener('submit', async function(event) {
 
-            if (!db.objectStoreNames.contains('sync_queue')) {
+                event.preventDefault();
 
-                const syncStore =
-                    db.createObjectStore(
-                        'sync_queue', {
-                            keyPath: 'id',
-                            autoIncrement: true
-                        }
-                    );
+                try {
 
-                syncStore.createIndex(
-                    'status',
-                    'status', {
-                        unique: false
-                    }
-                );
-
-                syncStore.createIndex(
-                    'client_uuid',
-                    'client_uuid', {
-                        unique: false
-                    }
-                );
-            }
-        };
+                    const form = editForm;
 
 
-        request.onsuccess = function(event) {
+                    // ==========================================
+                    // Get Data
+                    // ==========================================
 
-            db = event.target.result;
+                    const data = {
 
-            console.log(
-                'IndexedDB Connected'
-            );
+                        server_id: form.querySelector(
+                            '#edit_server_id'
+                        )?.value.trim() || null,
 
-            // Page ဖွင့်တဲ့အချိန်မှာလည်း
-            // pending data ရှိရင် sync စစ်မယ်
-            if (navigator.onLine) {
+                        client_uuid: form.querySelector(
+                            '#edit_client_uuid'
+                        )?.value.trim() || null,
 
-                syncOfflineCrops();
-            }
-        };
+                        crop_name: form.querySelector(
+                            '#edit_crop_name'
+                        )?.value.trim() || '',
 
+                        commission_amount: form.querySelector(
+                            '#edit_commission_amount'
+                        )?.value || '',
 
-        request.onerror = function(event) {
+                        unit: form.querySelector(
+                            '#edit_unit'
+                        )?.value || '',
 
-            console.error(
-                'IndexedDB Error:',
-                event.target.error
-            );
-        };
+                        quantity_per_basket: form.querySelector(
+                            '#edit_quantity_per_basket'
+                        )?.value || ''
 
-        //Form Submit ကို ဖမ်းမယ်
-        document
-            .getElementById('cropForm')
-            .addEventListener(
-                'submit',
-                async function(event) {
-
-                    event.preventDefault();
-
-
-                    // ==================================
-                    // Form Data
-                    // ==================================
-
-                    const crop_id = document.getElementById('crop_id').value;
-
-                    const cropData = {
-
-                        crop_name: document.getElementById(
-                            'crop_name'
-                        ).value.trim(),
-
-                        commission_amount: document.getElementById(
-                            'commission_amount'
-                        ).value,
-
-                        unit: document.getElementById(
-                            'unit'
-                        ).value,
-
-                        quantity_per_basket: document.getElementById(
-                            'quantity_per_basket'
-                        ).value
                     };
 
 
+                    console.log(
+                        '========== CROP UPDATE =========='
+                    );
+
+                    console.log(
+                        'UPDATE DATA:',
+                        data
+                    );
+
+
                     // ==========================================
-                    // EDIT
+                    // Validation
                     // ==========================================
 
-                    if (crop_id) {
+                    if (!data.server_id) {
 
-                        if (navigator.onLine) {
+                        throw new Error(
+                            'Server ID မရှိပါ။'
+                        );
+                    }
 
-                            console.log(
-                                'ONLINE → Laravel UPDATE'
-                            );
 
-                            await updateCropOnline(
-                                crop_id,
-                                cropData
-                            );
+                    if (!data.client_uuid) {
 
-                        } else {
+                        throw new Error(
+                            'Client UUID မရှိပါ။'
+                        );
+                    }
 
-                            console.log(
-                                'OFFLINE → IndexedDB UPDATE'
-                            );
 
-                            await updateCropOffline(
-                                crop_id,
-                                cropData
-                            );
+                    if (!data.crop_name) {
 
-                        }
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'သတိပြုရန်',
+                            text: 'သီးနှံအမည် ထည့်ပေးပါ။',
+                            confirmButtonText: 'အိုကေ'
+                        });
 
                         return;
                     }
 
-                }
-            );
 
-        //Online ဖြစ်ရင် Laravel Controller ကိုပို့မယ်
-        async function updateCropOnline(
-            id,
-            data
-        ) {
+                    if (data.commission_amount === '') {
+
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'သတိပြုရန်',
+                            text: 'ပွဲခ ထည့်ပေးပါ။',
+                            confirmButtonText: 'အိုကေ'
+                        });
+
+                        return;
+                    }
+
+
+                    if (!data.unit) {
+
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'သတိပြုရန်',
+                            text: 'ယူနစ် ရွေးချယ်ပါ။',
+                            confirmButtonText: 'အိုကေ'
+                        });
+
+                        return;
+                    }
+
+
+                    if (data.quantity_per_basket === '') {
+
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'သတိပြုရန်',
+                            text: 'တစ်တင်းတွင်ပါဝင်သော အရေအတွက် ထည့်ပေးပါ။',
+                            confirmButtonText: 'အိုကေ'
+                        });
+
+                        return;
+                    }
+
+
+                    // ==========================================
+                    // ONLINE
+                    // ==========================================
+
+                    if (navigator.onLine) {
+
+                        console.log(
+                            '🌐 ONLINE → Laravel Update'
+                        );
+
+                        await updateCropOnline(data);
+
+                        return;
+                    }
+
+
+                    // ==========================================
+                    // OFFLINE
+                    // ==========================================
+
+                    console.log(
+                        '📴 OFFLINE → IndexedDB Update'
+                    );
+
+                    await updateCropOffline(data);
+
+
+                } catch (error) {
+
+                    console.error(
+                        'Crop Update Error:',
+                        error
+                    );
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Update မအောင်မြင်ပါ',
+                        text: error.message ||
+                            'Update ပြုလုပ်ရာတွင် ပြဿနာရှိနေပါသည်။',
+                        confirmButtonText: 'အိုကေ'
+                    });
+
+                }
+
+            });
+
+        });
+
+        async function updateCropOnline(data) {
 
             try {
 
-                const response =
-                    await fetch(
-                        `/WholeSaleMarket/Crop/update/${id}`, {
-
-                            method: 'POST',
-
-                            headers: {
-
-                                'Content-Type': 'application/json',
-
-                                'Accept': 'application/json',
-
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-
-                            },
-
-                            body: JSON.stringify({
-
-                                crop_name: data.crop_name,
-
-                                commission_amount: data.commission_amount,
-
-                                unit: data.unit,
-
-                                quantity_per_basket: data.quantity_per_basket
-
-                            })
-
-                        }
-                    );
+                console.log(
+                    '🌐 Sending Crop Update:',
+                    data
+                );
 
 
-                // ==========================================
-                // Success
-                // ==========================================
+                const response = await fetch(
+                    "/WholeSaleMarket/Crop/update/" +
+                    data.server_id, {
 
-                if (response.ok) {
+                        method: 'POST',
 
-                    Swal.fire({
+                        headers: {
 
-                        icon: 'success',
+                            'Content-Type': 'application/json',
 
-                        title: 'အောင်မြင်ပါသည်',
+                            'Accept': 'application/json',
 
-                        text: 'သီးနှံအချက်အလက် ပြင်ဆင်ပြီးပါပြီ။',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
 
-                        confirmButtonText: 'အိုကေ'
+                        },
 
-                    });
+                        body: JSON.stringify({
+
+                            crop_name: data.crop_name,
+
+                            commission_amount: data.commission_amount,
+
+                            unit: data.unit,
+
+                            quantity_per_basket: data.quantity_per_basket
+
+                        })
+
+                    }
+                );
 
 
-                    // Page ပြန် reload
-                    location.reload();
+                const result =
+                    await response.json();
 
 
-                    return;
-
-                }
+                console.log(
+                    'Laravel Update Response:',
+                    result
+                );
 
 
                 // ==========================================
@@ -465,305 +527,239 @@
 
                 if (response.status === 422) {
 
-                    const errors =
-                        await response.json();
+                    let message =
+                        result.message ||
+                        'Data ကို ပြန်လည်စစ်ဆေးပါ။';
 
 
-                    console.log(errors);
+                    if (result.errors) {
+
+                        message =
+                            Object.values(
+                                result.errors
+                            )
+                            .flat()
+                            .join('\n');
+
+                    }
 
 
-                    Swal.fire({
+                    await Swal.fire({
 
                         icon: 'warning',
 
                         title: 'သတိပြုရန်',
 
-                        text: 'ပြင်ဆင်ထားသော Data ကို ပြန်လည်စစ်ဆေးပါ။',
+                        text: message,
+
+                        confirmButtonText: 'အိုကေ'
+
+                    });
+
+                    return false;
+                }
+
+
+                // ==========================================
+                // Other Error
+                // ==========================================
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        result.message ||
+                        'Server Update Error'
+                    );
+
+                }
+
+
+                // ==========================================
+                // Success
+                // ==========================================
+
+                if (result.success) {
+
+                    console.log(
+                        '✅ Laravel Crop Update Success'
+                    );
+
+
+                    // IndexedDB ထဲက data ကို
+                    // server_id နဲ့ရှာပြီး update
+
+                    await updateLocalCropAfterOnlineUpdate(
+                        data
+                    );
+
+
+                    await Swal.fire({
+
+                        icon: 'success',
+
+                        title: 'အောင်မြင်ပါသည်',
+
+                        text: result.message ||
+                            'သီးနှံအချက်အလက် ပြင်ဆင်ပြီးပါပြီ။',
 
                         confirmButtonText: 'အိုကေ'
 
                     });
 
 
-                    return;
+                    location.reload();
 
+                    return true;
                 }
 
 
                 throw new Error(
-                    'Update Server Error'
+                    result.message ||
+                    'Update မအောင်မြင်ပါ။'
                 );
 
 
             } catch (error) {
 
                 console.error(
-                    'Update Error:',
+                    'Online Crop Update Error:',
                     error
                 );
 
 
-                Swal.fire({
+                await Swal.fire({
 
                     icon: 'error',
 
-                    title: 'ချိတ်ဆက်မှု မအောင်မြင်ပါ',
+                    title: 'Update မအောင်မြင်ပါ',
 
-                    text: 'Server နှင့် ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေပါသည်။',
+                    text: error.message ||
+                        'Server နှင့် ဆက်သွယ်၍မရပါ။',
 
                     confirmButtonText: 'အိုကေ'
 
                 });
 
+                return false;
             }
-
         }
 
-        //Offline ဖြစ်ရင် IndexedDB ထဲ Create
-        async function updateCropOffline(
-            id,
-            data
-        ) {
+        async function updateLocalCropAfterOnlineUpdate(data) {
 
-            return new Promise(
-                function(resolve, reject) {
+            const database =
+                await ensureDBUpdate();
 
-                    const transaction =
-                        db.transaction(
-                            [
-                                'crops',
-                                'sync_queue'
-                            ],
-                            'readwrite'
-                        );
 
+            if (!database) {
 
-                    const cropStore =
-                        transaction.objectStore(
-                            'crops'
-                        );
-
-
-                    const syncStore =
-                        transaction.objectStore(
-                            'sync_queue'
-                        );
-
-
-                    // =========================================
-                    // Get Crop
-                    // =========================================
-
-                    const getRequest =
-                        cropStore.get(
-                            id
-                        );
-
-
-                    getRequest.onsuccess =
-                        function() {
-
-                            const crop =
-                                getRequest.result;
-
-
-                            if (!crop) {
-
-                                reject(
-                                    new Error(
-                                        'Crop not found'
-                                    )
-                                );
-
-                                return;
-
-                            }
-
-
-                            // ==================================
-                            // Update Local Crop
-                            // ==================================
-
-                            crop.crop_name =
-                                data.crop_name;
-
-
-                            crop.commission_amount =
-                                data.commission_amount;
-
-
-                            crop.unit =
-                                data.unit;
-
-
-                            crop.quantity_per_basket =
-                                data.quantity_per_basket;
-
-
-                            crop.sync_status =
-                                'pending';
-
-
-                            crop.updated_at =
-                                new Date().toISOString();
-
-
-                            // ==================================
-                            // Save Updated Crop
-                            // ==================================
-
-                            cropStore.put(
-                                crop
-                            );
-
-
-                            // ==================================
-                            // Add Update Queue
-                            // ==================================
-
-                            syncStore.add({
-
-                                entity: 'crops',
-
-                                action: 'update',
-
-                                client_uuid: crop.client_uuid,
-
-                                data: {
-
-                                    id: id,
-
-                                    client_uuid: crop.client_uuid,
-
-                                    crop_name: data.crop_name,
-
-                                    commission_amount: data.commission_amount,
-
-                                    unit: data.unit,
-
-                                    quantity_per_basket: data.quantity_per_basket
-
-                                },
-
-                                status: 'pending',
-
-                                created_at: new Date().toISOString()
-
-                            });
-
-                        };
-
-
-                    // =========================================
-                    // Transaction Complete
-                    // =========================================
-
-                    transaction.oncomplete =
-                        function() {
-
-                            Swal.fire({
-
-                                icon: 'info',
-
-                                title: 'Offline Update',
-
-                                text: 'သီးနှံအချက်အလက်ကို Offline အနေဖြင့် ပြင်ဆင်သိမ်းဆည်းထားပါပြီ။ Internet ပြန်ရသောအခါ အလိုအလျောက် Update လုပ်ပါမည်။',
-
-                                confirmButtonText: 'အိုကေ'
-
-                            });
-
-
-                            cancelEdit();
-
-
-                            resolve(true);
-
-                        };
-
-
-                    transaction.onerror =
-                        function() {
-
-                            console.error(
-                                transaction.error
-                            );
-
-
-                            reject(
-                                transaction.error
-                            );
-
-                        };
-
-                }
-            );
-
-        }
-
-        // =====================================================
-        // Internet ပြန်ရရင် Auto Sync
-        // =====================================================
-
-        window.addEventListener(
-            'online',
-            function() {
-
-                console.log(
-                    'Internet ပြန်ရပါပြီ။'
+                throw new Error(
+                    'IndexedDB connection မရပါ။'
                 );
 
-
-                syncOfflineCrops();
-
             }
-        );
 
-        // =====================================================
-        // Get Pending Crops
-        // =====================================================
-
-        function getPendingCrops() {
 
             return new Promise(
                 function(resolve, reject) {
 
                     const transaction =
-                        db.transaction(
-                            'sync_queue',
-                            'readonly'
+                        database.transaction(
+                            'crops',
+                            'readwrite'
                         );
 
 
                     const store =
                         transaction.objectStore(
-                            'sync_queue'
+                            'crops'
                         );
 
 
+                    // ==========================================
+                    // server_id index
+                    // ==========================================
+
+                    const serverIndex =
+                        store.index('server_id');
+
+
                     const request =
-                        store.getAll();
+                        serverIndex.get(
+                            Number(data.server_id)
+                        );
 
 
                     request.onsuccess =
                         function() {
 
-                            const pending =
-                                request.result.filter(
-                                    function(item) {
+                            const crop =
+                                request.result;
 
-                                        return (
-                                            item.entity === 'crops' &&
-                                            item.status === 'pending'
-                                        );
 
-                                    }
+                            if (!crop) {
+
+                                console.log(
+                                    'IndexedDB မှာ server_id = ' +
+                                    data.server_id +
+                                    ' Crop မတွေ့ပါ။'
                                 );
 
+                                // IndexedDB မှာ မရှိလည်း
+                                // Laravel update က အောင်မြင်ပြီးသားဖြစ်လို့
+                                // Error မပေးဘဲ complete လုပ်မယ်
 
-                            resolve(
-                                pending
+                                return;
+                            }
+
+
+                            console.log(
+                                'IndexedDB Crop Found:',
+                                crop
                             );
+
+
+                            // ======================================
+                            // Update Local Data
+                            // ======================================
+
+                            crop.server_id =
+                                Number(data.server_id);
+
+                            crop.client_uuid =
+                                data.client_uuid;
+
+                            crop.crop_name =
+                                data.crop_name;
+
+                            crop.commission_amount =
+                                data.commission_amount;
+
+                            crop.unit =
+                                data.unit;
+
+                            crop.quantity_per_basket =
+                                data.quantity_per_basket;
+
+
+                            // ======================================
+                            // Sync Status
+                            // ======================================
+
+                            crop.sync_status =
+                                'synced';
+
+                            crop.sync_result =
+                                'success';
+
+                            crop.updated_at =
+                                new Date().toISOString();
+
+
+                            // ======================================
+                            // Save
+                            // ======================================
+
+                            store.put(crop);
 
                         };
 
@@ -777,59 +773,584 @@
 
                         };
 
+
+                    transaction.oncomplete =
+                        function() {
+
+                            console.log(
+                                '✅ IndexedDB Local Crop Updated'
+                            );
+
+                            resolve(true);
+
+                        };
+
+
+                    transaction.onerror =
+                        function() {
+
+                            reject(
+                                transaction.error
+                            );
+
+                        };
+
                 }
             );
-
         }
 
 
-        // =====================================================
-        // Sync Offline Crops
-        // =====================================================
+        // =========================================================
+        // OFFLINE CROP UPDATE
+        // local_id မသုံးပါ
+        // server_id → client_uuid fallback
+        // =========================================================
 
-        // async function syncOfflineCrops() {
+        async function updateCropOffline(data) {
 
-        //     // ==========================================
-        //     // Internet မရှိရင်
-        //     // ==========================================
+            const database = await ensureDBUpdate();
+
+            if (!database) {
+                throw new Error('IndexedDB connection မရပါ။');
+            }
+
+            return new Promise(function(resolve, reject) {
+
+                let transaction;
+
+                try {
+
+                    transaction = database.transaction(
+                        ['crops', 'sync_queue'],
+                        'readwrite'
+                    );
+
+                    const cropStore =
+                        transaction.objectStore('crops');
+
+                    const syncStore =
+                        transaction.objectStore('sync_queue');
+
+
+                    // =====================================================
+                    // server_id နဲ့ရှာမယ်
+                    // =====================================================
+
+                    const serverIndex =
+                        cropStore.index('server_id');
+
+                    const cropRequest =
+                        serverIndex.get(Number(data.server_id));
+
+
+                    cropRequest.onsuccess = function() {
+
+                        let crop = cropRequest.result;
+
+
+                        // =================================================
+                        // server_id နဲ့ မတွေ့ရင် client_uuid နဲ့ရှာမယ်
+                        // =================================================
+
+                        if (!crop) {
+
+                            console.log(
+                                'server_id = ' +
+                                data.server_id +
+                                ' နဲ့ Crop မတွေ့ပါ။'
+                            );
+
+                            console.log(
+                                'client_uuid နဲ့ ပြန်ရှာနေပါတယ်...'
+                            );
+
+
+                            if (!data.client_uuid) {
+
+                                transaction.abort();
+
+                                reject(
+                                    new Error(
+                                        'Client UUID မရှိပါ။'
+                                    )
+                                );
+
+                                return;
+                            }
+
+
+                            const uuidIndex =
+                                cropStore.index('client_uuid');
+
+
+                            const uuidRequest =
+                                uuidIndex.get(
+                                    data.client_uuid
+                                );
+
+
+                            uuidRequest.onsuccess =
+                                function() {
+
+                                    crop =
+                                        uuidRequest.result;
+
+
+                                    if (!crop) {
+
+                                        console.error(
+                                            'IndexedDB မှာ Crop မတွေ့ပါ။'
+                                        );
+
+                                        transaction.abort();
+
+                                        reject(
+                                            new Error(
+                                                'Offline Update လုပ်ရန် IndexedDB မှာ Crop မတွေ့ပါ။'
+                                            )
+                                        );
+
+                                        return;
+                                    }
+
+
+                                    console.log(
+                                        '📦 Crop ကို client_uuid နဲ့တွေ့ပါပြီ:',
+                                        crop
+                                    );
+
+
+                                    // ⭐ data ပါရမယ်
+                                    updateCropRecord(
+                                        crop,
+                                        cropStore,
+                                        syncStore,
+                                        data
+                                    );
+                                };
+
+
+                            uuidRequest.onerror =
+                                function() {
+
+                                    transaction.abort();
+
+                                    reject(
+                                        uuidRequest.error
+                                    );
+                                };
+
+
+                            return;
+                        }
+
+
+                        // =================================================
+                        // server_id နဲ့တွေ့ပြီ
+                        // =================================================
+
+                        console.log(
+                            '📦 Crop ကို server_id နဲ့တွေ့ပါပြီ:',
+                            crop
+                        );
+
+
+                        // ⭐ ဒီနေရာမှာလည်း data ပါရမယ်
+                        updateCropRecord(
+                            crop,
+                            cropStore,
+                            syncStore,
+                            data
+                        );
+                    };
+
+
+                    cropRequest.onerror =
+                        function() {
+
+                            transaction.abort();
+
+                            reject(
+                                cropRequest.error
+                            );
+                        };
+
+
+                    // =====================================================
+                    // Transaction Complete
+                    // =====================================================
+
+                    transaction.oncomplete =
+                        async function() {
+
+                            console.log(
+                                '✅ Offline Crop Update Saved'
+                            );
+
+
+                            await Swal.fire({
+
+                                icon: 'info',
+
+                                title: 'အင်တာနက်ချိတ်ဆက်မှု မရှိပါ',
+
+                                text: 'သီးနှံအချက်အလက်ကို Offline အဖြစ် ပြင်ဆင်သိမ်းဆည်းထားပါပြီ။ ' +
+                                    'အင်တာနက်ပြန်ရရှိသည်နှင့် Server သို့ အလိုအလျောက် Update လုပ်ပေးပါမည်။',
+
+                                confirmButtonText: 'အိုကေ'
+
+                            });
+
+
+                            resolve(true);
+                        };
+
+
+                    // =====================================================
+                    // Transaction Error
+                    // =====================================================
+
+                    transaction.onerror =
+                        function() {
+
+                            console.error(
+                                '❌ Offline Update Transaction Error:',
+                                transaction.error
+                            );
+
+                            reject(
+                                transaction.error ||
+                                new Error(
+                                    'Offline Update Transaction Error'
+                                )
+                            );
+                        };
+
+
+                    // =====================================================
+                    // Transaction Abort
+                    // =====================================================
+
+                    transaction.onabort =
+                        function() {
+
+                            console.error(
+                                '❌ Offline Update Transaction Aborted'
+                            );
+                        };
+
+
+                } catch (error) {
+
+                    reject(error);
+                }
+            });
+        }
+
+        // =========================================================
+        // Update Crop Record + Sync Queue
+        // =========================================================
+
+        // =========================================================
+        // UPDATE CROP RECORD
+        // =========================================================
+
+        function updateCropRecord(
+            crop,
+            cropStore,
+            syncStore,
+            data
+        ) {
+
+            // =====================================================
+            // Debug
+            // =====================================================
+
+            console.log(
+                '========== updateCropRecord =========='
+            );
+
+            console.log(
+                'Crop:',
+                crop
+            );
+
+            console.log(
+                'Update Data:',
+                data
+            );
+
+
+            // =====================================================
+            // Data မပါရင် ချက်ချင်းရပ်
+            // =====================================================
+
+            if (!data) {
+
+                throw new Error(
+                    'updateCropRecord() ထဲကို update data မရောက်ပါ။'
+                );
+            }
+
+
+            if (!data.server_id) {
+
+                throw new Error(
+                    'Update Data ထဲမှာ server_id မရှိပါ။'
+                );
+            }
+
+
+            // =====================================================
+            // Client UUID
+            // =====================================================
+
+            const clientUuid =
+                crop.client_uuid ||
+                data.client_uuid;
+
+
+            if (!clientUuid) {
+
+                throw new Error(
+                    'Client UUID မရှိပါ။'
+                );
+            }
+
+
+            // =====================================================
+            // Update Crop
+            // =====================================================
+
+            crop.server_id =
+                Number(data.server_id);
+
+            crop.client_uuid =
+                clientUuid;
+
+            crop.crop_name =
+                data.crop_name;
+
+            crop.commission_amount =
+                data.commission_amount;
+
+            crop.unit =
+                data.unit;
+
+            crop.quantity_per_basket =
+                data.quantity_per_basket;
+
+            crop.sync_status =
+                'pending';
+
+            crop.sync_result =
+                null;
+
+            crop.synced_at =
+                null;
+
+            crop.updated_at =
+                new Date().toISOString();
+
+
+            console.log(
+                '📝 Updated Local Crop:',
+                crop
+            );
+
+
+            // =====================================================
+            // Save Crop
+            // =====================================================
+
+            cropStore.put(crop);
+
+
+            // =====================================================
+            // Sync Queue ရှာမယ်
+            // =====================================================
+
+            const queueIndex =
+                syncStore.index('client_uuid');
+
+
+            const queueRequest =
+                queueIndex.getAll(clientUuid);
+
+
+            queueRequest.onsuccess =
+                function() {
+
+                    const queueItems =
+                        queueRequest.result;
+
+
+                    const existingUpdate =
+                        queueItems.find(
+                            function(item) {
+
+                                return (
+                                    item.entity === 'crops' &&
+                                    item.action === 'update' &&
+                                    item.status === 'pending'
+                                );
+                            }
+                        );
+
+
+                    // =================================================
+                    // Queue Data
+                    // =================================================
+
+                    const queueData = {
+
+                        entity: 'crops',
+
+                        action: 'update',
+
+                        client_uuid: clientUuid,
+
+                        server_id: Number(data.server_id),
+
+                        data: {
+
+                            server_id: Number(data.server_id),
+
+                            client_uuid: clientUuid,
+
+                            crop_name: data.crop_name,
+
+                            commission_amount: data.commission_amount,
+
+                            unit: data.unit,
+
+                            quantity_per_basket: data.quantity_per_basket
+                        },
+
+                        status: 'pending',
+
+                        updated_at: new Date().toISOString()
+                    };
+
+
+                    // =================================================
+                    // Existing Queue
+                    // =================================================
+
+                    if (existingUpdate) {
+
+                        queueData.id =
+                            existingUpdate.id;
+
+                        syncStore.put(
+                            queueData
+                        );
+
+                        console.log(
+                            '🔄 Existing Sync Queue Updated:',
+                            queueData
+                        );
+
+                    }
+
+                    // =================================================
+                    // New Queue
+                    // =================================================
+                    else {
+
+                        syncStore.add(
+                            queueData
+                        );
+
+                        console.log(
+                            '➕ New Sync Queue Added:',
+                            queueData
+                        );
+                    }
+                };
+
+
+            queueRequest.onerror =
+                function() {
+
+                    console.error(
+                        '❌ Sync Queue Error:',
+                        queueRequest.error
+                    );
+                };
+        }
+
+
+        // window.addEventListener(
+        //     'online',
+        //     async function() {
+
+        //         console.log(
+        //             '🌐 Internet ပြန်ရပါပြီ။'
+        //         );
+
+
+        //         try {
+
+        //             await ensureDBUpdate();
+
+        //             await syncOfflineCropsUpdate();
+
+
+        //         } catch (error) {
+
+        //             console.error(
+        //                 'Online Sync Error:',
+        //                 error
+        //             );
+
+        //         }
+
+        //     }
+        // );
+
+
+        // async function syncOfflineCropsUpdate() {
 
         //     if (!navigator.onLine) {
 
-        //         return;
+        //         console.log(
+        //             '📴 Offline → Sync မလုပ်ပါ'
+        //         );
 
+        //         return;
         //     }
 
 
         //     try {
 
-        //         // ==========================================
-        //         // Get Pending Data
-        //         // ==========================================
+        //         await ensureDBUpdate();
+
 
         //         const pending =
-        //             await getPendingCrops();
+        //             await getPendingCropsUpdate();
 
 
-        //         if (pending.length === 0) {
+        //         if (
+        //             !pending ||
+        //             pending.length === 0
+        //         ) {
 
         //             console.log(
         //                 'Sync လုပ်စရာ Data မရှိပါ။'
         //             );
 
         //             return;
-
         //         }
 
 
         //         console.log(
+        //             '🔄 ' +
         //             pending.length +
-        //             ' crops syncing...'
+        //             ' crops syncing...',
+        //             pending
         //         );
 
-
-        //         // ==========================================
-        //         // Send to Laravel
-        //         // ==========================================
 
         //         const response =
         //             await fetch(
@@ -860,14 +1381,22 @@
         //             );
 
 
-        //         // ==========================================
-        //         // Error
-        //         // ==========================================
-
         //         if (!response.ok) {
 
+        //             const errorText =
+        //                 await response.text();
+
+
+        //             console.error(
+        //                 'Sync API Error:',
+        //                 response.status,
+        //                 errorText
+        //             );
+
+
         //             throw new Error(
-        //                 'Sync API Error'
+        //                 'Sync API Error: ' +
+        //                 response.status
         //             );
 
         //         }
@@ -877,33 +1406,61 @@
         //             await response.json();
 
 
-        //         // ==========================================
-        //         // Sync Success
-        //         // ==========================================
+        //         console.log(
+        //             'Sync API Result:',
+        //             result
+        //         );
+
 
         //         if (result.success) {
 
-        //             await markCropsAsSynced(
-        //                 result.results
+        //             await markCropsAsSyncedUpdate(
+        //                 result.results || []
         //             );
 
 
         //             console.log(
-        //                 'Crop Sync Success'
+        //                 '✅ Crop Sync Success'
+        //             );
+
+        //             // =============================================
+        //             // Sync Result
+        //             // =============================================
+
+        //             const results = result.results || [];
+
+        //             const successItems = results.filter(item =>
+        //                 item.status === 'success'
         //             );
 
 
-        //             Swal.fire({
+        //             console.log(
+        //                 '✅ Success Items:',
+        //                 successItems
+        //             );
 
-        //                 icon: 'success',
 
-        //                 title: 'အောင်မြင်ပါသည်',
+        //             // =============================================
+        //             // Update Success
+        //             // =============================================
 
-        //                 text: 'Offline မှ သိမ်းထားသော သီးနှံအချက်အလက်များကို အလိုအလျောက် Sync လုပ်ပြီးပါပြီ။',
+        //             if (successItems.length > 0) {
 
-        //                 confirmButtonText: 'အိုကေ'
+        //                 Swal.fire({
 
-        //             });
+        //                     icon: 'success',
+
+        //                     title: 'Update အောင်မြင်ပါသည်',
+
+        //                     text: successItems.length +
+        //                         ' ခုသော သီးနှံအချက်အလက်များကို Database ထဲသို့ အောင်မြင်စွာ Update ပြုလုပ်ပြီးပါပြီ။',
+
+        //                     confirmButtonText: 'အိုကေ'
+
+        //                 });
+
+        //             }
+
 
         //         }
 
@@ -911,343 +1468,331 @@
         //     } catch (error) {
 
         //         console.error(
-        //             'Sync Error:',
+        //             '❌ Sync Error:',
         //             error
         //         );
 
         //     }
-
         // }
 
-        async function syncOfflineCrops() {
 
-            // ==========================================
-            // Internet မရှိရင် မလုပ်
-            // ==========================================
+        // async function getPendingCropsUpdate() {
 
-            if (!navigator.onLine) {
-                return;
-            }
+        //     const database =
+        //         await ensureDBUpdate();
 
 
-            try {
+        //     return new Promise(
+        //         function(resolve, reject) {
 
-                // ==========================================
-                // Pending Data ရှာမယ်
-                // ==========================================
+        //             const transaction =
+        //                 database.transaction(
+        //                     'sync_queue',
+        //                     'readonly'
+        //                 );
 
-                const pending =
-                    await getPendingCrops();
 
+        //             const store =
+        //                 transaction.objectStore(
+        //                     'sync_queue'
+        //                 );
 
-                // ==========================================
-                // Pending မရှိရင် ဘာမှမလုပ်
-                // ==========================================
 
-                if (
-                    !pending ||
-                    pending.length === 0
-                ) {
+        //             const request =
+        //                 store.getAll();
 
-                    console.log(
-                        'Sync လုပ်စရာ Data မရှိပါ။'
-                    );
 
-                    return;
-                }
+        //             request.onsuccess =
+        //                 function() {
 
+        //                     const pending =
+        //                         request.result.filter(
+        //                             function(item) {
 
-                console.log(
-                    pending.length +
-                    ' crops syncing...'
-                );
+        //                                 return (
 
+        //                                     item.entity ===
+        //                                     'crops' &&
 
-                // ==========================================
-                // Laravel ကိုပို့မယ်
-                // ==========================================
+        //                                     item.status ===
+        //                                     'pending'
 
-                const response =
-                    await fetch(
-                        "{{ route('api.sync.crops') }}", {
+        //                                 );
 
-                            method: 'POST',
+        //                             }
+        //                         );
 
-                            headers: {
 
-                                'Content-Type': 'application/json',
+        //                     resolve(pending);
 
-                                'Accept': 'application/json',
+        //                 };
 
-                                'Authorization': 'Bearer ' +
-                                    localStorage.getItem(
-                                        'api_token'
-                                    )
 
-                            },
+        //             request.onerror =
+        //                 function() {
 
-                            body: JSON.stringify({
+        //                     reject(
+        //                         request.error
+        //                     );
 
-                                items: pending
+        //                 };
 
-                            })
+        //         }
+        //     );
+        // }
 
-                        }
-                    );
 
+        // async function markCropsAsSyncedUpdate(results) {
 
-                // ==========================================
-                // API Error
-                // ==========================================
+        //     const database =
+        //         await ensureDBUpdate();
 
-                if (!response.ok) {
 
-                    throw new Error(
-                        'Sync API Error'
-                    );
+        //     return new Promise(
+        //         function(resolve, reject) {
 
-                }
+        //             const transaction =
+        //                 database.transaction(
+        //                     [
+        //                         'crops',
+        //                         'sync_queue'
+        //                     ],
+        //                     'readwrite'
+        //                 );
 
 
-                const result =
-                    await response.json();
+        //             const cropStore =
+        //                 transaction.objectStore(
+        //                     'crops'
+        //                 );
 
 
-                // ==========================================
-                // Sync Success
-                // ==========================================
+        //             const syncStore =
+        //                 transaction.objectStore(
+        //                     'sync_queue'
+        //                 );
 
-                if (
-                    result.success &&
-                    result.results &&
-                    result.results.length > 0
-                ) {
 
-                    await markCropsAsSynced(
-                        result.results
-                    );
+        //             // ==========================================
+        //             // Get Crops
+        //             // ==========================================
 
+        //             const cropRequest =
+        //                 cropStore.getAll();
 
-                    console.log(
-                        'Crop Sync Success'
-                    );
 
+        //             cropRequest.onsuccess =
+        //                 function() {
 
-                    // ======================================
-                    // Success Swal
-                    // တကယ် Sync ဖြစ်မှ ပြမယ်
-                    // ======================================
+        //                     const crops =
+        //                         cropRequest.result;
 
-                    Swal.fire({
 
-                        icon: 'success',
+        //                     results.forEach(
+        //                         function(result) {
 
-                        title: 'အောင်မြင်ပါသည်',
+        //                             if (
 
-                        text: 'Offline မှ သိမ်းထားသော သီးနှံအချက်အလက်များကို အလိုအလျောက် Sync လုပ်ပြီးပါပြီ။',
+        //                                 result.status !==
+        //                                 'success' &&
 
-                        confirmButtonText: 'အိုကေ'
+        //                                 result.status !==
+        //                                 'duplicate' &&
 
-                    });
+        //                                 result.status !==
+        //                                 'already_synced'
 
-                }
+        //                             ) {
 
+        //                                 return;
 
-            } catch (error) {
+        //                             }
 
-                console.error(
-                    'Sync Error:',
-                    error
-                );
 
-            }
+        //                             crops.forEach(
+        //                                 function(crop) {
 
-        }
+        //                                     if (
 
+        //                                         crop.client_uuid ===
+        //                                         result.client_uuid
 
-        // =====================================================
-        // Mark Crops As Synced
-        // =====================================================
+        //                                     ) {
 
-        function markCropsAsSynced(
-            results
-        ) {
+        //                                         crop.sync_status =
+        //                                             'synced';
 
-            return new Promise(
-                function(resolve, reject) {
 
-                    const transaction =
-                        db.transaction(
-                            [
-                                'crops',
-                                'sync_queue'
-                            ],
-                            'readwrite'
-                        );
+        //                                         crop.sync_result =
+        //                                             result.status;
 
 
-                    const cropStore =
-                        transaction.objectStore(
-                            'crops'
-                        );
+        //                                         if (
+        //                                             result.server_id
+        //                                         ) {
 
+        //                                             crop.server_id =
+        //                                                 result.server_id;
 
-                    const syncStore =
-                        transaction.objectStore(
-                            'sync_queue'
-                        );
+        //                                         }
 
 
-                    // =========================================
-                    // Get Crops
-                    // =========================================
+        //                                         if (
+        //                                             result.updated_at
+        //                                         ) {
 
-                    const cropRequest =
-                        cropStore.getAll();
+        //                                             crop.updated_at =
+        //                                                 result.updated_at;
 
+        //                                         }
 
-                    cropRequest.onsuccess =
-                        function() {
 
-                            const crops =
-                                cropRequest.result;
+        //                                         crop.synced_at =
+        //                                             new Date()
+        //                                             .toISOString();
 
 
-                            results.forEach(
-                                function(result) {
+        //                                         cropStore.put(
+        //                                             crop
+        //                                         );
 
-                                    if (
-                                        result.status !==
-                                        'success'
-                                    ) {
+        //                                     }
 
-                                        return;
+        //                                 }
+        //                             );
 
-                                    }
+        //                         }
+        //                     );
 
+        //                 };
 
-                                    crops.forEach(
-                                        function(crop) {
 
-                                            if (
-                                                crop.client_uuid ===
-                                                result.client_uuid
-                                            ) {
+        //             // ==========================================
+        //             // Sync Queue
+        //             // ==========================================
 
-                                                crop.sync_status =
-                                                    'synced';
+        //             const queueRequest =
+        //                 syncStore.getAll();
 
 
-                                                // Server ID ရှိရင်
-                                                if (
-                                                    result.server_id
-                                                ) {
+        //             queueRequest.onsuccess =
+        //                 function() {
 
-                                                    crop.server_id =
-                                                        result.server_id;
+        //                     const items =
+        //                         queueRequest.result;
 
-                                                }
 
+        //                     results.forEach(
+        //                         function(result) {
 
-                                                cropStore.put(
-                                                    crop
-                                                );
+        //                             if (
 
-                                            }
+        //                                 result.status !==
+        //                                 'success' &&
 
-                                        }
-                                    );
+        //                                 result.status !==
+        //                                 'duplicate' &&
 
-                                }
-                            );
+        //                                 result.status !==
+        //                                 'already_synced'
 
-                        };
+        //                             ) {
 
+        //                                 return;
 
-                    // =========================================
-                    // Update Sync Queue
-                    // =========================================
+        //                             }
 
-                    const queueRequest =
-                        syncStore.getAll();
 
+        //                             items.forEach(
+        //                                 function(item) {
 
-                    queueRequest.onsuccess =
-                        function() {
+        //                                     if (
 
-                            const items =
-                                queueRequest.result;
+        //                                         item.client_uuid ===
+        //                                         result.client_uuid &&
 
+        //                                         item.status ===
+        //                                         'pending'
 
-                            results.forEach(
-                                function(result) {
+        //                                     ) {
 
-                                    if (
-                                        result.status !==
-                                        'success'
-                                    ) {
+        //                                         item.status =
+        //                                             'synced';
 
-                                        return;
 
-                                    }
+        //                                         item.sync_result =
+        //                                             result.status;
 
 
-                                    items.forEach(
-                                        function(item) {
+        //                                         if (
+        //                                             result.server_id
+        //                                         ) {
 
-                                            if (
-                                                item.client_uuid ===
-                                                result.client_uuid
-                                            ) {
+        //                                             item.server_id =
+        //                                                 result.server_id;
 
-                                                item.status =
-                                                    'synced';
+        //                                         }
 
 
-                                                item.synced_at =
-                                                    new Date()
-                                                    .toISOString();
+        //                                         item.synced_at =
+        //                                             new Date()
+        //                                             .toISOString();
 
 
-                                                syncStore.put(
-                                                    item
-                                                );
+        //                                         syncStore.put(
+        //                                             item
+        //                                         );
 
-                                            }
+        //                                     }
 
-                                        }
-                                    );
+        //                                 }
+        //                             );
 
-                                }
-                            );
+        //                         }
+        //                     );
 
-                        };
+        //                 };
 
 
-                    // =========================================
-                    // Transaction Complete
-                    // =========================================
+        //             transaction.oncomplete =
+        //                 function() {
 
-                    transaction.oncomplete =
-                        function() {
+        //                     console.log(
+        //                         '✅ IndexedDB Sync Status Updated'
+        //                     );
 
-                            resolve(true);
 
-                        };
+        //                     resolve(true);
 
+        //                 };
 
-                    transaction.onerror =
-                        function() {
 
-                            reject(
-                                transaction.error
-                            );
+        //             transaction.onerror =
+        //                 function() {
 
-                        };
+        //                     reject(
+        //                         transaction.error
+        //                     );
 
-                }
-            );
+        //                 };
 
-        }
+
+        //             transaction.onabort =
+        //                 function() {
+
+        //                     reject(
+
+        //                         transaction.error ||
+        //                         new Error(
+        //                             'Transaction aborted'
+        //                         )
+
+        //                     );
+
+        //                 };
+
+        //         }
+        //     );
+        // }
     </script>
 @endsection

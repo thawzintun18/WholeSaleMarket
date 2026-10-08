@@ -32,12 +32,11 @@
 
                     <div class=" d-flex justify-content-between">
                         <h5>
-                            <i class="bi bi-flower1 me-2"></i>
+                            <span class="page-icon"><i class="bi bi-flower1"></i></span>
                             သီးနှံအသစ်ထည့်သွင်းရန်
                         </h5>
                         <div class="">
-                            <a href="{{ route('Crop#list') }}"
-                                class=" btn btn-sm btn-outline-dark text-white border-white">နောက်သို့</a>
+                            <a href="{{ route('Crop#list') }}" class=" btn btn-sm btn-light btn-back">နောက်သို့</a>
                         </div>
                     </div>
 

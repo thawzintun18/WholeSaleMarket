@@ -116,8 +116,16 @@ a {
 }
 
 .brand-title {
-    font-size: 1.05rem;
-    font-weight: 800;
+    color: #198754;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-family: "Noto Sans Myanmar", sans-serif;
+
+    /* အနည်းငယ်လှပအောင် */
+    text-shadow: 0 2px 6px rgba(25, 135, 84, 0.18);
+
+    transition: all 0.3s ease;
 }
 
 .brand-subtitle {

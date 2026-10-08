@@ -2,7 +2,6 @@
     border: none;
     border-radius: 16px;
     overflow: hidden;
-    background: #fff;
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
 }
 
@@ -10,11 +9,9 @@
 .crop-table-header {
     padding: 20px 24px;
     border-bottom: 1px solid #e9ecef;
-    background: #ffffff;
 }
 
 .crop-title {
-    color: #0d6efd;
     font-weight: 700;
     margin: 0;
     font-size: 20px;
@@ -68,7 +65,7 @@
 .crop-table tbody td {
     padding: 15px 18px;
     vertical-align: middle;
-    color: #343a40;
+    /* color: #343a40; */
     font-size: 18px;
     border-color: #edf1f5;
     text-align: center;
@@ -165,7 +162,6 @@
 /* create */
 
 .crop-form-card {
-    background: #ffffff;
     border: none;
     border-radius: 16px;
     box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
@@ -174,9 +170,7 @@
 
 /* Header */
 .crop-form-header {
-    background: #0d6efd;
     padding: 20px 25px;
-    color: #fff;
 }
 
 .crop-form-header h5 {
@@ -197,7 +191,6 @@
 
 /* Labels */
 .form-label {
-    color: #000000;
     font-weight: 600;
     margin-bottom: 8px;
 }
@@ -205,7 +198,6 @@
 /* Input */
 .form-control,
 .form-select {
-    color: #000000;
     border: 1px solid #ced4da;
     border-radius: 9px;
     padding: 16px 14px;
@@ -214,7 +206,6 @@
 
 .form-control:focus,
 .form-select:focus {
-    color: #000000;
     border-color: #0d6efd;
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
 }
@@ -234,11 +225,6 @@
 
 .input-group .form-control {
     border-radius: 0 9px 9px 0;
-}
-
-/* Required */
-.required {
-    color: #000000;
 }
 
 /* Laravel Error */
@@ -318,4 +304,20 @@
     padding-top: 10px !important;
     padding-bottom: 10px !important;
     height: auto !important;
+}
+
+
+/* for edit button */
+
+/* Light Mode */
+.btn-edit {
+    border: 1px solid #212529;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-back {
+    border: 1px solid #212529;
+    background-color: transparent;
+    transition: all 0.3s ease;
 }

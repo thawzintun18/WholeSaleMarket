@@ -39,6 +39,11 @@
                     <span class="nav-icon"><i class="bi bi-flower1"></i></span>
                     <span class="nav-text">သီးနှံများ</span>
                 </a>
+                <a class="nav-link {{ request()->routeIs('Quality#list') ? 'active' : '' }}"
+                    href="{{ route('Quality#list') }}">
+                    <span class="nav-icon"><i class="bi bi-award"></i></span>
+                    <span class="nav-text">သီးနှံအရည်အသွေးအဆင့်</span>
+                </a>
 
             </nav>
 
@@ -59,9 +64,13 @@
                     </div>
 
                     <div class="navbar-actions ms-auto">
-
+                        <button class="icon-button theme-toggle" type="button" data-theme-toggle
+                            aria-label="Switch color theme" title="Switch color theme">
+                            <i class="bi bi-moon-stars" data-theme-icon aria-hidden="true"></i>
+                        </button>
 
                         <div class="dropdown">
+
                             <button class="profile-button dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                                 <img class="avatar-img avatar-sm" src="../assets/images/avatar/avatar.jpg"

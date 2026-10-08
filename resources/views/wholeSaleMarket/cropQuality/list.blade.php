@@ -4,15 +4,15 @@
     <div class="container-fluid px-3 px-lg-4 py-4">
         <div class="page-heading">
             <div class="page-heading-copy">
-                <span class="page-icon"><i class="bi bi-flower1"></i></span>
+                <span class="page-icon"><i class="bi bi-award"></i></span>
                 <div>
-                    <h1 class="h3 mb-1">🌾 သီးနှံစာရင်း</h1>
+                    <h1 class="h3 mb-1">သီးနှံအရည်အသွေးအဆင့် စာရင်း</h1>
                     <div class=" d-flex mt-3">
                         <a href="{{ route('WholeSaleMarket#dashboard') }}" class=" mx-2">
                             <small>ပင်မစာမျက်နှာ</small>
                         </a>
                         <i class="bi bi-arrow-right font-weight-bolder"></i>
-                        <p class=" mx-2">သီးနှံစာရင်း</p>
+                        <p class=" mx-2">သီးနှံအရည်အသွေးအဆင့် စာရင်း</p>
                     </div>
                 </div>
             </div>
@@ -29,16 +29,10 @@
 
                         <div>
                             <h5 class="crop-title">
-                                <span class="page-icon"><i class="bi bi-flower1"></i></span>
-                                သီးနှံစာရင်း
+                                <span class="page-icon"><i class="bi bi-award"></i></span>
+                                သီးနှံအရည်အသွေးအဆင့် စာရင်း
                             </h5>
                         </div>
-
-                        <!-- Add Crop Button -->
-                        <a href="{{ route('Crop#directPage') }}" class="add-crop-btn">
-                            <i class="bi bi-plus-lg"></i>
-                            သီးနှံထပ်ထည့်ရန်
-                        </a>
 
                     </div>
 
@@ -53,15 +47,14 @@
                         <thead>
                             <tr>
                                 <th>သီးနှံအမည်</th>
-                                <th>ပွဲခ</th>
-                                <th>တစ်တင်းပါ အရေအတွက်</th>
+                                <th>သီးနှံအရည်အသွေးအဆင့်</th>
                                 <th class="text-center">လုပ်ဆောင်ချက်</th>
                             </tr>
                         </thead>
 
                         <tbody>
 
-                            @if ($crops->count() > 0)
+                            {{-- @if ($crops->count() > 0)
                                 @foreach ($crops as $item)
                                     <tr>
 
@@ -90,13 +83,8 @@
 
                                         <td class="text-center">
 
-                                            <a href="{{ route('Quality#directPage', $item->id) }}"
-                                                class="btn btn-sm btn-outline-primary me-1" title="ပြင်ဆင်ရန်">
-                                                အရည်အသွေးအဆင့် ထည့်ရန်
-                                            </a>
-
                                             <a href="{{ route('Crop#edit', $item->id) }}"
-                                                class="btn btn-sm btn-light btn-edit me-1 mt-md-0 mt-2" title="ပြင်ဆင်ရန်">
+                                                class="btn btn-sm btn-outline-primary me-1" title="ပြင်ဆင်ရန်">
                                                 ပြင်ဆင်ရန်
                                             </a>
 
@@ -134,7 +122,7 @@
 
                                     </td>
                                 </tr>
-                            @endif
+                            @endif --}}
 
 
                         </tbody>
@@ -147,30 +135,4 @@
 
         </div>
     </div>
-@endsection
-
-@section('DeleteData')
-    <script>
-        function DeleteData(id) {
-            Swal.fire({
-                title: "ဖျက်ရန် သေချာပါသလား?",
-                text: "ဖျက်ပြီးပါက ဤသီးနှံအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "ဖျက်မည်",
-                cancelButtonText: "မဖျက်တော့ပါ"
-            }).then((result) => {
-                if (result.isConfirmed) Swal.fire({
-                    title: "ဖျက်ပြီးပါပြီ!",
-                    text: "သီးနှံအချက်အလက်ကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
-                    icon: "success"
-                }).then(() => {
-                    location.href = '/WholeSaleMarket/Crop/delete/' + id;
-                });
-
-            });
-        }
-    </script>
 @endsection

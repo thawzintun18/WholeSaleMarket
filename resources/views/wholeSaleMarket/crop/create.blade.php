@@ -204,120 +204,308 @@
             </div>
 
         </div>
+
+
     </div>
 @endsection
 
 @section('OnlineOffline')
     <script>
-        //IndexedDB Setup
-        const DB_NAME = 'WholeSaleMarketDB';
-        const DB_VERSION = 1;
+        // =========================================================
+        // IndexedDB Setup
+        // =========================================================
 
-        let db = null;
+        // const DB_NAME = 'WholeSaleMarketDB';
+        // const DB_VERSION = 3;
 
+        // let db = null;
 
-        // ======================================
-        // Open IndexedDB
-        // ======================================
-
-        const request = indexedDB.open(
-            DB_NAME,
-            DB_VERSION
-        );
+        // DB ဖွင့်နေချိန်မှာ request များစွာ မဖွင့်အောင်
+        // let dbPromise = null;
 
 
-        request.onupgradeneeded = function(event) {
+        // =========================================================
+        // Open / Initialize IndexedDB
+        // =========================================================
 
-            db = event.target.result;
+        // function openDatabase() {
 
-
-            // ================================
-            // Crops Store
-            // ================================
-
-            if (!db.objectStoreNames.contains('crops')) {
-
-                const cropStore =
-                    db.createObjectStore(
-                        'crops', {
-                            keyPath: 'local_id'
-                        }
-                    );
-
-                cropStore.createIndex(
-                    'client_uuid',
-                    'client_uuid', {
-                        unique: true
-                    }
-                );
-
-                cropStore.createIndex(
-                    'sync_status',
-                    'sync_status', {
-                        unique: false
-                    }
-                );
-            }
+        //     // DB ရှိပြီးသားဆိုရင်
+        //     if (db) {
+        //         return Promise.resolve(db);
+        //     }
 
 
-            // ================================
-            // Sync Queue
-            // ================================
-
-            if (!db.objectStoreNames.contains('sync_queue')) {
-
-                const syncStore =
-                    db.createObjectStore(
-                        'sync_queue', {
-                            keyPath: 'id',
-                            autoIncrement: true
-                        }
-                    );
-
-                syncStore.createIndex(
-                    'status',
-                    'status', {
-                        unique: false
-                    }
-                );
-
-                syncStore.createIndex(
-                    'client_uuid',
-                    'client_uuid', {
-                        unique: false
-                    }
-                );
-            }
-        };
+        //     // DB ဖွင့်နေပြီးသားဆိုရင်
+        //     if (dbPromise) {
+        //         return dbPromise;
+        //     }
 
 
-        request.onsuccess = function(event) {
+        //     dbPromise = new Promise(function(resolve, reject) {
 
-            db = event.target.result;
-
-            console.log(
-                'IndexedDB Connected'
-            );
-
-            // Page ဖွင့်တဲ့အချိန်မှာလည်း
-            // pending data ရှိရင် sync စစ်မယ်
-            if (navigator.onLine) {
-
-                syncOfflineCrops();
-            }
-        };
+        //         console.log(
+        //             'IndexedDB ကို ဖွင့်နေပါတယ်...'
+        //         );
 
 
-        request.onerror = function(event) {
-
-            console.error(
-                'IndexedDB Error:',
-                event.target.error
-            );
-        };
+        //         const request =
+        //             indexedDB.open(
+        //                 DB_NAME,
+        //                 DB_VERSION
+        //             );
 
 
-        //Form Submit ကို ဖမ်းမယ်
+        //         // =================================================
+        //         // Database Upgrade
+        //         // =================================================
+
+        //         request.onupgradeneeded =
+        //             function(event) {
+
+        //                 const database =
+        //                     event.target.result;
+
+
+        //                 // =========================================
+        //                 // Crops Store
+        //                 // =========================================
+
+        //                 if (
+        //                     !database.objectStoreNames
+        //                     .contains('crops')
+        //                 ) {
+
+        //                     const cropStore =
+        //                         database.createObjectStore(
+        //                             'crops', {
+        //                                 keyPath: 'local_id'
+        //                             }
+        //                         );
+
+
+        //                     cropStore.createIndex(
+        //                         'client_uuid',
+        //                         'client_uuid', {
+        //                             unique: true
+        //                         }
+        //                     );
+
+
+        //                     cropStore.createIndex(
+        //                         'sync_status',
+        //                         'sync_status', {
+        //                             unique: false
+        //                         }
+        //                     );
+
+
+        //                     console.log(
+        //                         'crops store created'
+        //                     );
+        //                 }
+
+
+        //                 // =========================================
+        //                 // Sync Queue Store
+        //                 // =========================================
+
+        //                 if (
+        //                     !database.objectStoreNames
+        //                     .contains('sync_queue')
+        //                 ) {
+
+        //                     const syncStore =
+        //                         database.createObjectStore(
+        //                             'sync_queue', {
+        //                                 keyPath: 'id',
+        //                                 autoIncrement: true
+        //                             }
+        //                         );
+
+
+        //                     syncStore.createIndex(
+        //                         'status',
+        //                         'status', {
+        //                             unique: false
+        //                         }
+        //                     );
+
+
+        //                     syncStore.createIndex(
+        //                         'client_uuid',
+        //                         'client_uuid', {
+        //                             unique: false
+        //                         }
+        //                     );
+
+
+        //                     console.log(
+        //                         'sync_queue store created'
+        //                     );
+        //                 }
+        //             };
+
+
+        //         // =================================================
+        //         // Database Success
+        //         // =================================================
+
+        //         request.onsuccess =
+        //             function(event) {
+
+        //                 db =
+        //                     event.target.result;
+
+
+        //                 console.log(
+        //                     'IndexedDB Connected'
+        //                 );
+
+
+        //                 // DB connection ပိတ်သွားရင်
+        //                 db.onclose =
+        //                     function() {
+
+        //                         console.warn(
+        //                             'IndexedDB connection closed'
+        //                         );
+
+        //                         db = null;
+        //                         dbPromise = null;
+        //                     };
+
+
+        //                 // DB error
+        //                 db.onerror =
+        //                     function(event) {
+
+        //                         console.error(
+        //                             'IndexedDB Runtime Error:',
+        //                             event.target.error
+        //                         );
+        //                     };
+
+
+        //                 resolve(db);
+        //             };
+
+
+        //         // =================================================
+        //         // Database Error
+        //         // =================================================
+
+        //         request.onerror =
+        //             function(event) {
+
+        //                 console.error(
+        //                     'IndexedDB Open Error:',
+        //                     event.target.error
+        //                 );
+
+
+        //                 db = null;
+        //                 dbPromise = null;
+
+
+        //                 reject(
+        //                     event.target.error
+        //                 );
+        //             };
+
+
+        //         // =================================================
+        //         // Database Blocked
+        //         // =================================================
+
+        //         request.onblocked =
+        //             function() {
+
+        //                 console.warn(
+        //                     'IndexedDB Open Blocked'
+        //                 );
+        //             };
+
+        //     });
+
+
+        //     return dbPromise;
+        // }
+
+
+        // =========================================================
+        // Make Sure DB Is Ready
+        // =========================================================
+
+        // async function ensureDB() {
+
+        //     // DB ရှိပြီးသား
+        //     if (db) {
+        //         return db;
+        //     }
+
+
+        //     // DB မရှိသေးရင် ဖွင့်မယ်
+        //     const database =
+        //         await openDatabase();
+
+
+        //     if (!database) {
+
+        //         throw new Error(
+        //             'IndexedDB connection မရပါ'
+        //         );
+        //     }
+
+
+        //     return database;
+        // }
+
+
+
+        // =========================================================
+        // Page Load
+        // =========================================================
+
+        // document.addEventListener(
+        //     'DOMContentLoaded',
+        //     async function() {
+
+        //         try {
+
+        //             await ensureDB();
+
+
+        //             console.log(
+        //                 'IndexedDB Ready'
+        //             );
+
+
+        //             // Page ဖွင့်တဲ့အချိန် Online ဖြစ်ပြီး
+        //             // pending data ရှိရင် sync
+        //             if (navigator.onLine) {
+
+        //                 await syncOfflineCrops();
+        //             }
+
+
+        //         } catch (error) {
+
+        //             console.error(
+        //                 'IndexedDB initialization failed:',
+        //                 error
+        //             );
+        //         }
+
+        //     }
+        // );
+
+
+
+        // =========================================================
+        // Form Submit
+        // =========================================================
+
         document
             .getElementById('cropForm')
             .addEventListener(
@@ -327,33 +515,38 @@
                     event.preventDefault();
 
 
-                    // ==================================
+                    // =============================================
                     // Form Data
-                    // ==================================
+                    // =============================================
 
                     const cropData = {
 
-                        crop_name: document.getElementById(
-                            'crop_name'
-                        ).value.trim(),
+                        crop_name: document
+                            .getElementById('crop_name')
+                            .value
+                            .trim(),
 
-                        commission_amount: document.getElementById(
-                            'commission_amount'
-                        ).value,
+                        commission_amount: document
+                            .getElementById(
+                                'commission_amount'
+                            )
+                            .value,
 
-                        unit: document.getElementById(
-                            'unit'
-                        ).value,
+                        unit: document
+                            .getElementById('unit')
+                            .value,
 
-                        quantity_per_basket: document.getElementById(
-                            'quantity_per_basket'
-                        ).value
+                        quantity_per_basket: document
+                            .getElementById(
+                                'quantity_per_basket'
+                            )
+                            .value
                     };
 
 
-                    // ==================================
-                    // Check Online / Offline
-                    // ==================================
+                    // =============================================
+                    // Online
+                    // =============================================
 
                     if (navigator.onLine) {
 
@@ -361,661 +554,1366 @@
                             'ONLINE → Laravel'
                         );
 
+
                         await createCropOnline(
                             cropData
                         );
 
-                    } else {
 
-                        console.log(
-                            'OFFLINE → IndexedDB'
-                        );
+                        return;
+                    }
 
-                        // const isUnique =
-                        //     await checkOfflineCropNameUnique(
-                        //         cropData.crop_name
-                        //     );
 
-                        // if (!isUnique) {
+                    // =============================================
+                    // Offline
+                    // =============================================
 
-                        //     Swal.fire({
-                        //         icon: 'warning',
-                        //         title: 'သတိပြုရန်',
-                        //         text: 'ဤသီးနှံအမည်ကို ထည့်သွင်းပြီးသားဖြစ်ပါသည်။',
-                        //         confirmButtonText: 'အိုကေ'
-                        //     });
+                    console.log(
+                        'OFFLINE → IndexedDB'
+                    );
 
-                        //     return;
-                        // }
+
+                    try {
 
                         await createCropOffline(
                             cropData
                         );
+
+                    } catch (error) {
+
+                        console.error(
+                            'Offline Create Error:',
+                            error
+                        );
+
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'သိမ်းဆည်း၍ မရပါ',
+                            text: 'Offline Data သိမ်းဆည်းရာတွင် ပြဿနာရှိနေပါသည်။',
+                            confirmButtonText: 'အိုကေ'
+                        });
+
                     }
 
                 }
             );
 
-        //IndexedDB မှာ Crop Name ရှိ/မရှိစစ်မယ့် Function
-        // function checkOfflineCropNameUnique(cropName) {
 
-        //     return new Promise(function(resolve, reject) {
 
-        //         const transaction =
-        //             db.transaction(
-        //                 'crops',
-        //                 'readonly'
+        // =========================================================
+        // Create Crop Online
+        // =========================================================
+
+        // async function createCropOnline(data) {
+
+        //     try {
+
+        //         const response =
+        //             await fetch(
+        //                 "{{ route('Crop#create') }}", {
+        //                     method: 'POST',
+
+        //                     headers: {
+
+        //                         'Content-Type': 'application/json',
+
+        //                         'Accept': 'application/json',
+
+        //                         'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        //                     },
+
+        //                     body: JSON.stringify({
+
+        //                         crop_name: data.crop_name,
+
+        //                         commission_amount: data.commission_amount,
+
+        //                         unit: data.unit,
+
+        //                         quantity_per_basket: data.quantity_per_basket
+        //                     })
+        //                 }
         //             );
 
-        //         const store =
-        //             transaction.objectStore(
-        //                 'crops'
+
+        //         // =============================================
+        //         // Success
+        //         // =============================================
+
+        //         if (response.ok) {
+
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'အောင်မြင်ပါသည်',
+        //                 text: 'သီးနှံ ထည့်သွင်းပြီးပါပြီ။',
+        //                 confirmButtonText: 'အိုကေ'
+        //             });
+
+
+        //             document
+        //                 .getElementById('cropForm')
+        //                 .reset();
+
+
+        //             return;
+        //         }
+
+
+        //         // =============================================
+        //         // Validation Error
+        //         // =============================================
+
+        //         if (response.status === 422) {
+
+        //             const errors =
+        //                 await response.json();
+
+
+        //             console.log(
+        //                 'Validation Errors:',
+        //                 errors
         //             );
 
-        //         const request =
-        //             store.getAll();
+
+        //             Swal.fire({
+        //                 icon: 'warning',
+        //                 title: 'သတိပြုရန်',
+        //                 text: 'ထည့်သွင်းထားသော Data ကို ပြန်လည်စစ်ဆေးပါ။',
+        //                 confirmButtonText: 'အိုကေ'
+        //             });
 
 
-        //         request.onsuccess =
-        //             function() {
-
-        //                 const crops =
-        //                     request.result;
+        //             return;
+        //         }
 
 
-        //                 const exists =
-        //                     crops.some(function(crop) {
-
-        //                         return (
-        //                             crop.crop_name
-        //                             .trim()
-        //                             .toLowerCase() ===
-        //                             cropName
-        //                             .trim()
-        //                             .toLowerCase()
-        //                         );
-
-        //                     });
+        //         throw new Error(
+        //             'Server Error'
+        //         );
 
 
-        //                 // ရှိပြီးသားဆို false
-        //                 // မရှိသေးရင် true
+        //     } catch (error) {
 
-        //                 resolve(!exists);
+        //         console.error(
+        //             'Online Create Error:',
+        //             error
+        //         );
 
-        //             };
 
-
-        //         request.onerror =
-        //             function() {
-
-        //                 reject(
-        //                     request.error
-        //                 );
-
-        //             };
-
-        //     });
-
+        //         Swal.fire({
+        //             icon: 'error',
+        //             title: 'ချိတ်ဆက်မှု မအောင်မြင်ပါ',
+        //             text: 'Server နှင့် ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေပါသည်။',
+        //             confirmButtonText: 'အိုကေ'
+        //         });
+        //     }
         // }
 
-        //Online ဖြစ်ရင် Laravel Controller ကိုပို့မယ်
+        //v1
         async function createCropOnline(data) {
+
             try {
 
-                // console.log(data);
+                const response = await fetch(
+                    "{{ route('Crop#create') }}", {
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+
+                        body: JSON.stringify({
+
+                            crop_name: data.crop_name,
+
+                            commission_amount: data.commission_amount,
+
+                            unit: data.unit,
+
+                            quantity_per_basket: data.quantity_per_basket
+                        })
+                    }
+                );
 
 
-                const response =
-                    await fetch(
-                        "{{ route('Crop#create') }}", {
-                            method: 'POST',
+                // =====================================================
+                // Validation Error
+                // =====================================================
 
-                            headers: {
-
-                                'Content-Type': 'application/json',
-
-                                'Accept': 'application/json',
-
-                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                            },
-
-                            body: JSON.stringify({
-
-                                crop_name: data.crop_name,
-
-                                commission_amount: data.commission_amount,
-
-                                unit: data.unit,
-
-                                quantity_per_basket: data.quantity_per_basket
-                            })
-                        }
-                    );
-
-
-                if (response.ok) {
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'အောင်မြင်ပါသည်',
-                        text: 'သီးနှံ ထည့်သွင်းပြီးပါပြီ။',
-                        confirmButtonText: 'အိုကေ'
-                    });
-
-
-                    document
-                        .getElementById('cropForm')
-                        .reset();
-
-
-                    return;
-                }
-
-
-                // Laravel validation error
                 if (response.status === 422) {
 
-                    const errors =
+                    const result =
                         await response.json();
 
-                    console.log(errors);
+                    console.log(
+                        'Validation Errors:',
+                        result
+                    );
 
-                    Swal.fire({
+                    await Swal.fire({
                         icon: 'warning',
                         title: 'သတိပြုရန်',
-                        text: 'ထည့်သွင်းထားသော Data ကို ပြန်လည်စစ်ဆေးပါ။',
+                        text: result.message ||
+                            'ထည့်သွင်းထားသော Data ကို ပြန်လည်စစ်ဆေးပါ။',
                         confirmButtonText: 'အိုကေ'
                     });
 
-                    return;
+                    return false;
                 }
 
 
-                throw new Error(
-                    'Server Error'
-                );
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                Swal.fire({
-                    icon: 'error',
-                    title: 'ချိတ်ဆက်မှု မအောင်မြင်ပါ',
-                    text: 'Server နှင့် ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေပါသည်။',
-                    confirmButtonText: 'အိုကေ'
-                });
-            }
-        }
-
-
-        //Offline ဖြစ်ရင် IndexedDB ထဲ Create
-        function createCropOffline(data) {
-            return new Promise(
-                function(resolve, reject) {
-
-                    const transaction =
-                        db.transaction(
-                            [
-                                'crops',
-                                'sync_queue'
-                            ],
-                            'readwrite'
-                        );
-
-
-                    const cropStore =
-                        transaction.objectStore(
-                            'crops'
-                        );
-
-
-                    const syncStore =
-                        transaction.objectStore(
-                            'sync_queue'
-                        );
-
-
-                    // =================================
-                    // Generate UUID
-                    // =================================
-
-                    const clientUuid =
-                        crypto.randomUUID();
-
-
-                    const localId =
-                        clientUuid;
-
-
-                    // =================================
-                    // Crop Data
-                    // =================================
-
-                    const crop = {
-
-                        local_id: localId,
-
-                        client_uuid: clientUuid,
-
-                        crop_name: data.crop_name,
-
-                        commission_amount: data.commission_amount,
-
-                        unit: data.unit,
-
-                        quantity_per_basket: data.quantity_per_basket,
-
-                        sync_status: 'pending',
-
-                        created_at: new Date().toISOString()
-                    };
-
-
-                    // =================================
-                    // Save Crop
-                    // =================================
-
-                    cropStore.add(crop);
-
-
-                    // =================================
-                    // Add Sync Queue
-                    // =================================
-
-                    syncStore.add({
-
-                        entity: 'crops',
-
-                        action: 'create',
-
-                        client_uuid: clientUuid,
-
-                        data: crop,
-
-                        status: 'pending',
-
-                        created_at: new Date().toISOString()
-                    });
-
-
-                    transaction.oncomplete =
-                        function() {
-
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'အင်တာနက်ချိတ်ဆက်မှု မရှိပါ',
-                                text: 'သီးနှံအချက်အလက်ကို အင်တာနက်မလိုဘဲ သိမ်းဆည်းထားပါပြီ။ အင်တာနက်ပြန်လည်ရရှိသည်နှင့် အလိုအလျောက် ချိတ်ဆက်၍ အချက်အလက်များကို ပေးပို့သွားပါမည်။',
-                                confirmButtonText: 'အိုကေ'
-                            });
-
-
-                            document
-                                .getElementById(
-                                    'cropForm'
-                                )
-                                .reset();
-
-
-                            resolve(true);
-                        };
-
-
-                    transaction.onerror =
-                        function() {
-
-                            console.error(
-                                transaction.error
-                            );
-
-                            reject(
-                                transaction.error
-                            );
-                        };
-
-                }
-            );
-        }
-
-        //Internet ပြန်ရရင် Auto Sync
-        window.addEventListener(
-            'online',
-            function() {
-
-                console.log(
-                    'Internet ပြန်ရပါပြီ။'
-                );
-
-
-                // User ဘာမှနှိပ်စရာမလို
-                syncOfflineCrops();
-            }
-        );
-
-
-        //Pending Crop တွေ ရှာမယ်
-        function getPendingCrops() {
-            return new Promise(
-                function(resolve, reject) {
-
-                    const transaction =
-                        db.transaction(
-                            'sync_queue',
-                            'readonly'
-                        );
-
-
-                    const store =
-                        transaction.objectStore(
-                            'sync_queue'
-                        );
-
-
-                    const request =
-                        store.getAll();
-
-
-                    request.onsuccess =
-                        function() {
-
-                            const pending =
-                                request.result.filter(
-                                    function(item) {
-
-                                        return (
-                                            item.entity ===
-                                            'crops' &&
-                                            item.status ===
-                                            'pending'
-                                        );
-                                    }
-                                );
-
-
-                            resolve(pending);
-                        };
-
-
-                    request.onerror =
-                        function() {
-
-                            reject(
-                                request.error
-                            );
-                        };
-
-                }
-            );
-        }
-
-
-        //JavaScript က Laravel API ကို Auto ပို့မယ်
-        async function syncOfflineCrops() {
-            // Internet မရှိရင် မလုပ်
-            if (!navigator.onLine) {
-
-                return;
-            }
-
-
-            try {
-
-                // ===========================
-                // Get Pending Data
-                // ===========================
-
-                const pending =
-                    await getPendingCrops();
-
-
-                if (pending.length === 0) {
-
-                    console.log(
-                        'Sync လုပ်စရာ Data မရှိပါ။'
-                    );
-
-                    return;
-                }
-
-
-                console.log(
-                    pending.length +
-                    ' crops syncing...'
-                );
-
-
-                // ===========================
-                // Send to Laravel
-                // ===========================
-
-                const response =
-                    await fetch(
-                        "{{ route('api.sync.crops') }}", {
-                            method: 'POST',
-
-                            headers: {
-
-                                'Content-Type': 'application/json',
-
-                                'Accept': 'application/json',
-
-                                'Authorization': 'Bearer ' +
-                                    localStorage.getItem(
-                                        'api_token'
-                                    )
-                            },
-
-                            body: JSON.stringify({
-
-                                items: pending
-                            })
-                        }
-                    );
-
+                // =====================================================
+                // Server Error
+                // =====================================================
 
                 if (!response.ok) {
 
+                    const errorText =
+                        await response.text();
+
+                    console.error(
+                        'Server Error:',
+                        errorText
+                    );
+
                     throw new Error(
-                        'Sync API Error'
+                        'Server Error: ' +
+                        response.status
                     );
                 }
 
+
+                // =====================================================
+                // Success Response
+                // =====================================================
 
                 const result =
                     await response.json();
 
 
-                // ===========================
-                // Update IndexedDB
-                // ===========================
+                console.log(
+                    'Laravel Create Response:',
+                    result
+                );
 
-                if (result.success) {
 
-                    await markCropsAsSynced(
-                        result.results
+                if (!result.success) {
+
+                    throw new Error(
+                        result.message ||
+                        'Crop Create မအောင်မြင်ပါ။'
                     );
-
-
-                    console.log(
-                        'Crop Sync Success'
-                    );
-
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'အောင်မြင်ပါသည်',
-                        text: 'အင်တာနက်မရှိချိန်တွင် သိမ်းဆည်းထားသော သီးနှံအချက်အလက်များကို အလိုအလျောက် ပေးပို့သိမ်းဆည်းပြီးပါပြီ။',
-                        confirmButtonText: 'အိုကေ'
-                    });
                 }
+
+
+                // =====================================================
+                // Laravel မှ ပြန်လာတဲ့ Crop
+                // =====================================================
+
+                const crop =
+                    result.data;
+
+
+                if (!crop) {
+
+                    throw new Error(
+                        'Laravel Response ထဲမှာ Crop Data မပါပါ။'
+                    );
+                }
+
+
+                console.log(
+                    '✅ Created Server Crop:',
+                    crop
+                );
+
+
+                // =====================================================
+                // IndexedDB ထဲ Save
+                // =====================================================
+
+                await saveOnlineCropToIndexedDB(
+                    crop,
+                    data
+                );
+
+
+                // =====================================================
+                // Success Message
+                // =====================================================
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'အောင်မြင်ပါသည်',
+                    text: 'သီးနှံ ထည့်သွင်းပြီးပါပြီ။',
+                    confirmButtonText: 'အိုကေ'
+                });
+
+
+                // =====================================================
+                // Reset Form
+                // =====================================================
+
+                const cropForm =
+                    document.getElementById(
+                        'cropForm'
+                    );
+
+                if (cropForm) {
+                    cropForm.reset();
+                }
+
+
+                return true;
 
 
             } catch (error) {
 
                 console.error(
-                    'Sync Error:',
+                    'Online Create Error:',
                     error
                 );
 
-                /*
-                |--------------------------------------------------------------------------
-                | Internet ပြန်ပြတ်သွားရင်
-                | Data ကို pending အတိုင်းထားမယ်
-                |--------------------------------------------------------------------------
-                */
 
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'ချိတ်ဆက်မှု မအောင်မြင်ပါ',
+                    text: error.message ||
+                        'Server နှင့် ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေပါသည်။',
+                    confirmButtonText: 'အိုကေ'
+                });
+
+
+                return false;
             }
         }
 
 
-        //Sync ပြီးရင် IndexedDB မှာ synced ပြောင်းမယ်
-        function markCropsAsSynced(results) {
+        // Online Create ပြီးရင် IndexedDB ထဲသိမ်းမယ့် function
+
+        async function saveOnlineCropToIndexedDB(
+            serverCrop,
+            originalData
+        ) {
+
+            const database =
+                await ensureDB();
+
+
+            if (!database) {
+
+                throw new Error(
+                    'IndexedDB connection မရပါ။'
+                );
+            }
+
+
+            return new Promise(function(
+                resolve,
+                reject
+            ) {
+
+                const transaction =
+                    database.transaction(
+                        'crops',
+                        'readwrite'
+                    );
+
+
+                const store =
+                    transaction.objectStore(
+                        'crops'
+                    );
+
+
+                // =====================================================
+                // Laravel မှာ client_uuid မပြန်ရင်
+                // original data မှာရှိတာကိုသုံး
+                // မရှိရင် အသစ် generate လုပ်
+                // =====================================================
+
+                const clientUuid =
+                    serverCrop.client_uuid ||
+                    originalData.client_uuid ||
+                    crypto.randomUUID();
+
+
+                // =====================================================
+                // Server ID
+                // =====================================================
+
+                const serverId =
+                    Number(
+                        serverCrop.id ||
+                        serverCrop.server_id
+                    );
+
+
+                if (!serverId) {
+
+                    transaction.abort();
+
+                    reject(
+                        new Error(
+                            'Server ID မရရှိပါ။'
+                        )
+                    );
+
+                    return;
+                }
+
+
+                // =====================================================
+                // IndexedDB Crop Record
+                // =====================================================
+
+                const cropRecord = {
+
+                    // IndexedDB primary key
+                    local_id: clientUuid,
+
+                    // Laravel MySQL ID
+                    server_id: serverId,
+
+                    // UUID
+                    client_uuid: clientUuid,
+
+                    crop_name: serverCrop.crop_name ||
+                        originalData.crop_name,
+
+                    commission_amount: serverCrop.commission_amount ||
+                        originalData.commission_amount,
+
+                    unit: serverCrop.unit ||
+                        originalData.unit,
+
+                    quantity_per_basket: serverCrop.quantity_per_basket ||
+                        originalData.quantity_per_basket,
+
+                    sync_status: 'synced',
+
+                    sync_result: 'success',
+
+                    synced_at: new Date().toISOString(),
+
+                    created_at: serverCrop.created_at ||
+                        new Date().toISOString(),
+
+                    updated_at: new Date().toISOString()
+                };
+
+
+                console.log(
+                    '💾 Saving Online Crop to IndexedDB:',
+                    cropRecord
+                );
+
+
+                store.put(
+                    cropRecord
+                );
+
+
+                // =====================================================
+                // Transaction Complete
+                // =====================================================
+
+                transaction.oncomplete =
+                    function() {
+
+                        console.log(
+                            '✅ Online Created Crop → IndexedDB Saved'
+                        );
+
+                        resolve(
+                            cropRecord
+                        );
+                    };
+
+
+                // =====================================================
+                // Error
+                // =====================================================
+
+                transaction.onerror =
+                    function() {
+
+                        console.error(
+                            '❌ IndexedDB Save Error:',
+                            transaction.error
+                        );
+
+                        reject(
+                            transaction.error
+                        );
+                    };
+
+
+                transaction.onabort =
+                    function() {
+
+                        reject(
+                            transaction.error ||
+                            new Error(
+                                'IndexedDB Transaction Aborted'
+                            )
+                        );
+                    };
+
+            });
+        }
+
+
+
+        // =========================================================
+        // Create Crop Offline
+        // =========================================================
+
+        async function createCropOffline(data) {
+
+            // =============================================
+            // DB Ready ဖြစ်အောင်လုပ်
+            // =============================================
+
+            const database =
+                await ensureDB();
+
+
+            if (!database) {
+
+                throw new Error(
+                    'IndexedDB is null'
+                );
+            }
+
+
             return new Promise(
                 function(resolve, reject) {
 
-                    const transaction =
-                        db.transaction(
-                            [
-                                'crops',
+                    try {
+
+                        // =========================================
+                        // Transaction
+                        // =========================================
+
+                        const transaction =
+                            database.transaction(
+                                [
+                                    'crops',
+                                    'sync_queue'
+                                ],
+                                'readwrite'
+                            );
+
+
+                        // =========================================
+                        // Object Stores
+                        // =========================================
+
+                        const cropStore =
+                            transaction.objectStore(
+                                'crops'
+                            );
+
+
+                        const syncStore =
+                            transaction.objectStore(
                                 'sync_queue'
-                            ],
-                            'readwrite'
+                            );
+
+
+                        // =========================================
+                        // Generate UUID
+                        // =========================================
+
+                        const clientUuid =
+                            crypto.randomUUID();
+
+
+                        const localId =
+                            clientUuid;
+
+
+                        // =========================================
+                        // Crop Data
+                        // =========================================
+
+                        const crop = {
+
+                            local_id: localId,
+
+                            client_uuid: clientUuid,
+
+                            crop_name: data.crop_name,
+
+                            commission_amount: data.commission_amount,
+
+                            unit: data.unit,
+
+                            quantity_per_basket: data.quantity_per_basket,
+
+                            sync_status: 'pending',
+
+                            created_at: new Date()
+                                .toISOString()
+                        };
+
+
+                        // =========================================
+                        // Save Crop
+                        // =========================================
+
+                        cropStore.add(
+                            crop
                         );
 
 
-                    const cropStore =
-                        transaction.objectStore(
-                            'crops'
+                        // =========================================
+                        // Add Sync Queue
+                        // =========================================
+
+                        syncStore.add({
+
+                            entity: 'crops',
+
+                            action: 'create',
+
+                            client_uuid: clientUuid,
+
+                            data: crop,
+
+                            status: 'pending',
+
+                            created_at: new Date()
+                                .toISOString()
+                        });
+
+
+                        // =========================================
+                        // Transaction Complete
+                        // =========================================
+
+                        transaction.oncomplete =
+                            function() {
+
+                                console.log(
+                                    'Offline Crop Saved:',
+                                    crop
+                                );
+
+
+                                Swal.fire({
+
+                                    icon: 'info',
+
+                                    title: 'အင်တာနက်ချိတ်ဆက်မှု မရှိပါ',
+
+                                    text: 'သီးနှံအချက်အလက်ကို အင်တာနက်မလိုဘဲ သိမ်းဆည်းထားပါပြီ။ အင်တာနက်ပြန်လည်ရရှိသည်နှင့် အလိုအလျောက် ချိတ်ဆက်၍ အချက်အလက်များကို ပေးပို့သွားပါမည်။',
+
+                                    confirmButtonText: 'အိုကေ'
+                                });
+
+
+                                document
+                                    .getElementById(
+                                        'cropForm'
+                                    )
+                                    .reset();
+
+
+                                resolve(true);
+                            };
+
+
+                        // =========================================
+                        // Transaction Error
+                        // =========================================
+
+                        transaction.onerror =
+                            function() {
+
+                                console.error(
+                                    'Transaction Error:',
+                                    transaction.error
+                                );
+
+
+                                reject(
+                                    transaction.error
+                                );
+                            };
+
+
+                        // =========================================
+                        // Transaction Abort
+                        // =========================================
+
+                        transaction.onabort =
+                            function() {
+
+                                console.error(
+                                    'Transaction Aborted:',
+                                    transaction.error
+                                );
+
+
+                                reject(
+                                    transaction.error ||
+                                    new Error(
+                                        'Transaction aborted'
+                                    )
+                                );
+                            };
+
+
+                    } catch (error) {
+
+                        console.error(
+                            'IndexedDB Transaction Error:',
+                            error
                         );
 
 
-                    const syncStore =
-                        transaction.objectStore(
-                            'sync_queue'
-                        );
-
-
-                    // ============================
-                    // Get all local crops
-                    // ============================
-
-                    const cropRequest =
-                        cropStore.getAll();
-
-
-                    cropRequest.onsuccess =
-                        function() {
-
-                            const crops =
-                                cropRequest.result;
-
-
-                            results.forEach(
-                                function(result) {
-
-                                    if (
-                                        result.status !==
-                                        'success'
-                                    ) {
-                                        return;
-                                    }
-
-
-                                    crops.forEach(
-                                        function(crop) {
-
-                                            if (
-                                                crop.client_uuid ===
-                                                result.client_uuid
-                                            ) {
-
-                                                crop.sync_status =
-                                                    'synced';
-
-                                                cropStore.put(
-                                                    crop
-                                                );
-                                            }
-                                        }
-                                    );
-
-                                }
-                            );
-                        };
-
-
-                    // ============================
-                    // Update Sync Queue
-                    // ============================
-
-                    const queueRequest =
-                        syncStore.getAll();
-
-
-                    queueRequest.onsuccess =
-                        function() {
-
-                            const items =
-                                queueRequest.result;
-
-
-                            results.forEach(
-                                function(result) {
-
-                                    if (
-                                        result.status !==
-                                        'success'
-                                    ) {
-                                        return;
-                                    }
-
-
-                                    items.forEach(
-                                        function(item) {
-
-                                            if (
-                                                item.client_uuid ===
-                                                result.client_uuid
-                                            ) {
-
-                                                item.status =
-                                                    'synced';
-
-                                                item.synced_at =
-                                                    new Date()
-                                                    .toISOString();
-
-                                                syncStore.put(
-                                                    item
-                                                );
-                                            }
-                                        }
-                                    );
-
-                                }
-                            );
-                        };
-
-
-                    transaction.oncomplete =
-                        function() {
-
-                            resolve(true);
-                        };
-
-
-                    transaction.onerror =
-                        function() {
-
-                            reject(
-                                transaction.error
-                            );
-                        };
+                        reject(error);
+                    }
 
                 }
             );
         }
+
+
+
+        // =========================================================
+        // Internet ပြန်ရရင် Auto Sync
+        // =========================================================
+
+        // window.addEventListener(
+        //     'online',
+        //     async function() {
+
+        //         console.log(
+        //             'Internet ပြန်ရပါပြီ။'
+        //         );
+
+
+        //         try {
+
+        //             // DB ready ဖြစ်အောင်စောင့်
+        //             await ensureDB();
+
+
+        //             // Auto Sync
+        //             await syncOfflineCrops();
+
+
+        //         } catch (error) {
+
+        //             console.error(
+        //                 'Online Sync Error:',
+        //                 error
+        //             );
+        //         }
+
+        //     }
+        // );
+
+
+
+        // =========================================================
+        // Get Pending Crops
+        // =========================================================
+
+        // async function getPendingCrops() {
+
+        //     const database =
+        //         await ensureDB();
+
+
+        //     return new Promise(
+        //         function(resolve, reject) {
+
+        //             try {
+
+        //                 const transaction =
+        //                     database.transaction(
+        //                         'sync_queue',
+        //                         'readonly'
+        //                     );
+
+
+        //                 const store =
+        //                     transaction.objectStore(
+        //                         'sync_queue'
+        //                     );
+
+
+        //                 const request =
+        //                     store.getAll();
+
+
+        //                 request.onsuccess =
+        //                     function() {
+
+        //                         const pending =
+        //                             request.result.filter(
+        //                                 function(item) {
+
+        //                                     return (
+        //                                         item.entity ===
+        //                                         'crops' &&
+
+        //                                         item.status ===
+        //                                         'pending'
+        //                                     );
+
+        //                                 }
+        //                             );
+
+
+        //                         resolve(
+        //                             pending
+        //                         );
+        //                     };
+
+
+        //                 request.onerror =
+        //                     function() {
+
+        //                         reject(
+        //                             request.error
+        //                         );
+        //                     };
+
+
+        //             } catch (error) {
+
+        //                 reject(error);
+        //             }
+
+        //         }
+        //     );
+        // }
+
+
+
+        // =========================================================
+        // Sync Offline Crops
+        // =========================================================
+
+        // async function syncOfflineCrops() {
+
+        //     // =============================================
+        //     // Internet မရှိရင် မလုပ်
+        //     // =============================================
+
+        //     if (!navigator.onLine) {
+
+        //         console.log(
+        //             'Offline → Sync မလုပ်ပါ'
+        //         );
+
+        //         return;
+        //     }
+
+
+        //     try {
+
+        //         // =============================================
+        //         // DB Ready
+        //         // =============================================
+
+        //         await ensureDB();
+
+
+        //         // =============================================
+        //         // Get Pending Data
+        //         // =============================================
+
+        //         const pending =
+        //             await getPendingCrops();
+
+
+        //         if (pending.length === 0) {
+
+        //             console.log(
+        //                 'Sync လုပ်စရာ Data မရှိပါ။'
+        //             );
+
+        //             return;
+        //         }
+
+
+        //         console.log(
+        //             pending.length +
+        //             ' crops syncing...'
+        //         );
+
+
+        //         // =============================================
+        //         // Send Laravel API
+        //         // =============================================
+
+        //         const response =
+        //             await fetch(
+        //                 "{{ route('api.sync.crops') }}", {
+        //                     method: 'POST',
+
+        //                     headers: {
+
+        //                         'Content-Type': 'application/json',
+
+        //                         'Accept': 'application/json',
+
+        //                         'Authorization': 'Bearer ' +
+        //                             localStorage.getItem(
+        //                                 'api_token'
+        //                             )
+        //                     },
+
+        //                     body: JSON.stringify({
+
+        //                         items: pending
+        //                     })
+        //                 }
+        //             );
+
+
+        //         // =============================================
+        //         // API Error
+        //         // =============================================
+
+        //         if (!response.ok) {
+
+        //             throw new Error(
+        //                 'Sync API Error: ' +
+        //                 response.status
+        //             );
+        //         }
+
+
+        //         // =============================================
+        //         // JSON Result
+        //         // =============================================
+
+        //         const result =
+        //             await response.json();
+
+
+        //         console.log(
+        //             'Sync API Result:',
+        //             result
+        //         );
+
+
+        //         // =============================================
+        //         // Update IndexedDB
+        //         // =============================================
+
+        //         if (result.success) {
+
+        //             await markCropsAsSynced(
+        //                 result.results
+        //             );
+
+
+        //             console.log(
+        //                 'Crop Sync Success'
+        //             );
+
+
+        //             // ==========================================
+        //             // Count Result
+        //             // ==========================================
+
+        //             const results =
+        //                 result.results || [];
+
+
+        //             const successItems =
+        //                 results.filter(
+        //                     function(item) {
+
+        //                         return (
+        //                             item.status ===
+        //                             'success'
+        //                         );
+
+        //                     }
+        //                 );
+
+
+        //             const duplicateItems =
+        //                 results.filter(
+        //                     function(item) {
+
+        //                         return (
+        //                             item.status ===
+        //                             'duplicate'
+        //                         );
+
+        //                     }
+        //                 );
+
+
+        //             const alreadySyncedItems =
+        //                 results.filter(
+        //                     function(item) {
+
+        //                         return (
+        //                             item.status ===
+        //                             'already_synced'
+        //                         );
+
+        //                     }
+        //                 );
+
+
+        //             const failedItems =
+        //                 results.filter(
+        //                     function(item) {
+
+        //                         return (
+        //                             item.status ===
+        //                             'failed'
+        //                         );
+
+        //                     }
+        //                 );
+
+
+        //             // ==========================================
+        //             // Success
+        //             // ==========================================
+
+        //             if (
+        //                 successItems.length > 0
+        //             ) {
+
+        //                 Swal.fire({
+
+        //                     icon: 'success',
+
+        //                     title: 'အောင်မြင်ပါသည်',
+
+        //                     text: successItems.length +
+        //                         ' ခုသော သီးနှံအချက်အလက်များကို အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။',
+
+        //                     confirmButtonText: 'အိုကေ'
+        //                 });
+        //             }
+
+
+        //             // ==========================================
+        //             // Duplicate
+        //             // ==========================================
+        //             else if (
+        //                 duplicateItems.length > 0
+        //             ) {
+
+        //                 Swal.fire({
+
+        //                     icon: 'warning',
+
+        //                     title: 'သီးနှံအမည် ထပ်နေပါသည်',
+
+        //                     text: 'သီးနှံအချက်အလက်သည် Database တွင် ရှိပြီးသားဖြစ်သောကြောင့် သိမ်းဆည်းခြင်းမပြုပါ။',
+
+        //                     confirmButtonText: 'အိုကေ'
+        //                 });
+        //             }
+
+
+        //             // ==========================================
+        //             // Already Synced
+        //             // ==========================================
+        //             else if (
+        //                 alreadySyncedItems.length > 0
+        //             ) {
+
+        //                 console.log(
+        //                     alreadySyncedItems.length +
+        //                     ' crops already synced'
+        //                 );
+        //             }
+
+
+        //             // ==========================================
+        //             // Failed
+        //             // ==========================================
+
+        //             if (
+        //                 failedItems.length > 0
+        //             ) {
+
+        //                 console.warn(
+        //                     'Some crops failed to sync:',
+        //                     failedItems
+        //                 );
+        //             }
+
+        //         }
+
+
+        //     } catch (error) {
+
+        //         console.error(
+        //             'Sync Error:',
+        //             error
+        //         );
+
+        //         /*
+        //          * Internet ပြန်ပြတ်သွားရင်
+        //          * Data ကို pending အတိုင်းထားမယ်
+        //          */
+        //     }
+        // }
+
+
+
+        // =========================================================
+        // Mark Crops As Synced
+        // =========================================================
+
+        // async function markCropsAsSynced(results) {
+
+        //     const database =
+        //         await ensureDB();
+
+
+        //     return new Promise(
+        //         function(resolve, reject) {
+
+        //             try {
+
+        //                 const transaction =
+        //                     database.transaction(
+        //                         [
+        //                             'crops',
+        //                             'sync_queue'
+        //                         ],
+        //                         'readwrite'
+        //                     );
+
+
+        //                 const cropStore =
+        //                     transaction.objectStore(
+        //                         'crops'
+        //                     );
+
+
+        //                 const syncStore =
+        //                     transaction.objectStore(
+        //                         'sync_queue'
+        //                     );
+
+
+        //                 // =========================================
+        //                 // Get Local Crops
+        //                 // =========================================
+
+        //                 const cropRequest =
+        //                     cropStore.getAll();
+
+
+        //                 cropRequest.onsuccess =
+        //                     function() {
+
+        //                         const crops =
+        //                             cropRequest.result;
+
+
+        //                         results.forEach(
+        //                             function(result) {
+
+        //                                 // Success / Duplicate /
+        //                                 // Already Synced
+        //                                 if (
+        //                                     result.status !==
+        //                                     'success' &&
+
+        //                                     result.status !==
+        //                                     'duplicate' &&
+
+        //                                     result.status !==
+        //                                     'already_synced'
+        //                                 ) {
+
+        //                                     return;
+        //                                 }
+
+
+        //                                 crops.forEach(
+        //                                     function(crop) {
+
+        //                                         if (
+        //                                             crop.client_uuid ===
+        //                                             result.client_uuid
+        //                                         ) {
+
+        //                                             crop.sync_status =
+        //                                                 'synced';
+
+
+        //                                             crop.sync_result =
+        //                                                 result.status;
+
+
+        //                                             crop.synced_at =
+        //                                                 new Date()
+        //                                                 .toISOString();
+
+
+        //                                             cropStore.put(
+        //                                                 crop
+        //                                             );
+        //                                         }
+
+        //                                     }
+        //                                 );
+
+        //                             }
+        //                         );
+
+        //                     };
+
+
+        //                 cropRequest.onerror =
+        //                     function() {
+
+        //                         reject(
+        //                             cropRequest.error
+        //                         );
+        //                     };
+
+
+        //                 // =========================================
+        //                 // Update Sync Queue
+        //                 // =========================================
+
+        //                 const queueRequest =
+        //                     syncStore.getAll();
+
+
+        //                 queueRequest.onsuccess =
+        //                     function() {
+
+        //                         const items =
+        //                             queueRequest.result;
+
+
+        //                         results.forEach(
+        //                             function(result) {
+
+        //                                 if (
+        //                                     result.status !==
+        //                                     'success' &&
+
+        //                                     result.status !==
+        //                                     'duplicate' &&
+
+        //                                     result.status !==
+        //                                     'already_synced'
+        //                                 ) {
+
+        //                                     return;
+        //                                 }
+
+
+        //                                 items.forEach(
+        //                                     function(item) {
+
+        //                                         if (
+        //                                             item.client_uuid ===
+        //                                             result.client_uuid
+        //                                         ) {
+
+        //                                             item.status =
+        //                                                 'synced';
+
+
+        //                                             item.sync_result =
+        //                                                 result.status;
+
+
+        //                                             item.synced_at =
+        //                                                 new Date()
+        //                                                 .toISOString();
+
+
+        //                                             syncStore.put(
+        //                                                 item
+        //                                             );
+        //                                         }
+
+        //                                     }
+        //                                 );
+
+        //                             }
+        //                         );
+
+        //                     };
+
+
+        //                 queueRequest.onerror =
+        //                     function() {
+
+        //                         reject(
+        //                             queueRequest.error
+        //                         );
+        //                     };
+
+
+        //                 // =========================================
+        //                 // Transaction Complete
+        //                 // =========================================
+
+        //                 transaction.oncomplete =
+        //                     function() {
+
+        //                         resolve(
+        //                             true
+        //                         );
+        //                     };
+
+
+        //                 // =========================================
+        //                 // Transaction Error
+        //                 // =========================================
+
+        //                 transaction.onerror =
+        //                     function() {
+
+        //                         reject(
+        //                             transaction.error
+        //                         );
+        //                     };
+
+
+        //                 // =========================================
+        //                 // Transaction Abort
+        //                 // =========================================
+
+        //                 transaction.onabort =
+        //                     function() {
+
+        //                         reject(
+        //                             transaction.error ||
+        //                             new Error(
+        //                                 'Transaction aborted'
+        //                             )
+        //                         );
+        //                     };
+
+        //             } catch (error) {
+
+        //                 reject(error);
+        //             }
+
+        //         }
+        //     );
+        // }
     </script>
 @endsection

@@ -106,6 +106,218 @@ class CropSyncController extends Controller
     //     ]);
     // }
 
+    // public function sync(Request $request)
+    // {
+    //     $request->validate([
+    //         'items' => [
+    //             'required',
+    //             'array',
+    //         ],
+    //     ]);
+
+    //     $results = [];
+
+    //     foreach ($request->items as $item) {
+
+    //         try {
+
+    //             DB::transaction(function () use ($item) {
+
+    //                 $data = $item['data'];
+
+    //                 $action = $item['action'] ?? 'create';
+
+    //                 // ==========================================
+    //                 // CREATE
+    //                 // ==========================================
+
+    //                 if ($action === 'create') {
+
+    //                     // -------------------------------
+    //                     // Duplicate Check
+    //                     // -------------------------------
+
+    //                     $existing = Crop::where(
+    //                         'client_uuid',
+    //                         $data['client_uuid']
+    //                     )->first();
+
+    //                     // client_uuid အရင်ရှိပြီးသား
+    //                     if ($existing) {
+
+    //                         return;
+    //                     }
+
+    //                     // =========================================
+    //                     // Crop Name Unique Check
+    //                     // =========================================
+
+    //                     $duplicateCrop = Crop::where(
+    //                         'crop_name',
+    //                         $data['crop_name']
+    //                     )->first();
+
+    //                     if ($duplicateCrop) {
+
+    //                         throw new \Exception(
+    //                             'ဤသီးနှံအမည်ကို ထည့်သွင်းပြီးသားဖြစ်ပါသည်။'
+    //                         );
+
+    //                     }
+
+    //                     // -------------------------------
+    //                     // Create Only If Not Exists
+    //                     // -------------------------------
+
+    //                     if (! $existing) {
+
+    //                         Crop::create([
+
+    //                             'client_uuid'         =>
+    //                             $data['client_uuid'],
+
+    //                             'crop_name'           =>
+    //                             $data['crop_name'],
+
+    //                             'commission_amount'   =>
+    //                             $data['commission_amount'],
+
+    //                             'unit'                =>
+    //                             $data['unit'],
+
+    //                             'quantity_per_basket' =>
+    //                             $data['quantity_per_basket'],
+
+    //                         ]);
+
+    //                     }
+
+    //                 }
+
+    //                 // ==========================================
+    //                 // UPDATE
+    //                 // ==========================================
+
+    //                 elseif ($action === 'update') {
+
+    //                     // -------------------------------
+    //                     // Find Crop By client_uuid
+    //                     // -------------------------------
+
+    //                     $crop = Crop::where(
+    //                         'client_uuid',
+    //                         $data['client_uuid']
+    //                     )->first();
+
+    //                     // -------------------------------
+    //                     // Crop မတွေ့ရင် Error
+    //                     // -------------------------------
+
+    //                     if (! $crop) {
+
+    //                         throw new \Exception(
+    //                             'Update လုပ်ရန် Crop မတွေ့ပါ။'
+    //                         );
+
+    //                     }
+
+    //                     // -------------------------------
+    //                     // Update Crop
+    //                     // -------------------------------
+
+    //                     $crop->update([
+
+    //                         'crop_name'           =>
+    //                         $data['crop_name'],
+
+    //                         'commission_amount'   =>
+    //                         $data['commission_amount'],
+
+    //                         'unit'                =>
+    //                         $data['unit'],
+
+    //                         'quantity_per_basket' =>
+    //                         $data['quantity_per_basket'],
+
+    //                     ]);
+
+    //                 }
+
+    //                 // ==========================================
+    //                 // Unknown Action
+    //                 // ==========================================
+
+    //                 else {
+
+    //                     throw new \Exception(
+    //                         'Unknown sync action: ' . $action
+    //                     );
+
+    //                 }
+
+    //             });
+
+    //             // ==========================================
+    //             // Success Result
+    //             // ==========================================
+
+    //             $results[] = [
+
+    //                 'client_uuid' =>
+    //                 $item['client_uuid'],
+
+    //                 'status'      =>
+    //                 'success',
+
+    //                 'action'      =>
+    //                 $item['action'] ?? 'create',
+
+    //             ];
+
+    //         }
+
+    //         // ==============================================
+    //         // Failed
+    //         // ==============================================
+
+    //          catch (\Throwable $e) {
+
+    //             $results[] = [
+
+    //                 'client_uuid' =>
+    //                 $item['client_uuid'],
+
+    //                 'status'      =>
+    //                 'failed',
+
+    //                 'action'      =>
+    //                 $item['action'] ?? 'create',
+
+    //                 'message'     =>
+    //                 $e->getMessage(),
+
+    //             ];
+
+    //         }
+
+    //     }
+
+    //     // ==============================================
+    //     // Response
+    //     // ==============================================
+
+    //     return response()->json([
+
+    //         'success' =>
+    //         true,
+
+    //         'results' =>
+    //         $results,
+
+    //     ]);
+    // }
+
+    // now
     public function sync(Request $request)
     {
         $request->validate([
@@ -121,11 +333,12 @@ class CropSyncController extends Controller
 
             try {
 
-                DB::transaction(function () use ($item) {
+                $result = DB::transaction(function () use ($item) {
 
                     $data = $item['data'];
 
-                    $action = $item['action'] ?? 'create';
+                    $action =
+                    $item['action'] ?? 'create';
 
                     // ==========================================
                     // CREATE
@@ -133,64 +346,88 @@ class CropSyncController extends Controller
 
                     if ($action === 'create') {
 
-                        // -------------------------------
-                        // Duplicate Check
-                        // -------------------------------
+                        // --------------------------------------
+                        // 1. client_uuid duplicate check
+                        // --------------------------------------
 
-                        $existing = Crop::where(
+                        $existing =
+                        Crop::where(
                             'client_uuid',
                             $data['client_uuid']
                         )->first();
 
-                        // client_uuid အရင်ရှိပြီးသား
+                        // --------------------------------------
+                        // Already synced
+                        // --------------------------------------
+
                         if ($existing) {
 
-                            return;
+                            return [
+
+                                'status' =>
+                                'already_synced',
+
+                            ];
+
                         }
 
-// =========================================
-// Crop Name Unique Check
-// =========================================
+                        // --------------------------------------
+                        // 2. crop_name duplicate check
+                        // --------------------------------------
 
-                        $duplicateCrop = Crop::where(
+                        $duplicateCrop =
+                        Crop::where(
                             'crop_name',
                             $data['crop_name']
                         )->first();
 
+                        // --------------------------------------
+                        // Duplicate Crop Name
+                        // --------------------------------------
+
                         if ($duplicateCrop) {
 
-                            throw new \Exception(
-                                'ဤသီးနှံအမည်ကို ထည့်သွင်းပြီးသားဖြစ်ပါသည်။'
-                            );
+                            return [
+
+                                'status'  =>
+                                'duplicate',
+
+                                'message' =>
+                                'ဤသီးနှံအမည်ကို Database တွင် ရှိပြီးသားဖြစ်ပါသည်။',
+
+                            ];
 
                         }
 
-                        // -------------------------------
-                        // Create Only If Not Exists
-                        // -------------------------------
+                        // --------------------------------------
+                        // 3. Create
+                        // --------------------------------------
 
-                        if (! $existing) {
+                        Crop::create([
 
-                            Crop::create([
+                            'client_uuid'         =>
+                            $data['client_uuid'],
 
-                                'client_uuid'         =>
-                                $data['client_uuid'],
+                            'crop_name'           =>
+                            $data['crop_name'],
 
-                                'crop_name'           =>
-                                $data['crop_name'],
+                            'commission_amount'   =>
+                            $data['commission_amount'],
 
-                                'commission_amount'   =>
-                                $data['commission_amount'],
+                            'unit'                =>
+                            $data['unit'],
 
-                                'unit'                =>
-                                $data['unit'],
+                            'quantity_per_basket' =>
+                            $data['quantity_per_basket'],
 
-                                'quantity_per_basket' =>
-                                $data['quantity_per_basket'],
+                        ]);
 
-                            ]);
+                        return [
 
-                        }
+                            'status' =>
+                            'success',
+
+                        ];
 
                     }
 
@@ -198,32 +435,266 @@ class CropSyncController extends Controller
                     // UPDATE
                     // ==========================================
 
-                    elseif ($action === 'update') {
+                    // if ($action === 'update') {
 
-                        // -------------------------------
-                        // Find Crop By client_uuid
-                        // -------------------------------
+                    //     // ==========================================
+                    //     // Find Crop
+                    //     // ==========================================
 
-                        $crop = Crop::where(
-                            'client_uuid',
-                            $data['client_uuid']
-                        )->first();
+                    //     $crop = null;
 
-                        // -------------------------------
-                        // Crop မတွေ့ရင် Error
-                        // -------------------------------
+                    //     // ==========================================
+                    //     // First: server_id
+                    //     // ==========================================
+
+                    //     if (
+                    //         isset($data['server_id']) &&
+                    //         ! empty($data['server_id'])
+                    //     ) {
+
+                    //         $crop = Crop::find(
+                    //             $data['server_id']
+                    //         );
+
+                    //     }
+
+                    //     // ==========================================
+                    //     // Second: client_uuid
+                    //     // ==========================================
+
+                    //     if (! $crop) {
+
+                    //         if (
+                    //             isset($data['client_uuid']) &&
+                    //             ! empty($data['client_uuid'])
+                    //         ) {
+
+                    //             $crop =
+                    //             Crop::where(
+                    //                 'client_uuid',
+                    //                 $data['client_uuid']
+                    //             )->first();
+
+                    //         }
+
+                    //     }
+
+                    //     // ==========================================
+                    //     // Not Found
+                    //     // ==========================================
+
+                    //     if (! $crop) {
+
+                    //         throw new \Exception(
+                    //             'Update လုပ်ရန် သီးနှံမတွေ့ပါ။'
+                    //         );
+
+                    //     }
+
+                    //     // ==========================================
+                    //     // Unique Crop Name Check
+                    //     // ==========================================
+
+                    //     $duplicateCrop =
+                    //     Crop::where(
+                    //         'crop_name',
+                    //         $data['crop_name']
+                    //     )
+                    //         ->where(
+                    //             'id',
+                    //             '!=',
+                    //             $crop->id
+                    //         )
+                    //         ->first();
+
+                    //     if ($duplicateCrop) {
+
+                    //         return [
+
+                    //             'status'      =>
+                    //             'duplicate',
+
+                    //             'client_uuid' =>
+                    //             $data['client_uuid'] ?? null,
+
+                    //             'server_id'   =>
+                    //             $crop->id,
+
+                    //             'message'     =>
+                    //             'ဤသီးနှံအမည်ကို အခြားသီးနှံတွင် အသုံးပြုထားပြီးဖြစ်ပါသည်။',
+
+                    //         ];
+
+                    //     }
+
+                    //     // ==========================================
+                    //     // Update Crop
+                    //     // ==========================================
+
+                    //     $crop->update([
+
+                    //         'crop_name'           =>
+                    //         $data['crop_name'],
+
+                    //         'commission_amount'   =>
+                    //         $data['commission_amount'],
+
+                    //         'unit'                =>
+                    //         $data['unit'],
+
+                    //         'quantity_per_basket' =>
+                    //         $data['quantity_per_basket'],
+
+                    //     ]);
+
+                    //     // ==========================================
+                    //     // Return Success
+                    //     // ==========================================
+
+                    //     return [
+
+                    //         'status'      =>
+                    //         'success',
+
+                    //         'client_uuid' =>
+                    //         $data['client_uuid'] ?? null,
+
+                    //         'server_id'   =>
+                    //         $crop->id,
+
+                    //     ];
+
+                    // }
+
+                    // v1
+                    if ($action === 'update') {
+
+                        // ==========================================
+                        // Validate Update Data
+                        // ==========================================
+
+                        if (
+                            empty($data['crop_name']) ||
+                            ! isset($data['commission_amount']) ||
+                            empty($data['unit']) ||
+                            ! isset($data['quantity_per_basket'])
+                        ) {
+
+                            return [
+
+                                'status'      =>
+                                'failed',
+
+                                'client_uuid' =>
+                                $data['client_uuid'] ?? null,
+
+                                'server_id'   =>
+                                $data['server_id'] ?? null,
+
+                                'message'     =>
+                                'Update Data မပြည့်စုံပါ။',
+                            ];
+                        }
+
+                        // ==========================================
+                        // Find Crop
+                        // ==========================================
+
+                        $crop = null;
+
+                        // ==========================================
+                        // First → server_id
+                        // ==========================================
+
+                        if (
+                            isset($data['server_id']) &&
+                            ! empty($data['server_id'])
+                        ) {
+
+                            $crop =
+                            Crop::find(
+                                $data['server_id']
+                            );
+                        }
+
+                        // ==========================================
+                        // Second → client_uuid
+                        // ==========================================
 
                         if (! $crop) {
 
-                            throw new \Exception(
-                                'Update လုပ်ရန် Crop မတွေ့ပါ။'
-                            );
+                            if (
+                                isset($data['client_uuid']) &&
+                                ! empty($data['client_uuid'])
+                            ) {
 
+                                $crop =
+                                Crop::where(
+                                    'client_uuid',
+                                    $data['client_uuid']
+                                )->first();
+                            }
                         }
 
-                        // -------------------------------
+                        // ==========================================
+                        // Crop မတွေ့ရင်
+                        // ==========================================
+
+                        if (! $crop) {
+
+                            return [
+
+                                'status'      =>
+                                'failed',
+
+                                'client_uuid' =>
+                                $data['client_uuid'] ?? null,
+
+                                'server_id'   =>
+                                $data['server_id'] ?? null,
+
+                                'message'     =>
+                                'Update လုပ်ရန် သီးနှံမတွေ့ပါ။',
+                            ];
+                        }
+
+                        // ==========================================
+                        // Duplicate Crop Name
+                        // ==========================================
+
+                        $duplicateCrop =
+                        Crop::where(
+                            'crop_name',
+                            $data['crop_name']
+                        )
+                            ->where(
+                                'id',
+                                '!=',
+                                $crop->id
+                            )
+                            ->first();
+
+                        if ($duplicateCrop) {
+
+                            return [
+
+                                'status'      =>
+                                'duplicate',
+
+                                'client_uuid' =>
+                                $data['client_uuid'] ?? null,
+
+                                'server_id'   =>
+                                $crop->id,
+
+                                'message'     =>
+                                'ဤသီးနှံအမည်ကို အခြားသီးနှံတွင် အသုံးပြုထားပြီးဖြစ်ပါသည်။',
+                            ];
+                        }
+
+                        // ==========================================
                         // Update Crop
-                        // -------------------------------
+                        // ==========================================
 
                         $crop->update([
 
@@ -241,24 +712,44 @@ class CropSyncController extends Controller
 
                         ]);
 
+                        // ==========================================
+                        // Refresh
+                        // ==========================================
+
+                        $crop->refresh();
+
+                        // ==========================================
+                        // Success
+                        // ==========================================
+
+                        return [
+
+                            'status'      =>
+                            'success',
+
+                            'client_uuid' =>
+                            $data['client_uuid'] ?? null,
+
+                            'server_id'   =>
+                            $crop->id,
+
+                            'message'     =>
+                            'သီးနှံအချက်အလက် ပြင်ဆင်ပြီးပါပြီ။',
+                        ];
                     }
 
                     // ==========================================
                     // Unknown Action
                     // ==========================================
 
-                    else {
-
-                        throw new \Exception(
-                            'Unknown sync action: ' . $action
-                        );
-
-                    }
+                    throw new \Exception(
+                        'Unknown sync action: ' . $action
+                    );
 
                 });
 
                 // ==========================================
-                // Success Result
+                // Result
                 // ==========================================
 
                 $results[] = [
@@ -267,10 +758,10 @@ class CropSyncController extends Controller
                     $item['client_uuid'],
 
                     'status'      =>
-                    'success',
+                    $result['status'],
 
-                    'action'      =>
-                    $item['action'] ?? 'create',
+                    'message'     =>
+                    $result['message'] ?? null,
 
                 ];
 
@@ -290,9 +781,6 @@ class CropSyncController extends Controller
                     'status'      =>
                     'failed',
 
-                    'action'      =>
-                    $item['action'] ?? 'create',
-
                     'message'     =>
                     $e->getMessage(),
 
@@ -301,10 +789,6 @@ class CropSyncController extends Controller
             }
 
         }
-
-        // ==============================================
-        // Response
-        // ==============================================
 
         return response()->json([
 

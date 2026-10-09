@@ -1,13 +1,17 @@
 <?php
 
-use App\Http\Controllers\WholeSaleMarket\CropController;
-use App\Http\Controllers\WholeSaleMarket\DashboardController;
-use App\Http\Controllers\WholeSaleMarket\QualityController;
+use App\Http\Controllers\CropController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'WholeSaleMarket'], function () {
+Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
 
-    Route::get('dashboard', [DashboardController::class, 'dashboard'])->name('WholeSaleMarket#dashboard');
+    Route::get('/', function () {
+        return redirect()->route('dashboard');
+    });
+
+    Route::get('/dashboard', function () {
+        return view('dashboard.index');
+    })->name('dashboard');
 
     Route::group(['prefix' => 'Crop'], function () {
         Route::get('directPage', [CropController::class, 'directPage'])->name('Crop#directPage');
@@ -16,13 +20,6 @@ Route::group(['prefix' => 'WholeSaleMarket'], function () {
         Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
         Route::get('edit/{id}', [CropController::class, 'edit'])->name('Crop#edit');
         Route::post('update/{id}', [CropController::class, 'update'])->name('Crop#update');
-
-    });
-
-    Route::group(['prefix' => 'Quality'], function () {
-        Route::get('directPage/{id}', [QualityController::class, 'directPage'])->name('Quality#directPage');
-        Route::post('create', [QualityController::class, 'create'])->name('Quality#create');
-        Route::get('list', [QualityController::class, 'list'])->name('Quality#list');
     });
 
 });

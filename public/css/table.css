@@ -1,0 +1,254 @@
+/* Table Responsive */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Table အကျယ်ကို ထိန်းထားရန် */
+.table-responsive .table {
+    width: 100%;
+    min-width: 650px;
+    table-layout: fixed;
+}
+
+/* Header နဲ့ Data စာသားတွေ တစ်ကြောင်းတည်းထားရန် */
+.table-responsive .table th,
+.table-responsive .table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Column တစ်ခုချင်းစီ အကျယ်သတ်မှတ်ရန် */
+.table-responsive .table th:nth-child(1),
+.table-responsive .table td:nth-child(1) {
+    width: 25%;
+}
+
+.table-responsive .table th:nth-child(2),
+.table-responsive .table td:nth-child(2) {
+    width: 20%;
+}
+
+.table-responsive .table th:nth-child(3),
+.table-responsive .table td:nth-child(3) {
+    width: 30%;
+}
+
+.table-responsive .table th:nth-child(4),
+.table-responsive .table td:nth-child(4) {
+    width: 30%;
+    text-align: center;
+}
+
+
+/* empty state */
+
+/* ========================================
+   Empty State Table Cell
+======================================== */
+
+.empty-state-cell {
+    padding: 0 !important;
+    border: none !important;
+    background: #f8faf9;
+}
+
+/* ========================================
+   Empty State Container
+======================================== */
+
+.empty-state {
+    min-height: 320px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg,
+            #f7fcf8 0%,
+            #edf8f0 100%);
+    border: 1px dashed #b8d9c0;
+    border-radius: 16px;
+    margin: 12px;
+    transition: all 0.3s ease;
+}
+
+.empty-state:hover {
+    border-color: #198754;
+    box-shadow: 0 8px 24px rgba(25, 135, 84, 0.08);
+}
+
+/* ========================================
+   Empty State Icon
+======================================== */
+
+.empty-icon {
+    width: 85px;
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg,
+            #d8f3df,
+            #b9e8c7);
+    color: #198754;
+    border-radius: 50%;
+    margin-bottom: 22px;
+    box-shadow: 0 6px 18px rgba(25, 135, 84, 0.12);
+    animation: emptyFloat 3s ease-in-out infinite;
+}
+
+.empty-icon i {
+    font-size: 42px;
+    line-height: 1;
+}
+
+/* ========================================
+   Heading
+======================================== */
+
+.empty-state h5 {
+    color: #245c3c;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* ========================================
+   Description
+======================================== */
+
+.empty-state p {
+    max-width: 440px;
+    color: #718078;
+    font-size: 14px;
+    line-height: 1.9;
+    margin-bottom: 22px;
+}
+
+/* ========================================
+   Add Crop Button
+======================================== */
+
+.empty-state .btn-success {
+    padding: 11px 22px;
+    background: #198754;
+    border: 1px solid #198754;
+    border-radius: 9px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(25, 135, 84, 0.15);
+    transition: all 0.25s ease;
+}
+
+.empty-state .btn-success:hover {
+    background: #146c43;
+    border-color: #146c43;
+    transform: translateY(-3px);
+    box-shadow: 0 7px 16px rgba(25, 135, 84, 0.25);
+}
+
+.empty-state .btn-success i {
+    transition: transform 0.25s ease;
+}
+
+.empty-state .btn-success:hover i {
+    transform: rotate(90deg);
+}
+
+/* ========================================
+   Floating Animation
+======================================== */
+
+@keyframes emptyFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+/* ========================================
+   Responsive Design
+======================================== */
+
+@media (max-width: 576px) {
+    .empty-state {
+        min-height: 280px;
+        padding: 30px 16px;
+        margin: 8px;
+        border-radius: 12px;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 18px;
+    }
+
+    .empty-icon i {
+        font-size: 34px;
+    }
+
+    .empty-state h5 {
+        font-size: 17px;
+        line-height: 1.6;
+    }
+
+    .empty-state p {
+        font-size: 13px;
+        line-height: 1.8;
+        margin-bottom: 18px;
+    }
+
+    .empty-state .btn-success {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+}
+
+/* ========================================
+   Accessibility
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .empty-icon {
+        animation: none;
+    }
+
+    .empty-state,
+    .empty-state .btn-success,
+    .empty-state .btn-success i {
+        transition: none;
+    }
+}
+
+
+/* form input  */
+
+.form-control,
+.form-select {
+    min-height: 48px;
+    height: auto;
+    line-height: 1.8;
+    padding: 10px 12px !important;
+    font-size: 16px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.form-control::placeholder {
+    line-height: 1.8;
+    opacity: 1;
+}
+
+.form-control:focus {
+    height: auto;
+    outline: none;
+}

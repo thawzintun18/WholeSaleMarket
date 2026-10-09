@@ -9,7 +9,6 @@ class Crop extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'client_uuid',
         'crop_name',
         'commission_amount',
         'unit',

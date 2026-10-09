@@ -40,8 +40,8 @@
 
         </a>
 
-        <a href="{{route('farmers.index')}}"
-           class="{{ request()->routeIs('farmers.*') ? 'active' : '' }}">
+        <a href="{{route('farmers#index')}}"
+           class="{{ request()->routeIs('farmers#*') ? 'active' : '' }}">
 
             <i class="bi bi-people"></i>
             <span>တောင်သူစာရင်း</span>
@@ -68,7 +68,7 @@
             Purchase
         </div>
 
-        <a href="#"
+        <a href="{{route('purchases.create')}}"
            class="{{ request()->routeIs('purchases.create') ? 'active' : '' }}">
 
             <i class="bi bi-cart-plus"></i>
@@ -76,7 +76,7 @@
 
         </a>
 
-        <a href="#"
+        <a href="{{route('purchases.index')}}"
            class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
 
             <i class="bi bi-receipt"></i>

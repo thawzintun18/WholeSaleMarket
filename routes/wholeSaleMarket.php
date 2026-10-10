@@ -20,6 +20,9 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
         Route::get('edit/{id}', [CropController::class, 'edit'])->name('Crop#edit');
         Route::post('update/{id}', [CropController::class, 'update'])->name('Crop#update');
+        Route::get('history', [CropController::class, 'history'])->name('Crop#history');
+        Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
+        Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
     });
 
 });

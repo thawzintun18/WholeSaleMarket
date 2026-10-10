@@ -2,7 +2,7 @@
 
 @section('page-title', 'Crops')
 @section('breadcrumb')
-    အခြေခံစာရင်းများ / သီးနှံစာရင်း
+    အခြေခံစာရင်းများ / သီးနှံစာရင်း / ဖျက်ထားသော သီးနှံစာရင်း
 @endsection
 
 @section('content')
@@ -10,62 +10,55 @@
     <div class="d-md-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="page-title mb-1">သီးနှံစာရင်း</h1>
+            <h1 class="page-title mb-1">ဖျက်ထားသော သီးနှံစာရင်း</h1>
 
             <p class="text-muted mb-0 mt-2" style="line-height: 30px">
-                ပွဲရုံမှ လက်ခံဝယ်ယူမည့် သီးနှံအမျိုးအစားများနှင့် သက်ဆိုင်သော အချက်အလက်များကို ဤစာရင်းတွင်
-                ကြည့်ရှုနိုင်ပါသည်။
+                ဖျက်ထားသော သီးနှံများကို ဤနေရာတွင် ကြည့်ရှုနိုင်ပြီး လိုအပ်ပါက ပြန်လည်အသုံးပြုနိုင်ပါသည်။
+                ပြန်လည်အသုံးပြုထားသော သီးနှံများသည် မူရင်းသီးနှံစာရင်းတွင် ပြန်လည်ပေါ်လာမည်ဖြစ်သည်။
             </p>
         </div>
-
-        <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-            <i class="bi bi-plus-lg me-1"></i>
-            သီးနှံထပ်ထည့်ရန်
-        </a>
 
     </div>
 
 
     {{-- Search --}}
     <div class="dashboard-card mb-4 shadow-sm">
-        <form action="{{ route('Crop#list') }}" method="GET">
+
+        <form action="{{ route('Crop#trashList') }}" method="GET">
             <div class="row g-3">
 
-                <div class="col-md-6">
+                <div class="col-md-8">
+                    <label class="form-label">သီးနှံနှင့် ရက်စွဲ ရှာဖွေရန်</label>
 
-                    <label class="form-label">
-                        သီးနှံရှာဖွေရန်
-                    </label>
+                    <div class="d-flex">
+                        <select name="crop_name" id="cropSearch" class="form-select w-50 me-2">
+                            <option value="">သီးနှံအားလုံး</option>
 
-                    <div class="input-group">
+                            @foreach ($crop_name as $item)
+                                <option value="{{ $item->crop_name }}"
+                                    {{ request('crop_name') == $item->crop_name ? 'selected' : '' }}>
+                                    {{ $item->crop_name }}
+                                </option>
+                            @endforeach
+                        </select>
 
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-
-                        <input type="text" name="searchData" value="{{ request('searchData') }}" id="cropSearch"
-                            class="form-control p-2" placeholder="သီးနှံအမည် ရိုက်ထည့်ပါ...">
-
+                        <input type="date" id="dateSearch" name="changed_date" class="form-control w-50"
+                            value="{{ request('changed_date', now()->subDay()->toDateString()) }}">
                     </div>
-
                 </div>
 
                 <div class="col-md-auto d-flex align-items-end">
-
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-search me-1"></i>
                         ရှာဖွေမည်
                     </button>
-
                 </div>
 
                 <div class="col-md-auto d-flex align-items-end">
-
-                    <button class="btn btn-outline-secondary" onclick="resetSearch()">
+                    <a href="{{ route('Crop#trashList') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်မည်
-                    </button>
-
+                    </a>
                 </div>
 
             </div>
@@ -81,29 +74,25 @@
 
             <div>
                 <h5 class="mb-1">
-                    သီးနှံစာရင်း
+                    ဖျက်ထားသော သီးနှံစာရင်း
                 </h5>
 
                 <small class="text-muted">
-                    စာရင်းသွင်းထားသော သီးနှံအားလုံး
+                    ဖျက်ထားသော သီးနှံများကို ကြည့်ရှုပြီး လိုအပ်ပါက ပြန်လည်အသုံးပြုနိုင်ပါသည်။
                 </small>
             </div>
 
-            <div class=" d-md-flex justify-content-end mt-md-0 mt-2">
+            <div class=" d-flex justify-content-end mt-md-0 mt-2">
                 <div class=" me-2">
                     <span class="badge bg-light text-dark border">
                         {{ $crops->count() }} သီးနှံ
                     </span>
                 </div>
 
-                <div class="d-flex mt-md-0 mt-2">
-                    <div class=" me-2">
-                        <a href="{{ route('Crop#history') }}" class=" btn btn-primary">သီးနှံပြင်ဆင်မှုစာရင်း</a>
-                    </div>
-
-                    <div class=" me-2">
-                        <a href="{{ route('Crop#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောသီးနှံစာရင်း</a>
-                    </div>
+                <div class="">
+                    <a href="{{ route('Crop#list') }}" class="btn btn-light">
+                        နောက်သို့
+                    </a>
                 </div>
             </div>
 
@@ -173,26 +162,10 @@
 
                                 <td class="text-center">
 
-                                    <div class=" d-md-flex pe-3">
-                                        <div class="">
-                                            <a href="" class="btn btn-sm btn-outline-primary me-1"
-                                                title="ပြင်ဆင်ရန်">
-                                                သီးနှံအရည်အသွေးထည့်ရန်
-                                            </a>
-                                        </div>
-
-                                        <div class=" d-flex mt-md-0 mt-2">
-                                            <a href="{{ route('Crop#edit', $item->id) }}"
-                                                class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
-                                                ပြင်ဆင်ရန်
-                                            </a>
-
-                                            <button type="button" onclick="DeleteData({{ $item->id }})"
-                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                                ဖျက်ရန်
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <a href="{{ route('Crop#restore', $item->id) }}"
+                                        class="btn btn-sm btn-outline-primary me-1" title="ပြန်လည်အသုံးပြုရန်">
+                                        ပြန်လည်အသုံးပြုမည်
+                                    </a>
 
                                 </td>
 
@@ -200,20 +173,15 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="4" class="empty-state-cell">
+                            <td colspan="8" class="empty-state-cell">
 
                                 <div class="empty-state">
 
-                                    <h5>သီးနှံအချက်အလက် မရှိသေးပါ</h5>
+                                    <h5>ဖျက်ထားသော သီးနှံစာရင်း မရှိသေးပါ</h5>
 
                                     <p>
-                                        လက်ရှိတွင် သီးနှံအချက်အလက် ထည့်သွင်းထားခြင်းမရှိသေးပါ။
+                                        သီးနှံကို ဖျက်ထားသော မှတ်တမ်း မရှိသေးပါ။
                                     </p>
-
-                                    <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-                                        <i class="bi bi-plus-lg me-1"></i>
-                                        သီးနှံထပ်ထည့်ရန်
-                                    </a>
 
                                 </div>
 

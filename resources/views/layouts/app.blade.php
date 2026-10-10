@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>
         @yield('title', 'မြရတနာ ပွဲရုံ')
@@ -14,10 +15,9 @@
 
     {{-- Bootstrap Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="{{ asset('css/table.css') }}">
     <style>
         body {
             background-color: #f5f6f8;
@@ -119,7 +119,6 @@
             height: 70px;
             background-color: #fff;
             border-bottom: 1px solid #e5e7eb;
-            display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 25px;
@@ -189,6 +188,10 @@
                 margin-left: 0;
             }
 
+            .top-navbar {
+                height: 115px;
+            }
+
         }
     </style>
 
@@ -211,6 +214,8 @@
             {{-- Page Content --}}
             <main class="page-content">
                 @yield('content')
+
+                @include('sweetalert::alert')
             </main>
 
         </div>
@@ -226,16 +231,31 @@
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
 
-        sidebarToggle?.addEventListener('click', function () {
+        sidebarToggle?.addEventListener('click', function() {
             sidebar.classList.toggle('show');
             sidebarOverlay.classList.toggle('show');
         });
 
-        sidebarOverlay?.addEventListener('click', function () {
+        sidebarOverlay?.addEventListener('click', function() {
             sidebar.classList.remove('show');
             sidebarOverlay.classList.remove('show');
         });
+
+        function resetSearch() {
+
+            // Search input ကို ရှင်းမယ်
+            document.getElementById('cropSearch').value = '';
+
+            // Input ကို focus ပြန်ပေးမယ်
+            document.getElementById('cropSearch').focus();
+        }
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @yield('DeleteData')
+
+
 </body>
 
 </html>

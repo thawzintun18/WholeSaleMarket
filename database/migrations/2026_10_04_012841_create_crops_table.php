@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('crops', function (Blueprint $table) {
             $table->id();
-            // Offline device မှ generate လုပ်မယ့် unique ID
-            $table->uuid('client_uuid')->unique();
             $table->string('crop_name')->nullable();
             $table->integer('commission_amount')->nullable();
             $table->string('unit')->nullable();

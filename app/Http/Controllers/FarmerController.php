@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Farmer;
 use Illuminate\Http\Request;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class FarmerController extends Controller
 {
@@ -38,14 +39,14 @@ class FarmerController extends Controller
 
     public function create(Request $request)
     {
-        $data = $this->validateFarmer($request);
+        $data              = $this->validateFarmer($request);
         $data['is_active'] = $request->boolean('is_active', true);
         if ($this->checkDuplicateFarmer($data)) {
             return back()
                 ->withInput()
                 ->with('warning', 'ဒီအမည် သို့မဟုတ် ဖုန်းနံပါတ်နဲ့ တောင်သူစာရင်း ရှိပြီးသား ဖြစ်နိုင်ပါတယ်။');
         }
-        $farmer = Farmer::create($data);
+        $farmer              = Farmer::create($data);
         $farmer->farmer_code = 'F-' . str_pad(
             (string) $farmer->id,
             6,
@@ -53,27 +54,24 @@ class FarmerController extends Controller
             STR_PAD_LEFT
         );
         $farmer->save();
+        Alert::success('အောင်မြင်ပါသည်', 'ောင်သူစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
         return redirect()
-            ->route('farmers#index')
-            ->with('success', 'တောင်သူစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
+            ->route('farmers#index');
     }
-
-    // public function update(Request $request, Farmer $farmer)
-    // {
-    //     $data = $this->validateFarmer($request, $farmer->id);
-
-    //     $data['is_active'] = $request->boolean('is_active');
-
-    //     $farmer->update($data);
-
-    //     return redirect()
-    //         ->route('farmers.index')
-    //         ->with('success', 'တောင်သူအချက်အလက် ပြင်ဆင်ပြီးပါပြီ။');
-    // }
 
     public function edit($id)
     {
         return view('farmers.edit');
+    }
+
+    //delete
+    public function delete($id)
+    {
+        $crop = Farmer::findOrFail($id);
+
+        $crop->delete();
+
+        return back();
     }
 
     private function validateFarmer($request, $farmerId = null)
@@ -85,28 +83,38 @@ class FarmerController extends Controller
             'address'   => ['nullable', 'string', 'max:255'],
             'notes'     => ['nullable', 'string', 'max:2000'],
             'is_active' => ['nullable', 'boolean'],
-        ], [], [
+        ],
+        [
+            // Farmer Name
+            'name.required'     => ':attribute ကို မဖြစ်မနေ ဖြည့်သွင်းပေးပါ။',
+            'name.string'       => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+            'name.max'          => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+
+            // Phone
+            'phone.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+            'phone.max'         => ':attribute သည် အများဆုံး စာလုံး ၃၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+
+            // Village
+            'village.string'    => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+            'village.max'       => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+
+            // Address
+            'address.string'    => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+            'address.max'       => ':attribute သည် အများဆုံး စာလုံး ၂၅၅ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+
+            // Notes
+            'notes.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+            'notes.max'         => ':attribute သည် အများဆုံး စာလုံး ၂၀၀၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+
+            // Status
+            'is_active.boolean' => ':attribute သည် မှန်ကန်သော အခြေအနေတန်ဖိုး ဖြစ်ရပါမည်။',
+        ]
+        , [
             'name'    => 'တောင်သူအမည်',
             'phone'   => 'ဖုန်းနံပါတ်',
             'village' => 'ရွာအမည်',
             'address' => 'နေရပ်လိပ်စာ',
             'notes'   => 'မှတ်ချက်',
         ]);
-    }
-
-    private function checkDuplicateFarmer($data)
-    {
-        return Farmer::query()
-            ->where(function ($query) use ($data) {
-                $query->whereRaw(
-                    'LOWER(name) = ?',
-                    [mb_strtolower(trim($data['name']))]
-                );
-
-                if (!empty($data['phone'])) {
-                    $query->orWhere('phone', trim($data['phone']));
-                }
-            })
-            ->exists();
     }
 }

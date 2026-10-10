@@ -9,17 +9,12 @@
     <title>Login | Wholesale Market</title>
 
     {{-- Bootstrap --}}
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     {{-- Font Awesome --}}
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
-
         * {
             box-sizing: border-box;
         }
@@ -66,11 +61,9 @@
         ============================== */
 
         .login-left {
-            background: linear-gradient(
-                145deg,
-                #198754,
-                #157347
-            );
+            background: linear-gradient(145deg,
+                    #198754,
+                    #157347);
 
             color: white;
 
@@ -396,175 +389,147 @@
             }
 
         }
-
     </style>
 
 </head>
 
 <body>
 
-<div class="login-wrapper">
+    <div class="login-wrapper">
 
-    <div class="login-card">
+        <div class="login-card">
 
-        <div class="row g-0 h-100">
+            <div class="row g-0 h-100">
 
-            <div class=" offset-2 col-md-8">
+                <div class=" offset-md-2 col-md-8">
 
-                <div class="login-right">
+                    <div class="login-right">
 
-                    <h2 class="login-title">
-                        မြရတနာပွဲရုံ
-                    </h2>
+                        <h2 class="login-title">
+                            မြရတနာပွဲရုံ
+                        </h2>
 
-                    <p class="login-subtitle">
-                        အကောင့် အရင်ဝင်ပါ
-                    </p>
+                        <p class="login-subtitle">
+                            အကောင့် အရင်ဝင်ပါ
+                        </p>
 
 
-                    {{-- Validation Error --}}
-                    @if ($errors->any())
+                        {{-- Validation Error --}}
+                        @if ($errors->any())
 
-                        <div class="alert alert-danger login-error">
+                            <div class="alert alert-danger login-error">
 
-                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center">
 
-                                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                                    <i class="fa-solid fa-circle-exclamation me-2"></i>
 
-                                <strong>
-                                    မအောင်မြင်ပါ
-                                </strong>
+                                    <strong>
+                                        မအောင်မြင်ပါ
+                                    </strong>
 
+                                </div>
+
+                                <ul class="mb-0 mt-2 ps-4">
+
+                                    @foreach ($errors->all() as $error)
+                                        <li>
+                                            {{ $error }}
+                                        </li>
+                                    @endforeach
+
+                                </ul>
                             </div>
+                        @endif
 
-                            <ul class="mb-0 mt-2 ps-4">
+                        {{-- Login Form --}}
+                        <form method="POST" action="{{ route('login') }}">
 
-                                @foreach ($errors->all() as $error)
+                            @csrf
 
-                                    <li>
-                                        {{ $error }}
-                                    </li>
+                            {{-- Email --}}
 
-                                @endforeach
+                            <div class="mb-3">
 
-                            </ul>
-                        </div>
-                    @endif
-
-                    {{-- Login Form --}}
-                    <form method="POST" action="{{ route('login') }}">
-
-                        @csrf
-
-                        {{-- Email --}}
-
-                        <div class="mb-3">
-
-                            <label for="email" class="form-label">
-                                အသုံးပြုသူအမည်
-                            </label>
-
-                            <div class="input-group">
-
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-envelope"></i>
-                                </span>
-
-                                <input
-                                    type="email"
-                                    class="form-control"
-                                    id="email"
-                                    name="email"
-                                    value="{{ old('email') }}"
-                                    placeholder="အသုံးပြုသူအမည်ထည့်ရန်"
-                                    required
-                                    autofocus
-                                    autocomplete="username"
-                                >
-
-                            </div>
-
-                        </div>
-
-
-                        {{-- Password --}}
-
-                        <div class="mb-3">
-
-                            <label for="password" class="form-label">
-                                စကားဝှက်ထည့်မည်
-                            </label>
-
-                            <div class="input-group">
-
-                                <span class="input-group-text">
-                                    <i class="fa-solid fa-lock"></i>
-                                </span>
-
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="password"
-                                    name="password"
-                                    placeholder="စကားဝှက်ထည်ရန်"
-                                    required
-                                    autocomplete="current-password"
-                                >
-
-                                <button
-                                    type="button"
-                                    class="btn btn-light border"
-                                    id="togglePassword">
-
-                                    <i class="fa-solid fa-eye"
-                                        id="passwordIcon">
-                                    </i>
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        {{-- Remember Me --}}
-
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-
-                            <div class="form-check">
-
-                                <input
-                                    class="form-check-input"
-                                    type="checkbox"
-                                    name="remember"
-                                    id="remember">
-
-                                <label
-                                    class="form-check-label"
-                                    for="remember">
-
-                                    မှတ်ထားမည်
-
+                                <label for="email" class="form-label">
+                                    အသုံးပြုသူအမည်
                                 </label>
 
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-envelope"></i>
+                                    </span>
+
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        value="{{ old('email') }}" placeholder="အသုံးပြုသူအမည်ထည့်ရန်" required
+                                        autofocus autocomplete="username">
+
+                                </div>
+
                             </div>
 
-                        </div>
+
+                            {{-- Password --}}
+
+                            <div class="mb-3">
+
+                                <label for="password" class="form-label">
+                                    စကားဝှက်ထည့်မည်
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+                                        <i class="fa-solid fa-lock"></i>
+                                    </span>
+
+                                    <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="စကားဝှက်ထည်ရန်" required autocomplete="current-password">
+
+                                    <button type="button" class="btn btn-light border" id="togglePassword">
+
+                                        <i class="fa-solid fa-eye" id="passwordIcon">
+                                        </i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
 
 
-                        {{-- Login Button --}}
+                            {{-- Remember Me --}}
 
-                        <button
-                            type="submit"
-                            class="btn btn-success w-100 login-btn">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
 
-                            <i class="fa-solid fa-right-to-bracket me-2"></i>
+                                <div class="form-check">
 
-                            အကောင့်ဝင်မည်
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
 
-                        </button>
+                                    <label class="form-check-label" for="remember">
 
-                    </form>
+                                        မှတ်ထားမည်
+
+                                    </label>
+
+                                </div>
+
+                            </div>
+
+
+                            {{-- Login Button --}}
+
+                            <button type="submit" class="btn btn-success w-100 login-btn">
+
+                                <i class="fa-solid fa-right-to-bracket me-2"></i>
+
+                                အကောင့်ဝင်မည်
+
+                            </button>
+
+                        </form>
+
+                    </div>
 
                 </div>
 
@@ -574,51 +539,48 @@
 
     </div>
 
-</div>
+
+    {{-- Password Show / Hide --}}
+
+    <script>
+        const togglePassword =
+            document.getElementById('togglePassword');
+
+        const password =
+            document.getElementById('password');
+
+        const passwordIcon =
+            document.getElementById('passwordIcon');
 
 
-{{-- Password Show / Hide --}}
+        togglePassword.addEventListener('click', function() {
 
-<script>
+            const type =
+                password.getAttribute('type') === 'password' ?
+                'text' :
+                'password';
 
-    const togglePassword =
-        document.getElementById('togglePassword');
-
-    const password =
-        document.getElementById('password');
-
-    const passwordIcon =
-        document.getElementById('passwordIcon');
+            password.setAttribute('type', type);
 
 
-    togglePassword.addEventListener('click', function () {
+            if (type === 'text') {
 
-        const type =
-            password.getAttribute('type') === 'password'
-                ? 'text'
-                : 'password';
+                passwordIcon.classList.remove('fa-eye');
 
-        password.setAttribute('type', type);
+                passwordIcon.classList.add('fa-eye-slash');
 
+            } else {
 
-        if (type === 'text') {
+                passwordIcon.classList.remove('fa-eye-slash');
 
-            passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye');
 
-            passwordIcon.classList.add('fa-eye-slash');
+            }
 
-        } else {
-
-            passwordIcon.classList.remove('fa-eye-slash');
-
-            passwordIcon.classList.add('fa-eye');
-
-        }
-
-    });
-
-</script>
+        });
+    </script>
 
 
 </body>
+
 </html>

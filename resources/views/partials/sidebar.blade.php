@@ -10,30 +10,27 @@
     <div class="sidebar-menu">
 
         {{-- Dashboard --}}
-        <a href="{{ route('dashboard') }}"
-           class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
 
             <i class="bi bi-grid"></i>
-            <span>Dashboard</span>
+            <span>ပင်မစာမျက်နှာ</span>
 
         </a>
 
 
         {{-- Master --}}
         <div class="menu-title">
-            Master
+            အခြေခံစာရင်းများ
         </div>
 
-        <a href="{{ route('crops.index') }}"
-           class="{{ request()->routeIs('crops.*') ? 'active' : '' }}">
+        <a href="{{ route('Crop#list') }}" class="{{ request()->routeIs('Crop#list') ? 'active' : '' }}">
 
             <i class="bi bi-box-seam"></i>
             <span>သီနှံများ</span>
 
         </a>
 
-        <a href="{{route('grades.index')}}"
-           class="{{ request()->routeIs('grades.*') ? 'active' : '' }}">
+        <a href="" class="{{ request()->routeIs('grades.*') ? 'active' : '' }}">
 
             <i class="bi bi-award"></i>
             <span>အရည်အသွေး</span>
@@ -54,8 +51,7 @@
             Pricing
         </div>
 
-        <a href="{{route('daily-prices.index')}}"
-           class="{{ request()->routeIs('daily-prices.*') ? 'active' : '' }}">
+        <a href="" class="{{ request()->routeIs('daily-prices.*') ? 'active' : '' }}">
 
             <i class="bi bi-tags"></i>
             <span>တစ်နေ့ချင်းဈေး</span>
@@ -72,7 +68,7 @@
            class="{{ request()->routeIs('purchases.create') ? 'active' : '' }}">
 
             <i class="bi bi-cart-plus"></i>
-            <span>New Purchase</span>
+            <span>အဝယ် ( တောဘောင်ချာ )</span>
 
         </a>
 
@@ -90,24 +86,21 @@
             Farmer Account
         </div>
 
-        <a href="#"
-           class="{{ request()->routeIs('advances.*') ? 'active' : '' }}">
+        <a href="#" class="{{ request()->routeIs('advances.*') ? 'active' : '' }}">
 
             <i class="bi bi-wallet2"></i>
             <span>Advances</span>
 
         </a>
 
-        <a href="#"
-           class="{{ request()->routeIs('payments.*') ? 'active' : '' }}">
+        <a href="#" class="{{ request()->routeIs('payments.*') ? 'active' : '' }}">
 
             <i class="bi bi-cash-stack"></i>
             <span>Payments</span>
 
         </a>
 
-        <a href="#"
-           class="{{ request()->routeIs('outstanding.*') ? 'active' : '' }}">
+        <a href="#" class="{{ request()->routeIs('outstanding.*') ? 'active' : '' }}">
 
             <i class="bi bi-credit-card"></i>
             <span>Outstanding</span>
@@ -120,8 +113,7 @@
             Expenses
         </div>
 
-        <a href="#"
-           class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
+        <a href="#" class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}">
 
             <i class="bi bi-wallet"></i>
             <span>Expenses</span>
@@ -134,8 +126,7 @@
             Reports
         </div>
 
-        <a href="#"
-           class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
+        <a href="#" class="{{ request()->routeIs('reports.*') ? 'active' : '' }}">
 
             <i class="bi bi-bar-chart"></i>
             <span>Reports</span>

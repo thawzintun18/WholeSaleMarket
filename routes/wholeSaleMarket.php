@@ -21,6 +21,16 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
         Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
         Route::post('create', [FarmerController::class, 'create'])->name('farmers#create');
+        Route::get('delete/{id}', [FarmerController::class, 'delete'])->name('farmers#delete');
+    });
+
+    Route::group(['prefix' => 'Crop'], function () {
+        Route::get('directPage', [CropController::class, 'directPage'])->name('Crop#directPage');
+        Route::post('create', [CropController::class, 'create'])->name('Crop#create');
+        Route::get('list', [CropController::class, 'list'])->name('Crop#list');
+        Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
+        Route::get('edit/{id}', [CropController::class, 'edit'])->name('Crop#edit');
+        Route::post('update/{id}', [CropController::class, 'update'])->name('Crop#update');
     });
 
 
@@ -63,5 +73,6 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
 
     Route::get('/purchases/{id}/voucher', [PurchaseController::class, 'voucher'])
         ->name('purchases.voucher');
+
 
 });

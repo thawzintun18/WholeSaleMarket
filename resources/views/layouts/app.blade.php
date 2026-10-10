@@ -248,6 +248,12 @@
 
             // Input ကို focus ပြန်ပေးမယ်
             document.getElementById('cropSearch').focus();
+
+            // Select box ကို မူလအခြေအနေ ပြန်ထားမယ်
+            document.getElementById('cropSearch').value = '';
+
+            // Date input ကို ရှင်းမယ်
+            document.getElementById('dateSearch').value = '';
         }
     </script>
 

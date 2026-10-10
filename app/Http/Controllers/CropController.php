@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Crop;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class CropController extends Controller
@@ -25,7 +26,7 @@ class CropController extends Controller
 
         Alert::success('အောင်မြင်ပါသည်', 'သီးနှံ အချက်အလက်များကို အောင်မြင်စွာ စာရင်းသွင်းပြီးပါပြီ။');
 
-        return back();
+        return to_route('Crop#list');
     }
 
     //update
@@ -37,7 +38,39 @@ class CropController extends Controller
 
         $data = $this->GetData($request);
 
-        Crop::where('id', $id)->update($data);
+        DB::transaction(function () use ($id, $data) {
+
+            $crop = Crop::findOrFail($id);
+
+            // Update မလုပ်ခင် Data အဟောင်းကို မှတ်ထားမယ်
+            $oldData = [
+                'old_crop_name'           => $crop->crop_name,
+                'old_commission_amount'   => $crop->commission_amount,
+                'old_unit'                => $crop->unit,
+                'old_quantity_per_basket' => $crop->quantity_per_basket,
+            ];
+
+            // Data အသစ်
+            $newData = [
+                'new_crop_name'           => $data['crop_name'],
+                'new_commission_amount'   => $data['commission_amount'],
+                'new_unit'                => $data['unit'],
+                'new_quantity_per_basket' => $data['quantity_per_basket'],
+            ];
+
+            // History Table ထဲ သိမ်းမယ်
+            DB::table('crop_histories')->insert([
+                'crop_id'    => $crop->id,
+                ...$oldData,
+                ...$newData,
+                'changed_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // crops Table မှာ Data အသစ် Update လုပ်မယ်
+            $crop->update($data);
+        });
 
         Alert::success('အောင်မြင်ပါသည်', 'သီးနှံအချက်အလက်များကို အောင်မြင်စွာပြင်ဆင်ပြီးပါပြီ။');
 
@@ -164,6 +197,65 @@ class CropController extends Controller
             ->first();
 
         return view('crops.edit', compact('crop'));
+    }
+
+    //history
+    public function history(Request $request)
+    {
+        $crop_name = DB::table('crop_histories')
+            ->select(
+                'crop_id',
+                DB::raw('MAX(new_crop_name) as crop_name'),
+            )
+            ->groupBy('crop_id')
+            ->get();
+
+        $histories = DB::table('crop_histories')
+            ->when($request->filled('crop_name'), function ($query) use ($request) {$query->where(function ($q) use ($request) {$q->where('old_crop_name', $request->crop_name)
+                    ->orWhere('new_crop_name', $request->crop_name);});})
+            ->when($request->filled('changed_date'), function ($query) use ($request) {$query->whereDate('changed_at', '>=', $request->changed_date);})
+            ->orderByDesc('changed_at')->paginate(5);
+
+        return view('crops.history', compact('histories', 'crop_name'));
+
+    }
+
+    //trashList
+    public function trashList(Request $request)
+    {
+        $crops = Crop::onlyTrashed()
+        // သီးနှံအမည်ဖြင့် ရှာဖွေခြင်း
+            ->when($request->filled('crop_name'), function ($query) use ($request) {
+                $query->where('crop_name', $request->crop_name);
+            })
+        // ဖျက်ခဲ့သည့်ရက်စွဲဖြင့် ရှာဖွေခြင်း
+            ->when($request->filled('changed_date'), function ($query) use ($request) {
+                $query->whereDate('deleted_at', '>=', $request->changed_date);
+            })
+            ->orderByDesc('deleted_at')
+            ->paginate(10);
+        $crop_name = Crop::onlyTrashed()
+            ->select('crop_name')
+            ->distinct()
+            ->orderBy('crop_name')
+            ->get();
+        // dd($crop_name->toArray());
+        return view('crops.trashList', compact('crops', 'crop_name'));
+    }
+
+    //restore
+    public function restore($id)
+    {
+        $crop = Crop::onlyTrashed()->findOrFail($id);
+
+        $crop->restore();
+
+        Alert::success(
+            'အောင်မြင်ပါသည်',
+            'ဖျက်ထားသော သီးနှံကို ပြန်လည်အသုံးပြုနိုင်ပါပြီ။'
+        );
+
+        return to_route('Crop#list');
     }
 
 }

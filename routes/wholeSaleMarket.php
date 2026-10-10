@@ -21,6 +21,11 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
         Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
         Route::post('create', [FarmerController::class, 'create'])->name('farmers#create');
+        Route::get('edit/{id}/page', [FarmerController::class, 'edit'])->name('farmers#edit#page');
+        Route::post('update/{id}', [FarmerController::class, 'update'])->name('farmers#update');
+        Route::get('history', [FarmerController::class, 'history'])->name('farmers#history');
+        Route::get('trashList', [FarmerController::class, 'trashList'])->name('farmers#trashList');
+        Route::get('restore/{id}', [FarmerController::class, 'restore'])->name('farmers#restore');
         Route::get('delete/{id}', [FarmerController::class, 'delete'])->name('farmers#delete');
     });
 
@@ -31,6 +36,9 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
         Route::get('edit/{id}', [CropController::class, 'edit'])->name('Crop#edit');
         Route::post('update/{id}', [CropController::class, 'update'])->name('Crop#update');
+        Route::get('history', [CropController::class, 'history'])->name('Crop#history');
+        Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
+        Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
     });
 
 

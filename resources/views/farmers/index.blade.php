@@ -69,19 +69,34 @@
     </div>
 
     {{-- တောင်သူစာရင်း --}}
-    <div class="dashboard-card shadow-sm">
+    <div class="dashboard-card shadow-lg">
 
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
                 <h5 class="mb-1">တောင်သူများစာရင်း</h5>
                 <small class="text-muted fs-6">
-                    အရောင်းအဝယ်လုပ်ထားသောတောင်သူများကို သီးသန့်မှတ်သားဖော်ပြထားခြင်းဖြစ်သည် ( နောက်ဆုံးရောင်းသွားသော တောင်သူကို အပေါ်ဆုံးကနေစပြီးပြထားပေးသည် )
+                    အရောင်းအဝယ်လုပ်ထားသောတောင်သူများကို သီးသန့်မှတ်သားဖော်ပြထားခြင်းဖြစ်သည် ( နောက်ဆုံးရောင်းသွားသော
+                    တောင်သူကို အပေါ်ဆုံးကနေစပြီးပြထားပေးသည် )
                 </small>
             </div>
 
-            <span class="badge bg-light text-dark border">
-                စုစုပေါင်း {{ number_format($farmers->total()) }} ဦး
-            </span>
+            <div class=" d-md-flex justify-content-end mt-md-0 mt-2">
+                <div class="me-2">
+                    <span class="badge bg-light text-dark border">
+                        စုစုပေါင်း {{ number_format($farmers->total()) }} ဦး
+                    </span>
+                </div>
+
+                <div class="d-flex mt-md-0 mt-2">
+                    <div class=" me-2">
+                        <a href="{{ route('farmers#history') }}" class=" btn btn-primary">ပြင်ဆင်မှုစာရင်း</a>
+                    </div>
+
+                    <div class=" me-2">
+                        <a href="{{ route('farmers#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောစာရင်း</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="table-responsive">
@@ -94,6 +109,7 @@
                         <th>တောင်သူအမည်</th>
                         <th>ဖုန်းနံပါတ်</th>
                         <th>ကျေးရွာ</th>
+                        <th>မှတ်ချက်</th>
                         <th>အခြေအနေ</th>
                         <th class="text-center" style="width: 130px;">လုပ်ဆောင်ချက်</th>
                     </tr>
@@ -125,6 +141,10 @@
                             </td>
 
                             <td>
+                                {{ $farmer->notes ?: '-' }}
+                            </td>
+
+                            <td>
                                 @if ($farmer->is_active)
                                     <span class="badge bg-success-subtle text-success border border-success-subtle">
                                         အသုံးပြုနေ
@@ -137,9 +157,10 @@
                             </td>
 
                             <td class="text-center">
-                                <a href="{{ route('farmers.edit', $farmer->id) }}" class="btn btn-sm btn-outline-primary"
-                                    title="ပြင်ဆင်ရန်">
-                                    <i class="bi bi-pencil"></i>
+                                <a href="{{ route('farmers#edit#page', $farmer->id) }}"
+                                    class="btn btn-sm btn-outline-primary" title="ပြင်ဆင်ရန်">
+                                    {{-- <i class="bi bi-pencil"></i> --}}
+                                    ပြင်ရန်
                                 </a>
 
                                 <button type="button" onclick="DeleteData({{ $farmer->id }})"

@@ -47,8 +47,7 @@
 ======================================== */
 
 .empty-state {
-    min-height: 320px;
-    padding: 40px 20px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,36 +60,6 @@
     border-radius: 16px;
     margin: 12px;
     transition: all 0.3s ease;
-}
-
-.empty-state:hover {
-    border-color: #198754;
-    box-shadow: 0 8px 24px rgba(25, 135, 84, 0.08);
-}
-
-/* ========================================
-   Empty State Icon
-======================================== */
-
-.empty-icon {
-    width: 85px;
-    height: 85px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg,
-            #d8f3df,
-            #b9e8c7);
-    color: #198754;
-    border-radius: 50%;
-    margin-bottom: 22px;
-    box-shadow: 0 6px 18px rgba(25, 135, 84, 0.12);
-    animation: emptyFloat 3s ease-in-out infinite;
-}
-
-.empty-icon i {
-    font-size: 42px;
-    line-height: 1;
 }
 
 /* ========================================
@@ -168,7 +137,7 @@
 
 @media (max-width: 576px) {
     .empty-state {
-        min-height: 280px;
+        min-height: 100px;
         padding: 30px 16px;
         margin: 8px;
         border-radius: 12px;

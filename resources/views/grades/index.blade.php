@@ -2,144 +2,143 @@
 
 @section('page-title', 'Grades')
 
-@section('breadcrumb', 'Master / Grades')
+@section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံ အရည်အသွေးစာရင်း')
 
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
+    <div class="d-md-flex justify-content-between align-items-center mb-4">
 
+        <div>
             <h1 class="page-title mb-1">
-                Grades
+                သီးနှံ အရည်အသွေးစာရင်း
             </h1>
 
-            <p class="text-muted mb-0">
-                Manage crop grades and quality levels.
+            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+                သီးနှံတစ်မျိုးစီအတွက် အရည်အသွေးအဆင့်များကို ဤစာရင်းတွင်
+                ကြည့်ရှုနိုင်ပါသည်။
             </p>
-
         </div>
 
-
-        <a href="{{ route('grades.create') }}" class="btn btn-success">
-            <i class="bi bi-plus-lg me-1"></i>
-            Add Grade
-        </a>
+        <div class=" d-flex justify-content-end">
+            <a href="{{ route('Quality#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+                <i class="bi bi-plus-lg me-1"></i>
+                သီးနှံအရည်အသွေးထပ်ထည့်ရန်
+            </a>
+        </div>
 
     </div>
 
     {{-- Search & Filter --}}
 
     <div class="dashboard-card mb-4 shadow-sm">
-        <div class="row g-3">
+        <form action="{{ route('Quality#list') }}" method="GET">
+            <div class="row g-3">
 
-            {{-- Search --}}
-            <div class="col-md-5">
+                {{-- သီးနှံအလိုက် စစ်ထုတ်ရန် --}}
+                <div class="col-md-4">
 
-                <label class="form-label">
-                    Search Grade
-                </label>
+                    <label class="form-label">
+                        သီးနှံအမည်
+                    </label>
 
-                <div class="input-group">
+                    <form action="{{ route('Quality#list') }}" method="GET">
+                        <select name="crop_id" class="form-select" onchange="this.form.submit()">
 
-                    <span class="input-group-text">
-                        <i class="bi bi-search"></i>
-                    </span>
+                            <option value="" {{ request('crop_id') == '' ? 'selected' : '' }}>
+                                သီးနှံအားလုံးအတွက် ကြည့်ရန်
+                            </option>
 
-                    <input type="text" class="form-control" placeholder="Enter grade name...">
+                            @foreach ($crops as $item)
+                                <option value="{{ $item->id }}" {{ request('crop_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->crop_name }} သီးနှံအတွက် ကြည့်ရန်
+                                </option>
+                            @endforeach
+
+                        </select>
+                    </form>
+
+                </div>
+
+                {{-- အဆင့်အမည် ရှာဖွေရန် --}}
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        အဆင့်အမည် ရှာဖွေရန်
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input type="text" name="searchData" value="{{ request('searchData') }}" id="search"
+                            class="form-control" placeholder="အဆင့်အမည် ရိုက်ထည့်ပါ...">
+
+                    </div>
+
+                </div>
+
+                {{-- ရှာဖွေရန် ခလုတ် --}}
+                <div class="col-md-auto d-flex align-items-end">
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>
+                        ရှာဖွေမည်
+                    </button>
+
+                </div>
+
+                {{-- ပြန်လည်သတ်မှတ်ရန် --}}
+                <div class="col-md-auto d-flex align-items-end">
+
+                    <a href="{{ route('Quality#list') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        ပြန်လည်သတ်မှတ်မည်
+                    </a>
 
                 </div>
 
             </div>
-
-
-            {{-- Crop Filter --}}
-            <div class="col-md-4">
-
-                <label class="form-label">
-                    Crop
-                </label>
-
-                <select class="form-select">
-
-                    <option value="">
-                        All Crops
-                    </option>
-
-                    <option>
-                        Tomato
-                    </option>
-
-                    <option>
-                        Potato
-                    </option>
-
-                    <option>
-                        Cabbage
-                    </option>
-
-                    <option>
-                        Onion
-                    </option>
-
-                    <option>
-                        Chilli
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            {{-- Search Button --}}
-            <div class="col-md-auto d-flex align-items-end">
-
-                <button class="btn btn-primary">
-
-                    <i class="bi bi-search me-1"></i>
-
-                    Search
-
-                </button>
-
-            </div>
-
-
-            {{-- Reset --}}
-            <div class="col-md-auto d-flex align-items-end">
-
-                <button class="btn btn-outline-secondary">
-
-                    Reset
-
-                </button>
-
-            </div>
-
-        </div>
+        </form>
 
     </div>
 
     {{-- Grade Table --}}
     <div class="dashboard-card shadow-sm">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="d-md-flex justify-content-between align-items-center mb-3">
 
             <div>
 
                 <h5 class="mb-1">
-                    Grade List
+                    သီးနှံ အရည်အသွေးစာရင်း
                 </h5>
 
-                <small class="text-muted">
-                    All registered crop grades
+                <small class="text-muted mt-2">
+                    စာရင်းသွင်းထားသော သီးနှံအရည်အသွေးအဆင့်များ
                 </small>
 
             </div>
 
 
-            <span class="badge bg-light text-dark border">
-                8 Grades
-            </span>
+            <div class="d-md-flex justify-content-end mt-md-0 mt-2">
+                <div class="me-2">
+                    <span class="badge bg-light text-dark border">
+                        {{ $grades->count() }} အရည်အသွေး
+                    </span>
+                </div>
+
+                <div class="d-md-flex mt-md-0 mt-2">
+                    <div class=" me-2">
+                        <a href="{{ route('Quality#history') }}" class=" btn btn-primary">အရည်အသွေးပြင်ဆင်မှုစာရင်း</a>
+                    </div>
+
+                    <div class=" me-2 mt-md-0 mt-2">
+                        <a href="{{ route('Quality#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောအရည်အသွေးစာရင်း</a>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
@@ -152,24 +151,20 @@
 
                     <tr>
 
-                        <th width="70">
-                            #
+                        <th>
+                            စဉ်
                         </th>
 
                         <th>
-                            Crop
+                            သီးနှံအမည်
                         </th>
 
                         <th>
-                            Grade Name
-                        </th>
-
-                        <th>
-                            Created Date
+                            အရည်အသွေး
                         </th>
 
                         <th width="150" class="text-center">
-                            Action
+                            လုပ်ဆောင်ချက်
                         </th>
 
                     </tr>
@@ -179,348 +174,63 @@
 
                 <tbody>
 
-                    {{-- Grade 1 --}}
-                    <tr>
+                    @if ($grades->count() > 0)
 
-                        <td>
-                            1
-                        </td>
+                        @foreach ($grades as $item)
+                            <tr>
 
-                        <td>
+                                <td>{{ $loop->iteration }}</td>
 
-                            <strong>
-                                Tomato
-                            </strong>
+                                <td>
+                                    <strong> {{ $item->crop_name }} </strong>
+                                </td>
 
-                        </td>
+                                <td>
+                                    <span class="fs-5">
+                                        {{ $item->grade_name }}
+                                    </span>
+                                </td>
 
-                        <td>
+                                <td class="text-center">
 
-                            <span class="badge bg-light text-dark border">
-                                Grade A
-                            </span>
+                                    <div class=" d-flex mt-md-0">
+                                        <a href="{{ route('Quality#edit', $item->id) }}"
+                                            class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
+                                            ပြင်ဆင်ရန်
+                                        </a>
 
-                        </td>
+                                        <button type="button" onclick="DeleteData({{ $item->id }})"
+                                            class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                            ဖျက်ရန်
+                                        </button>
+                                    </div>
 
-                        <td>
-                            08 Oct 2026
-                        </td>
+                                </td>
 
-                        <td class="text-center">
+                            </tr>
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="4" class="empty-state-cell">
 
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
+                                <div class="empty-state">
 
+                                    <h5>သီးနှံ အရည်အသွေးစာရင်း မရှိသေးပါ</h5>
 
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                                    <p>
+                                        လက်ရှိတွင် သီးနှံအရည်အသွေး ထည့်သွင်းထားခြင်းမရှိသေးပါ။
+                                    </p>
 
-                        </td>
+                                    <a href="{{ route('Quality#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+                                        <i class="bi bi-plus-lg me-1"></i>
+                                        သီးနှံအရည်အသွေးထပ်ထည့်ရန်
+                                    </a>
 
-                    </tr>
+                                </div>
 
-
-                    {{-- Grade 2 --}}
-                    <tr>
-
-                        <td>
-                            2
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Tomato
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade B
-                            </span>
-
-                        </td>
-
-                        <td>
-                            08 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- Grade 3 --}}
-                    <tr>
-
-                        <td>
-                            3
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Tomato
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade C
-                            </span>
-
-                        </td>
-
-                        <td>
-                            08 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- Grade 4 --}}
-                    <tr>
-
-                        <td>
-                            4
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Potato
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade A
-                            </span>
-
-                        </td>
-
-                        <td>
-                            07 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- Grade 5 --}}
-                    <tr>
-
-                        <td>
-                            5
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Potato
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade B
-                            </span>
-
-                        </td>
-
-                        <td>
-                            07 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- Grade 6 --}}
-                    <tr>
-
-                        <td>
-                            6
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Cabbage
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade A
-                            </span>
-
-                        </td>
-
-                        <td>
-                            06 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- Grade 7 --}}
-                    <tr>
-
-                        <td>
-                            7
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Onion
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade A
-                            </span>
-
-                        </td>
-
-                        <td>
-                            06 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- Grade 8 --}}
-                    <tr>
-
-                        <td>
-                            8
-                        </td>
-
-                        <td>
-
-                            <strong>
-                                Chilli
-                            </strong>
-
-                        </td>
-
-                        <td>
-
-                            <span class="badge bg-light text-dark border">
-                                Grade A
-                            </span>
-
-                        </td>
-
-                        <td>
-                            05 Oct 2026
-                        </td>
-
-                        <td class="text-center">
-
-                            <a href="#" class="btn btn-sm btn-outline-primary" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-
-                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
+                            </td>
+                        </tr>
+                    @endif
 
                 </tbody>
 
@@ -529,43 +239,21 @@
         </div>
 
 
-        {{-- Pagination --}}
-        <div class="d-flex justify-content-between align-items-center mt-4">
+        {{-- Pagination Example --}}
+        <div class="d-md-flex justify-content-between align-items-center mt-4">
 
-            <small class="text-muted">
-                Showing 1 to 8 of 8 grades
-            </small>
+            <p class="text-muted">
+                သီးနှံအရည်အသွေး {{ $grades->firstItem() ?? 0 }}
+                မှ {{ $grades->lastItem() ?? 0 }}
+                အထိ ပြသထားပြီး
+                စုစုပေါင်း {{ $grades->total() }} မျိုး ရှိပါသည်။
+            </p>
 
-
-            <nav>
+            <nav class=" d-flex justify-content-end">
 
                 <ul class="pagination pagination-sm mb-0">
 
-                    <li class="page-item disabled">
-
-                        <a class="page-link" href="#">
-                            Previous
-                        </a>
-
-                    </li>
-
-
-                    <li class="page-item active">
-
-                        <a class="page-link" href="#">
-                            1
-                        </a>
-
-                    </li>
-
-
-                    <li class="page-item disabled">
-
-                        <a class="page-link" href="#">
-                            Next
-                        </a>
-
-                    </li>
+                    <span> {{ $grades->links() }} </span>
 
                 </ul>
 
@@ -574,4 +262,30 @@
         </div>
     </div>
 
+@endsection
+
+@section('DeleteData')
+    <script>
+        function DeleteData(id) {
+            Swal.fire({
+                title: "ဖျက်ရန် သေချာပါသလား?",
+                text: "ဖျက်ပြီးပါက ဤသီးနှံအရည်အသွေးအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "ဖျက်မည်",
+                cancelButtonText: "မဖျက်တော့ပါ"
+            }).then((result) => {
+                if (result.isConfirmed) Swal.fire({
+                    title: "ဖျက်ပြီးပါပြီ!",
+                    text: "သီးနှံအရည်အသွေးအချက်အလက်ကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
+                    icon: "success"
+                }).then(() => {
+                    location.href = '/whole-sale-market/Quality/delete/' + id;
+                });
+
+            });
+        }
+    </script>
 @endsection

@@ -2,24 +2,26 @@
 
 @section('page-title', 'Edit Grade')
 
-@section('breadcrumb', 'Master / Grades / Edit')
+@section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံ အရည်အသွေးစာရင်း / သီးနှံ အရည်အသွေးများကိုပြင်ဆင်ရန်')
 
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-md-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="page-title mb-1">Edit Grade</h1>
+            <h1 class="page-title mb-1">သီးနှံ အရည်အသွေးများကိုပြင်ဆင်ရန်</h1>
 
-            <p class="text-muted mb-0">
-                Update the crop grade information.
+            <p class="text-muted mb-0 mt-2" style="line-height: 30px;">
+                သီးနှံအရည်အသွေးအမည်များကို လိုအပ်သလို ပြင်ဆင်နိုင်ပါသည်။
             </p>
         </div>
 
-        <a href="{{ route('grades.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>
-            Back to Grades
-        </a>
+        <div class="d-flex justify-content-end mt-md-0 mt-2">
+            <a href="{{ route('Quality#list') }}" class="btn btn-outline-secondary mt-3">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
+        </div>
 
     </div>
 
@@ -27,56 +29,29 @@
 
         <div class="mb-4">
 
-            <h5 class="mb-1">
-                Grade Information
+            <h5 class="mb-1" style="line-height: 35px;">
+                {{ $grade->crop_name }}သီးနှံအတွက် အရည်အသွေးပြင်ဆင်ရန်
             </h5>
 
-            <small class="text-muted">
-                Update the crop and grade name.
+            <small class="text-muted mt-2" style="line-height: 30px;">
+                သတ်မှတ်ထားသော သီးနှံအရည်အသွေးအမည်ကို လိုအပ်သလို ပြင်ဆင်၊ ပြောင်းလဲနိုင်ပါသည်။
             </small>
 
         </div>
 
-        <form action="{{ route('grades.update', $grade) }}" method="POST">
+        <form action="{{ route('Quality#update', $grade->id) }}" method="POST">
 
             @csrf
-            @method('PUT')
+
+            <input type="hidden" name="crop_id" value="{{ $grade->crop_id }}">
 
             <div class="row g-3">
 
-                {{-- Crop --}}
-                <div class="col-md-6">
-
-                    <label for="crop_id" class="form-label">
-                        Crop <span class="text-danger">*</span>
-                    </label>
-
-                    <select name="crop_id" id="crop_id" class="form-select @error('crop_id') is-invalid @enderror">
-
-                        <option value="">Select Crop</option>
-
-                        @foreach ($crops as $crop)
-                            <option value="{{ $crop->id }}"
-                                {{ old('crop_id', $grade->crop_id) == $crop->id ? 'selected' : '' }}>
-                                {{ $crop->crop_name }}
-                            </option>
-                        @endforeach
-
-                    </select>
-
-                    @error('crop_id')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                    @enderror
-
-                </div>
-
                 {{-- Grade Name --}}
-                <div class="col-md-6">
+                <div class="col-md-5 offset-md-2">
 
                     <label for="grade_name" class="form-label">
-                        Grade Name <span class="text-danger">*</span>
+                        အရည်အသွေးအမည် <span class="text-danger">*</span>
                     </label>
 
                     <input type="text" name="grade_name" id="grade_name"
@@ -92,35 +67,11 @@
 
                 </div>
 
-            </div>
-
-            <hr class="my-4">
-
-            <div class="d-flex justify-content-between align-items-center">
-
-                <form action="{{ route('grades.destroy', $grade) }}" method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this grade?');">
-                    @csrf
-                    @method('DELETE')
-
-                    <button type="submit" class="btn btn-outline-danger">
-                        <i class="bi bi-trash me-1"></i>
-                        Delete
-                    </button>
-
-                </form>
-
-                <div class="d-flex gap-2">
-
-                    <a href="{{ route('grades.index') }}" class="btn btn-outline-secondary">
-                        Cancel
-                    </a>
-
-                    <button type="submit" class="btn btn-primary">
+                <div class="col-md-3 d-flex justify-content-md-start justify-content-end pt-4">
+                    <button type="submit" class="btn btn-success">
                         <i class="bi bi-check-lg me-1"></i>
-                        Update Grade
+                        သီးနှံအရည်အသွေးပြင်ဆင်မည်
                     </button>
-
                 </div>
 
             </div>

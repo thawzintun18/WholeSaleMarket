@@ -6,16 +6,25 @@
 
 @section('content')
 
-    <div class="mb-4">
+    <div class="d-md-flex justify-content-between align-items-center mb-4">
 
-        <h1 class="page-title mb-1">
-            သီးနှံအသစ် ထပ်မံထည့်သွင်းခြင်း
-        </h1>
+        <div>
+            <h1 class="page-title mb-1">
+                သီးနှံအသစ် ထပ်မံထည့်သွင်းခြင်း
+            </h1>
 
-        <p class="text-muted mb-0 mt-2" style="line-height: 30px">
-            ပွဲရုံတွင် ရောင်းဝယ်အသုံးပြုမည့် သီးနှံအသစ်များကို အောက်ပါအချက်အလက်များ ဖြည့်သွင်း၍ ထပ်မံစာရင်းသွင်းနိုင်ပါသည်။
-        </p>
+            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+                ပွဲရုံတွင် ရောင်းဝယ်အသုံးပြုမည့် သီးနှံအသစ်များကို အောက်ပါအချက်အလက်များ ဖြည့်သွင်း၍
+                ထပ်မံစာရင်းသွင်းနိုင်ပါသည်။
+            </p>
+        </div>
 
+        <div class=" d-flex justify-content-end mt-md-0 mt-2">
+            <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
+        </div>
     </div>
 
 
@@ -130,10 +139,6 @@
 
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end gap-2">
-
-                        <a href="{{ route('Crop#list') }}" class="btn btn-light">
-                            နောက်သို့
-                        </a>
 
                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-lg me-1"></i>

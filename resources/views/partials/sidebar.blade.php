@@ -47,10 +47,10 @@
 
         {{-- Pricing --}}
         <div class="menu-title">
-            Pricing
+            ဈေးနှုန်းများ
         </div>
 
-        <a href="" class="{{ request()->routeIs('daily-prices.*') ? 'active' : '' }}">
+        <a href="{{ route('DailyPrice#list') }}" class="{{ request()->routeIs('DailyPrice#list') ? 'active' : '' }}">
 
             <i class="bi bi-tags"></i>
             <span>တစ်နေ့ချင်းဈေး</span>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropQualityController;
+use App\Http\Controllers\DailyPriceController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
@@ -36,5 +37,12 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('trashList', [CropQualityController::class, 'trashList'])->name('Quality#trashList');
         Route::get('restore/{id}', [CropQualityController::class, 'restore'])->name('Quality#restore');
         Route::get('history', [CropQualityController::class, 'history'])->name('Quality#history');
+    });
+
+    Route::group(['prefix' => 'DailyPrice'], function () {
+        Route::get('directPage', [DailyPriceController::class, 'directPage'])->name('DailyPrice#directPage');
+        Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
+        Route::get('list', [DailyPriceController::class, 'list'])->name('DailyPrice#list');
+        Route::get('getGrades/{id}', [DailyPriceController::class, 'getGrades'])->name('DailyPrice#getGrades');
     });
 });

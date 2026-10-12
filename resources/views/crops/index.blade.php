@@ -19,10 +19,12 @@
             </p>
         </div>
 
-        <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-            <i class="bi bi-plus-lg me-1"></i>
-            သီးနှံထပ်ထည့်ရန်
-        </a>
+        <div class=" d-flex justify-content-end">
+            <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+                <i class="bi bi-plus-lg me-1"></i>
+                သီးနှံထပ်ထည့်ရန်
+            </a>
+        </div>
 
     </div>
 
@@ -62,10 +64,10 @@
 
                 <div class="col-md-auto d-flex align-items-end">
 
-                    <button class="btn btn-outline-secondary" onclick="resetSearch()">
+                    <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်မည်
-                    </button>
+                    </a>
 
                 </div>
 
@@ -85,7 +87,7 @@
                     သီးနှံစာရင်း
                 </h5>
 
-                <small class="text-muted">
+                <small class="text-muted" style="line-height: 30px">
                     စာရင်းသွင်းထားသော သီးနှံအားလုံး
                 </small>
             </div>
@@ -174,25 +176,16 @@
 
                                 <td class="text-center">
 
-                                    <div class=" d-md-flex pe-3">
-                                        <div class="">
-                                            <a href="" class="btn btn-sm btn-outline-primary me-1"
-                                                title="ပြင်ဆင်ရန်">
-                                                သီးနှံအရည်အသွေးထည့်ရန်
-                                            </a>
-                                        </div>
+                                    <div class=" d-flex mt-md-0">
+                                        <a href="{{ route('Crop#edit', $item->id) }}"
+                                            class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
+                                            ပြင်ဆင်ရန်
+                                        </a>
 
-                                        <div class=" d-flex mt-md-0 mt-2">
-                                            <a href="{{ route('Crop#edit', $item->id) }}"
-                                                class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
-                                                ပြင်ဆင်ရန်
-                                            </a>
-
-                                            <button type="button" onclick="DeleteData({{ $item->id }})"
-                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                                ဖျက်ရန်
-                                            </button>
-                                        </div>
+                                        <button type="button" onclick="DeleteData({{ $item->id }})"
+                                            class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                            ဖျက်ရန်
+                                        </button>
                                     </div>
 
                                 </td>
@@ -201,7 +194,11 @@
                         @endforeach
                     @else
                         <tr>
+<<<<<<< HEAD
                             <td colspan="4" class="text-center py-4">
+=======
+                            <td colspan="5" class="empty-state-cell">
+>>>>>>> e9c5d8b96011253380ac1870fdca7132f06228f1
 
                                         {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
                                         <p class="text-muted mt-2 mb-1">

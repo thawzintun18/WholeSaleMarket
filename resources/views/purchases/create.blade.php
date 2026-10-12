@@ -215,6 +215,9 @@
                             </select>
                         </div>
 
+                        <!-- quantity_per_basket ကို သိမ်းမယ့် Hidden Input -->
+                        <input type="hidden" id="quantity_per_basket" value="">
+
                         {{-- အမျိုးအစားရွေးချယ်ရန် --}}
                         <div class="col-lg-6">
                             <label for="grade_id" class="form-label fw-semibold">
@@ -264,8 +267,7 @@
                                 <span class="text-danger">*</span>
                             </label>
 
-                            {{-- အရေးကြီး *type="text"*ထားထားလို့ database ထဲသိမ်းတဲ့အခါမှာ , ပါလာရင်ဖြတ်ထုတ်မယ်ဆိုတဲ့ validation စစ်ဖို့လိုတယ်  --}}
-                            <input type="text" id="actual_buy_price" class="form-control" min="0"
+                           <input type="text" id="actual_buy_price" class="form-control" min="0"
                                 step="0.01" placeholder="ဝယ်ယူမည့်ဈေး">
                         </div>
 
@@ -480,6 +482,7 @@
         </div>
     </div>
 @endsection
+
 {{-- တောင်သူအပိုင်းအတွက် JS အစ --}}
 @push('scripts')
     <script>
@@ -828,6 +831,7 @@
 @endpush
 {{-- တောင်သူအပိုင်းအတွက် JS အဆုံး --}}
 
+
 {{-- သီးနှံစာရင်းအတွက် သီးနှံဈေး အလိုအလျောက်ပြပေးတဲ့ JS အစ --}}
 @push('scripts')
     <script>
@@ -835,9 +839,11 @@
 
             const cropSelect = document.getElementById('crop_id');
             const gradeSelect = document.getElementById('grade_id');
+            const qtyPerBasketInput = document.getElementById('quantity_per_basket');
             const unitInput = document.getElementById('unit');
             const commissionInput = document.getElementById('commission_amount');
             const referencePriceInput = document.getElementById('reference_price');
+            const actualPriceInput = document.getElementById('actual_buy_price');
 
             // သီးနှံရွေးလိုက်လျှင် Grade ရှာမည်
             cropSelect.addEventListener('change', async function() {
@@ -853,6 +859,8 @@
 
                 unitInput.value = option.dataset.unit || '';
                 commissionInput.value = option.dataset.commission || 0;
+                const qtyPerBasket = option.getAttribute('data-quantity-per-basket') || 0;
+                qtyPerBasketInput.value = qtyPerBasket;
 
                 if (!cropId) {
                     return;
@@ -909,12 +917,14 @@
                 const data = await response.json();
 
                 referencePriceInput.value = data.reference_price;
+                actualPriceInput.value = data.reference_price;
             });
 
         });
     </script>
 @endpush
 {{-- သီသီးနှံစာရင်းအတွက် သီးနှံဈေး အလိုအလျောက်ပြပေးတဲ့ JS အဆုံး --}}
+
 
 {{-- သီးနှံစာရင်း တွက်တဲ့အပိုင်း JS အစ --}}
 @push('scripts')
@@ -924,6 +934,7 @@
             const cropSelect = document.getElementById('crop_id');
             const gradeSelect = document.getElementById('grade_id');
             const quantityInput = document.getElementById('quantity');
+            const qtyPerBasketInput = document.getElementById('quantity_per_basket');
             const unitInput = document.getElementById('unit');
             const referencePriceInput = document.getElementById('reference_price');
             const actualPriceInput = document.getElementById('actual_buy_price');
@@ -953,15 +964,26 @@
             }
 
             // စာရင်းထဲက သီးနှံတစ်မျိုးရဲ့ ငွေတွက်မည်
+            // function calculate(item) {
+            //     item.gross_amount =
+            //         item.quantity * item.actual_buy_price;
+            //     item.total_deduction =
+            //         item.commission_amount + item.car_fee_amount;
+            //     item.net_amount =
+            //         item.gross_amount - item.total_deduction;
+            // }
+
             function calculate(item) {
-                item.gross_amount =
-                    item.quantity * item.actual_buy_price;
+                const qtyPerBasket = Number(item.quantity_per_basket) || 0;
+                const totalBaskets = qtyPerBasket > 0 ? (Number(item.quantity) / qtyPerBasket) : Number(item.quantity);
 
-                item.total_deduction =
-                    item.commission_amount + item.car_fee_amount;
+                const actual_buy_price_after_sub_commission_amt = Number(item.actual_buy_price) - Number(item.commission_amount);
+                item.gross_amount = Number((totalBaskets * actual_buy_price_after_sub_commission_amt).toFixed(2));
 
-                item.net_amount =
-                    item.gross_amount - item.total_deduction;
+                item.total_deduction = Number(item.car_fee_amount);
+
+                item.net_amount = Number((item.gross_amount - item.total_deduction).toFixed(2));
+                // console.table(item);
             }
 
             // Form ကိုရှင်းမည်
@@ -981,6 +1003,12 @@
                 carFeeInput.value = 0;
                 noteInput.value = '';
 
+                // Hidden Input ကိုပါ ရှင်းလင်းပေးရန်
+                const qtyPerBasketInput = document.getElementById('quantity_per_basket');
+                if (qtyPerBasketInput) {
+                    qtyPerBasketInput.value = '';
+                }
+
                 editingIndex = null;
 
                 addButton.innerHTML =
@@ -994,76 +1022,71 @@
 
                 if (items.length === 0) {
                     tableBody.innerHTML = `
-                <tr>
-                    <td colspan="9" class="text-center text-muted py-5">
-                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                        သီးနှံစာရင်း မထည့်ရသေးပါ။
-                    </td>
-                </tr>
-            `;
-                }
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                သီးနှံစာရင်း မထည့်ရသေးပါ။
+                            </td>
+                        </tr>
+                        `;
+                    }
 
-                let grossTotal = 0;
-                let deductionTotal = 0;
-                let netTotal = 0;
+                    let grossTotal = 0;
+                    let deductionTotal = 0;
+                    let netTotal = 0;
 
-                items.forEach(function(item, index) {
-                    calculate(item);
+                    items.forEach(function(item, index) {
+                        calculate(item);
 
-                    grossTotal += item.gross_amount;
-                    deductionTotal += item.total_deduction;
-                    netTotal += item.net_amount;
+                        grossTotal += item.gross_amount;
+                        deductionTotal += item.total_deduction;
+                        netTotal += item.net_amount;
 
-                    const row = document.createElement('tr');
+                        const row = document.createElement('tr');
 
-                    row.innerHTML = `
-                <td class="text-center">${index + 1}</td>
+                        row.innerHTML = `
+                            <td class="text-center">${index + 1}</td>
 
-                <td>
-                    <div class="fw-bold">
-                        ${escapeHtml(item.crop_name)}
-                    </div>
-                    <small class="text-muted">
-                        ${escapeHtml(item.grade_name)}
-                    </small>
-                </td>
+                            <td>
+                                <div class="fw-bold">
+                                    ${escapeHtml(item.crop_name)}
+                                </div>
+                                <small class="text-muted">
+                                    ${escapeHtml(item.grade_name)}
+                                </small>
+                            </td>
 
-                <td class="text-end">
-                    ${Number(item.quantity).toLocaleString('en-US')}
-                </td>
+                            <td class="text-end">
+                                ${Number(item.quantity).toLocaleString('en-US')}
+                            </td>
 
-                <td>${escapeHtml(item.unit)}</td>
+                            <td>${escapeHtml(item.unit)}</td>
 
-                <td class="text-end">
-                    ${money(item.actual_buy_price)}
-                </td>
+                            <td class="text-end">
+                                ${money(item.actual_buy_price)}
+                            </td>
 
-                <td class="text-end">
-                    ${money(item.commission_amount)}
-                </td>
+                            <td class="text-end">
+                                ${money(item.commission_amount)}
+                            </td>
 
-                <td class="text-end">
-                    ${money(item.car_fee_amount)}
-                </td>
+                            <td class="text-end">
+                                ${money(item.car_fee_amount)}
+                            </td>
 
-                <td class="text-end fw-bold">
-                    ${money(item.net_amount)}
-                </td>
+                            <td class="text-end fw-bold">
+                                ${money(item.net_amount)}
+                            </td>
 
-                <td class="text-center text-nowrap">
-                    <button type="button"
-                        class="btn btn-sm btn-outline-primary me-1"
-                        data-action="edit" data-index="${index}">
-                        <i class="bi bi-pencil"></i>
-                    </button>
+                            <td class="text-center text-nowrap">
 
-                    <button type="button"
-                        class="btn btn-sm btn-outline-danger"
-                        data-action="delete" data-index="${index}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            `;
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-action="delete" data-index="${index}">
+                                    <i class="bi bi-trash me-2"></i>ဖျက်မည်
+                                </button>
+                            </td>
+                        `;
 
                     tableBody.appendChild(row);
 
@@ -1162,6 +1185,7 @@
 
                     quantity: quantity,
                     unit: unitInput.value,
+                    quantity_per_basket: numberValue(qtyPerBasketInput) || 0,
 
                     reference_price: numberValue(referencePriceInput),
                     actual_buy_price: actualPrice,
@@ -1182,7 +1206,7 @@
                 resetFields();
             });
 
-            // ပြင်ဆင်ခြင်း / ဖျက်ခြင်း
+            // ဖျက်ခြင်း
             tableBody.addEventListener('click', async function(event) {
 
                 const button = event.target.closest('button[data-action]');
@@ -1208,66 +1232,6 @@
                     }
 
                     return;
-                }
-
-                if (action === 'edit') {
-
-                    cropSelect.value = item.crop_id;
-
-                    unitInput.value = item.unit;
-                    commissionInput.value = item.commission_amount;
-                    carFeeInput.value = item.car_fee_amount;
-                    quantityInput.value = item.quantity;
-                    referencePriceInput.value = item.reference_price;
-                    actualPriceInput.value = item.actual_buy_price;
-                    noteInput.value = item.note;
-
-                    // ရွေးထားတဲ့သီးနှံရဲ့ Grade တွေ ပြန်ယူမည်
-                    gradeSelect.innerHTML =
-                        '<option value="">အမျိုးအစားရွေးချယ်ပါ</option>';
-
-                    gradeSelect.disabled = true;
-
-                    try {
-                        const response = await fetch(
-                            `${gradesUrl}/${item.crop_id}`, {
-                                headers: {
-                                    'Accept': 'application/json'
-                                }
-                            }
-                        );
-
-                        if (!response.ok) {
-                            throw new Error('Grade စာရင်းရယူမရပါ။');
-                        }
-
-                        const grades = await response.json();
-
-                        grades.forEach(function(grade) {
-                            const option = document.createElement('option');
-
-                            option.value = grade.id;
-                            option.textContent = grade.grade_name;
-
-                            gradeSelect.appendChild(option);
-                        });
-
-                        gradeSelect.value = item.grade_id;
-                        gradeSelect.disabled = false;
-
-                        editingIndex = index;
-
-                        addButton.innerHTML =
-                            '<i class="bi bi-check-lg me-1"></i> ပြင်ဆင်ချက်သိမ်းမည်';
-
-                        cropSelect.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-
-                    } catch (error) {
-                        alert(error.message);
-                    }
                 }
             });
 

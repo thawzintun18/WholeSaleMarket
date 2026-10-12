@@ -17,6 +17,13 @@
             </p>
         </div>
 
+        <div class=" d-flex justify-content-end mt-md-0 mt-2">
+            <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
+        </div>
+
     </div>
 
 
@@ -76,7 +83,7 @@
                     သီးနှံပြင်ဆင်မှုစာရင်း
                 </h5>
 
-                <small class="text-muted">
+                <small class="text-muted" style="line-height: 30px">
                     ပြင်ဆင်ထားသော သီးနှံအားလုံး
                 </small>
             </div>
@@ -86,12 +93,6 @@
                     <span class="badge bg-light text-dark border">
                         {{ $histories->count() }} သီးနှံ
                     </span>
-                </div>
-
-                <div class="">
-                    <a href="{{ route('Crop#list') }}" class="btn btn-light">
-                        နောက်သို့
-                    </a>
                 </div>
             </div>
 

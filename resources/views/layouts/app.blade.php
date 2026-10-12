@@ -244,13 +244,13 @@
         function resetSearch() {
 
             // Search input ကို ရှင်းမယ်
-            document.getElementById('cropSearch').value = '';
+            document.getElementById('search').value = '';
 
             // Input ကို focus ပြန်ပေးမယ်
-            document.getElementById('cropSearch').focus();
+            document.getElementById('search').focus();
 
             // Select box ကို မူလအခြေအနေ ပြန်ထားမယ်
-            document.getElementById('cropSearch').value = '';
+            document.getElementById('search').value = '';
 
             // Date input ကို ရှင်းမယ်
             document.getElementById('dateSearch').value = '';
@@ -260,6 +260,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @yield('DeleteData')
+
+    @yield('JS-Content')
 
 
 </body>

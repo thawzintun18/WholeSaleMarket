@@ -7,15 +7,22 @@
 
 @section('content')
 
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class="row align-items-center mb-4">
 
-        <div>
+        <div class=" col-md-10">
             <h1 class="page-title mb-1">ဖျက်ထားသော သီးနှံစာရင်း</h1>
 
             <p class="text-muted mb-0 mt-2" style="line-height: 30px">
                 ဖျက်ထားသော သီးနှံများကို ဤနေရာတွင် ကြည့်ရှုနိုင်ပြီး လိုအပ်ပါက ပြန်လည်အသုံးပြုနိုင်ပါသည်။
                 ပြန်လည်အသုံးပြုထားသော သီးနှံများသည် မူရင်းသီးနှံစာရင်းတွင် ပြန်လည်ပေါ်လာမည်ဖြစ်သည်။
             </p>
+        </div>
+
+        <div class=" col-md-2 d-flex justify-content-end mt-md-0 mt-2">
+            <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
         </div>
 
     </div>
@@ -77,7 +84,7 @@
                     ဖျက်ထားသော သီးနှံစာရင်း
                 </h5>
 
-                <small class="text-muted">
+                <small class="text-muted" style="line-height: 30px">
                     ဖျက်ထားသော သီးနှံများကို ကြည့်ရှုပြီး လိုအပ်ပါက ပြန်လည်အသုံးပြုနိုင်ပါသည်။
                 </small>
             </div>
@@ -87,12 +94,6 @@
                     <span class="badge bg-light text-dark border">
                         {{ $crops->count() }} သီးနှံ
                     </span>
-                </div>
-
-                <div class="">
-                    <a href="{{ route('Crop#list') }}" class="btn btn-light">
-                        နောက်သို့
-                    </a>
                 </div>
             </div>
 

@@ -173,7 +173,7 @@ class CropController extends Controller
                 'quantity_per_basket',
             ], 'like', '%' . request('searchData') . '%');
         })
-            ->orderBy('created_at', 'desc')->paginate(5);
+            ->orderBy('created_at', 'desc')->paginate(10);
 
         return view('crops.index', compact('crops'));
     }
@@ -222,6 +222,11 @@ class CropController extends Controller
 
         $histories = $histories->orderByDesc('changed_at')
             ->paginate(10);
+        $histories = DB::table('crop_histories')
+            ->when($request->filled('crop_name'), function ($query) use ($request) {$query->where(function ($q) use ($request) {$q->where('old_crop_name', $request->crop_name)
+                    ->orWhere('new_crop_name', $request->crop_name);});})
+            ->when($request->filled('changed_date'), function ($query) use ($request) {$query->whereDate('changed_at', '>=', $request->changed_date);})
+            ->orderByDesc('changed_at')->paginate(10);
 
         return view('crops.history', compact('histories', 'crop_name'));
     }

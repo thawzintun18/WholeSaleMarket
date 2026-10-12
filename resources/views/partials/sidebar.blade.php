@@ -30,7 +30,7 @@
 
         </a>
 
-        <a href="" class="{{ request()->routeIs('grades.*') ? 'active' : '' }}">
+        <a href="{{ route('Quality#list') }}" class="{{ request()->routeIs('Quality#list') ? 'active' : '' }}">
 
             <i class="bi bi-award"></i>
             <span>အရည်အသွေး</span>

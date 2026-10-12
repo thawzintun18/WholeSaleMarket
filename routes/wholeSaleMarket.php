@@ -5,6 +5,7 @@ use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\CropQualityController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
@@ -44,6 +45,18 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('history', [CropController::class, 'history'])->name('Crop#history');
         Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
         Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
+    });
+
+    Route::group(['prefix' => 'Quality'], function () {
+        Route::get('directPage', [CropQualityController::class, 'directPage'])->name('Quality#directPage');
+        Route::post('create', [CropQualityController::class, 'create'])->name('Quality#create');
+        Route::get('list', [CropQualityController::class, 'list'])->name('Quality#list');
+        Route::get('delete/{id}', [CropQualityController::class, 'delete'])->name('Quality#delete');
+        Route::get('edit/{id}', [CropQualityController::class, 'edit'])->name('Quality#edit');
+        Route::post('update/{id}', [CropQualityController::class, 'update'])->name('Quality#update');
+        Route::get('trashList', [CropQualityController::class, 'trashList'])->name('Quality#trashList');
+        Route::get('restore/{id}', [CropQualityController::class, 'restore'])->name('Quality#restore');
+        Route::get('history', [CropQualityController::class, 'history'])->name('Quality#history');
     });
 
     Route::group(['prefix' => 'purchases'], function() {
@@ -92,6 +105,5 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
 
     Route::get('/purchases/{id}/voucher', [PurchaseController::class, 'voucher'])
         ->name('purchases.voucher');
-
 
 });

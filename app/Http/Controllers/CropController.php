@@ -223,30 +223,23 @@ class CropController extends Controller
     //trashList
     public function trashList(Request $request)
     {
-
         $crops = Crop::onlyTrashed()
-
         // သီးနှံအမည်ဖြင့် ရှာဖွေခြင်း
             ->when($request->filled('crop_name'), function ($query) use ($request) {
                 $query->where('crop_name', $request->crop_name);
             })
-
         // ဖျက်ခဲ့သည့်ရက်စွဲဖြင့် ရှာဖွေခြင်း
             ->when($request->filled('changed_date'), function ($query) use ($request) {
                 $query->whereDate('deleted_at', '>=', $request->changed_date);
             })
-
             ->orderByDesc('deleted_at')
             ->paginate(10);
-
         $crop_name = Crop::onlyTrashed()
             ->select('crop_name')
             ->distinct()
             ->orderBy('crop_name')
             ->get();
-
         // dd($crop_name->toArray());
-
         return view('crops.trashList', compact('crops', 'crop_name'));
     }
 

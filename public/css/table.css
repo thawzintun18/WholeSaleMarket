@@ -1,4 +1,3 @@
-/* Table Responsive */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -30,7 +29,6 @@
     vertical-align: middle;
     padding: 12px;
 }
-
 
 /* empty state */
 

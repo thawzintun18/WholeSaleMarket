@@ -5,6 +5,7 @@
     အခြေခံစာရင်းများ / သီးနှံစာရင်း
 @endsection
 
+
 @section('content')
 
     <div class="d-md-flex justify-content-between align-items-center mb-4">
@@ -159,7 +160,7 @@
                                 </td>
 
                                 <td>
-                                    <span class="fs-5">
+                                    <span class="fs-5 fw-bold text-success">
                                         {{ $item->commission_amount }}
                                     </span>
                                 </td>
@@ -195,22 +196,17 @@
                         <tr>
                             <td colspan="5" class="empty-state-cell">
 
-                                <div class="empty-state">
-
-                                    <h5>သီးနှံအချက်အလက် မရှိသေးပါ</h5>
-
-                                    <p>
-                                        လက်ရှိတွင် သီးနှံအချက်အလက် ထည့်သွင်းထားခြင်းမရှိသေးပါ။
-                                    </p>
-
-                                    <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-                                        <i class="bi bi-plus-lg me-1"></i>
-                                        သီးနှံထပ်ထည့်ရန်
-                                    </a>
-
-                                </div>
-
+                                {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
+                                <p class="text-muted mt-2 mb-1">
+                                    သီးနှံစာရင်း မတွေ့ရှိပါ။
+                                </p>
+                                <small class="text-muted">
+                                    ရှာဖွေမှုကို ပြန်စစ်ပါ၊ သို့မဟုတ် သီးနှံအသစ် ထည့်ပါ။
+                                </small>
                             </td>
+                        </tr>
+
+                        </td>
                         </tr>
                     @endif
 

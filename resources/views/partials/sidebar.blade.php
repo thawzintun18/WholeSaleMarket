@@ -37,7 +37,7 @@
 
         </a>
 
-        <a href="" class="{{ request()->routeIs('farmers.*') ? 'active' : '' }}">
+        <a href="{{ route('farmers#index') }}" class="{{ request()->routeIs('farmers#*') ? 'active' : '' }}">
 
             <i class="bi bi-people"></i>
             <span>တောင်သူစာရင်း</span>
@@ -63,14 +63,14 @@
             Purchase
         </div>
 
-        <a href="#" class="{{ request()->routeIs('purchases.create') ? 'active' : '' }}">
+        <a href="" class="{{ request()->routeIs('purchases.create') ? 'active' : '' }}">
 
             <i class="bi bi-cart-plus"></i>
-            <span>New Purchase</span>
+            <span>အဝယ် ( တောဘောင်ချာ )</span>
 
         </a>
 
-        <a href="#" class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
+        <a href="" class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
 
             <i class="bi bi-receipt"></i>
             <span>Purchase List</span>

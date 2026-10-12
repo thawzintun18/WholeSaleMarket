@@ -19,8 +19,13 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
 
     Route::group(['prefix' => '/farmers'], function(){
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
+
         Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
-        Route::post('create', [FarmerController::class, 'create'])->name('farmers#create');
+        // Route::post('create', [FarmerController::class, 'create'])->name('farmers#create');
+
+        Route::get('search', [FarmerController::class, 'search'])->name('farmers#search');
+        Route::post('create', [FarmerController::class, 'store'])->name('farmers#store');
+
         Route::get('edit/{id}/page', [FarmerController::class, 'edit'])->name('farmers#edit#page');
         Route::post('update/{id}', [FarmerController::class, 'update'])->name('farmers#update');
         Route::get('history', [FarmerController::class, 'history'])->name('farmers#history');
@@ -39,6 +44,12 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('history', [CropController::class, 'history'])->name('Crop#history');
         Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
         Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
+    });
+
+    Route::group(['prefix' => 'purchases'], function() {
+        Route::get('create/page', [PurchaseController::class, 'createPage'])->name('purchases#create#page');
+        Route::get('grades/{crop}', [PurchaseController::class, 'getGrades'])->name('purchases#grades');
+        Route::get('reference-price', [PurchaseController::class, 'getReferencePrice'])->name('purchases#reference-price');
     });
 
 
@@ -70,8 +81,8 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
     Route::get('/purchases', [PurchaseController::class, 'index'])
         ->name('purchases.index');
 
-    Route::get('/purchases/create', [PurchaseController::class, 'create'])
-        ->name('purchases.create');
+    // Route::get('/purchases/create', [PurchaseController::class, 'create'])
+    //     ->name('purchases.create');
 
     Route::get('/purchases/{id}/edit', [PurchaseController::class, 'edit'])
         ->name('purchases.edit');

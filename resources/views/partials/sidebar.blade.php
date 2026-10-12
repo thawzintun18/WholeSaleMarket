@@ -64,8 +64,8 @@
             Purchase
         </div>
 
-        <a href="{{route('purchases.create')}}"
-           class="{{ request()->routeIs('purchases.create') ? 'active' : '' }}">
+        <a href="{{route('purchases#create#page')}}"
+           class="{{ request()->routeIs('purchases#create#page') ? 'active' : '' }}">
 
             <i class="bi bi-cart-plus"></i>
             <span>အဝယ် ( တောဘောင်ချာ )</span>

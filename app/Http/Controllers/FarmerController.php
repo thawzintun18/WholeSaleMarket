@@ -159,8 +159,8 @@ class FarmerController extends Controller
     public function edit($id)
     {
         $farmer = Farmer::select('id', 'farmer_code', 'name', 'phone', 'village', 'notes', 'is_active')
-                        ->where('id', $id)
-                        ->first();
+            ->where('id', $id)
+            ->first();
 
         return view('farmers.edit', compact('farmer'));
     }
@@ -338,33 +338,33 @@ class FarmerController extends Controller
             'notes'     => ['nullable', 'string', 'max:2000'],
             'is_active' => ['nullable', 'boolean'],
         ],
-        [
-            // Farmer Name
-            'name.required'     => ':attribute ကို မဖြစ်မနေ ဖြည့်သွင်းပေးပါ။',
-            'name.string'       => ':attribute သည် စာသားဖြစ်ရပါမည်။',
-            'name.max'          => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+            [
+                // Farmer Name
+                'name.required'     => ':attribute ကို မဖြစ်မနေ ဖြည့်သွင်းပေးပါ။',
+                'name.string'       => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+                'name.max'          => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
 
-            // Phone
-            'phone.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
-            'phone.max'         => ':attribute သည် အများဆုံး စာလုံး ၃၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+                // Phone
+                'phone.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+                'phone.max'         => ':attribute သည် အများဆုံး စာလုံး ၃၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
 
-            // Village
-            'village.string'    => ':attribute သည် စာသားဖြစ်ရပါမည်။',
-            'village.max'       => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+                // Village
+                'village.string'    => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+                'village.max'       => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
 
-            // Notes
-            'notes.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
-            'notes.max'         => ':attribute သည် အများဆုံး စာလုံး ၂၀၀၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
+                // Notes
+                'notes.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
+                'notes.max'         => ':attribute သည် အများဆုံး စာလုံး ၂၀၀၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
 
-            // Status
-            'is_active.boolean' => ':attribute သည် မှန်ကန်သော အခြေအနေတန်ဖိုး ဖြစ်ရပါမည်။',
-        ]
-        , [
-            'name'    => 'တောင်သူအမည်',
-            'phone'   => 'ဖုန်းနံပါတ်',
-            'village' => 'ရွာအမည်',
-            'address' => 'နေရပ်လိပ်စာ',
-            'notes'   => 'မှတ်ချက်',
-        ]);
+                // Status
+                'is_active.boolean' => ':attribute သည် မှန်ကန်သော အခြေအနေတန်ဖိုး ဖြစ်ရပါမည်။',
+            ]
+            , [
+                'name'    => 'တောင်သူအမည်',
+                'phone'   => 'ဖုန်းနံပါတ်',
+                'village' => 'ရွာအမည်',
+                'address' => 'နေရပ်လိပ်စာ',
+                'notes'   => 'မှတ်ချက်',
+            ]);
     }
 }

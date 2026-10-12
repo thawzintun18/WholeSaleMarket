@@ -194,23 +194,19 @@
                         @endforeach
                     @else
                         <tr>
-<<<<<<< HEAD
-                            <td colspan="4" class="text-center py-4">
-=======
                             <td colspan="5" class="empty-state-cell">
->>>>>>> e9c5d8b96011253380ac1870fdca7132f06228f1
-
-                                        {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
-                                        <p class="text-muted mt-2 mb-1">
-                                            သီးနှံစာရင်း မတွေ့ရှိပါ။
-                                        </p>
-                                        <small class="text-muted">
-                                            ရှာဖွေမှုကို ပြန်စစ်ပါ၊ သို့မဟုတ် သီးနှံအသစ် ထည့်ပါ။
-                                        </small>
-                                    </td>
-                                </tr>
-
+                                {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
+                                <p class="text-muted mt-2 mb-1">
+                                    သီးနှံစာရင်း မတွေ့ရှိပါ။
+                                </p>
+                                <small class="text-muted">
+                                    ရှာဖွေမှုကို ပြန်စစ်ပါ၊ သို့မဟုတ် သီးနှံအသစ် ထည့်ပါ။
+                                </small>
                             </td>
+
+                        </tr>
+
+                        </td>
                         </tr>
                     @endif
 

@@ -37,8 +37,7 @@
 
         </a>
 
-        <a href="{{route('farmers#index')}}"
-           class="{{ request()->routeIs('farmers#*') ? 'active' : '' }}">
+        <a href="{{ route('farmers#index') }}" class="{{ request()->routeIs('farmers#*') ? 'active' : '' }}">
 
             <i class="bi bi-people"></i>
             <span>တောင်သူစာရင်း</span>
@@ -48,10 +47,10 @@
 
         {{-- Pricing --}}
         <div class="menu-title">
-            Pricing
+            ဈေးနှုန်းများ
         </div>
 
-        <a href="" class="{{ request()->routeIs('daily-prices.*') ? 'active' : '' }}">
+        <a href="{{ route('DailyPrice#list') }}" class="{{ request()->routeIs('DailyPrice#list') ? 'active' : '' }}">
 
             <i class="bi bi-tags"></i>
             <span>တစ်နေ့ချင်းဈေး</span>
@@ -72,8 +71,7 @@
 
         </a>
 
-        <a href="{{route('purchases.index')}}"
-           class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
+        <a href="" class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
 
             <i class="bi bi-receipt"></i>
             <span>Purchase List</span>

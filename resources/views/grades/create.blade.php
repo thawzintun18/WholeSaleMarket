@@ -2,14 +2,14 @@
 
 @section('page-title', 'Add Grade')
 
-@section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံ အရည်အသွေးစာရင်း / သီးနှံအရည်အသွေး ထပ်ထည့်ခြင်း')
+@section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံ အရည်အသွေးစာရင်း / သီးနှံအရည်အသွေး ထပ်မံထည့်သွင်းခြင်း')
 
 @section('content')
 
     <div class="d-md-flex justify-content-between align-items-center mb-4">
 
         <div>
-            <h1 class="page-title mb-1">သီးနှံအရည်အသွေး ထပ်ထည့်ခြင်း</h1>
+            <h1 class="page-title mb-1">သီးနှံအရည်အသွေး ထပ်မံထည့်သွင်းခြင်း</h1>
 
             <p class="text-muted mb-0 mt-2" style="line-height: 30px;">
                 သီးနှံအမည်ကို ရွေးချယ်ပြီး အရည်အသွေးအဆင့်အမည်များကို လိုအပ်သလို ထပ်မံထည့်သွင်းနိုင်ပါသည်။

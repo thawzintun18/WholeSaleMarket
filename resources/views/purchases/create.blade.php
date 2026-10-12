@@ -221,7 +221,7 @@
                         {{-- အမျိုးအစားရွေးချယ်ရန် --}}
                         <div class="col-lg-6">
                             <label for="grade_id" class="form-label fw-semibold">
-                                သီးနှံအမျိုးအစား <span class="text-danger">*</span>
+                                သီးနှံအမျိုးအစား <span class="text-danger">*(သီးနှံအမည် ရွေးပြီးမှရွေးလို့ရမည်)</span>
                             </label>
 
                             <select id="grade_id" class="form-select" disabled>
@@ -232,7 +232,7 @@
                         {{-- အလေးချိန် / အရေအတွက် --}}
                         <div class="col-md-6 col-lg-3">
                             <label for="quantity" class="form-label fw-semibold">
-                                အလေးချိန် / အရေအတွက်
+                                သီးနှံ စုစုပေါင်းအရေးအတွက်
                                 <span class="text-danger">*</span>
                             </label>
 
@@ -253,18 +253,18 @@
                         {{-- ယနေ့ရည်ညွှန်းဈေး --}}
                         <div class="col-md-6 col-lg-3">
                             <label for="reference_price" class="form-label fw-semibold">
-                                ရည်ညွှန်းဝယ်ဈေး (သတ်မှတ်ထားသော ထိပ်ဆ ဈေးကိုပြထားခြင်းဖြစ်သည် )
+                                ယနေ့ ထိပ်ဆဈေး ( နောက်ဆုံးသတ်မှတ်ထားသော ထိပ်ဆ ဈေးကိုပြထားခြင်းဖြစ်သည် )
                             </label>
 
                             <input type="text" id="reference_price" class="form-control" min="0"
-                                step="0.01" placeholder="ယနေ့သတ်မှတ်ဈေး">
+                                step="0.01" placeholder="ယနေ့သတ်မှတ်ဈေး" readonly>
                         </div>
 
                         {{-- အမှန်တကယ်ဝယ်ဈေး --}}
                         <div class="col-md-6 col-lg-3">
                             <label for="actual_buy_price" class="form-label fw-semibold">
-                                အမှန်တကယ်ဝယ်ဈေး ( စိတ်ကြိုက် အတိုး အလျှော့ လုပ်နိုင်သည် )
-                                <span class="text-danger">*</span>
+                                အမှန်တကယ်ဝယ်မည့်ဈေး
+                                <span class="text-danger">*( ပေးနိုင့်မည့်ဈေးကို စိတ်ကြိုက် အတိုး အလျှော့ လုပ်နိုင်သည် )</span>
                             </label>
 
                            <input type="text" id="actual_buy_price" class="form-control" min="0"
@@ -274,17 +274,17 @@
                         {{-- ပွဲခ --}}
                         <div class="col-md-6 col-lg-3">
                             <label for="commission_amount" class="form-label fw-semibold">
-                                ပွဲခ
+                                ကော်မရှင်ခ (ပွဲခ)
                             </label>
 
                             <input type="text" id="commission_amount" class="form-control" min="0"
-                                step="0.01" value="0">
+                                step="0.01" value="0" readonly>
                         </div>
 
                         {{-- ကားခ --}}
                         <div class="col-md-6 col-lg-3">
-                            <label for="car_fee_amount" class="form-label fw-semibold">
-                                ကားခ
+                            <label for="car_fee_amount" class="form-label fw-semibold text-danger">
+                                ကားခ (မပေးရလျှင် မထည့်လဲရ)
                             </label>
 
                             <input type="text" id="car_fee_amount" class="form-control" min="0"
@@ -294,7 +294,7 @@
                         {{-- မှတ်ချက် --}}
                         <div class="col-lg-6">
                             <label for="item_note" class="form-label fw-semibold">
-                                မှတ်ချက်
+                                မှတ်ချက် ( မထည့်လဲရ )
                             </label>
 
                             <input type="text" id="item_note" class="form-control" maxlength="255"
@@ -336,11 +336,17 @@
                                 <th class="text-center">စဉ်</th>
                                 <th>သီးနှံ / အမျိုးအစား</th>
                                 <th class="text-end">အရေအတွက်</th>
-                                <th>ယူနစ်</th>
-                                <th class="text-end">ဝယ်ဈေး</th>
+                                <th class="text-end">တင်း</th>
+                                <th class="text-end">
+                                    <div>1 တင်းဝယ်ဈေး</div>
+                                    <small class=" text-danger">ပွဲခ မနုတ်ရသေး</small>
+                                </th>
                                 <th class="text-end">ပွဲခ</th>
                                 <th class="text-end">ကားခ</th>
-                                <th class="text-end">စုစုပေါင်း</th>
+                                <th class="text-end">
+                                    <div>စုစုပေါင်း</div>
+                                    <small class=" text-danger">ပွဲခ နုတ်ပြီး</small>
+                                </th>
                                 <th class="text-center">လုပ်ဆောင်ချက်</th>
                             </tr>
                         </thead>
@@ -857,7 +863,16 @@
                 gradeSelect.disabled = true;
                 referencePriceInput.value = '';
 
-                unitInput.value = option.dataset.unit || '';
+                // unitInput.value = option.dataset.unit || '';
+                const rawUnit = option.dataset.unit || '';
+                let displayUnit = rawUnit;
+                if (rawUnit.toLowerCase() === 'viss') {
+                    displayUnit = 'ပိဿာ';
+                } else if (rawUnit.toLowerCase() === 'pound') {
+                    displayUnit = 'ပေါင်';
+                }
+                unitInput.value = displayUnit;
+
                 commissionInput.value = option.dataset.commission || 0;
                 const qtyPerBasket = option.getAttribute('data-quantity-per-basket') || 0;
                 qtyPerBasketInput.value = qtyPerBasket;
@@ -963,16 +978,6 @@
                 return Number(input.value || 0);
             }
 
-            // စာရင်းထဲက သီးနှံတစ်မျိုးရဲ့ ငွေတွက်မည်
-            // function calculate(item) {
-            //     item.gross_amount =
-            //         item.quantity * item.actual_buy_price;
-            //     item.total_deduction =
-            //         item.commission_amount + item.car_fee_amount;
-            //     item.net_amount =
-            //         item.gross_amount - item.total_deduction;
-            // }
-
             function calculate(item) {
                 const qtyPerBasket = Number(item.quantity_per_basket) || 0;
                 const totalBaskets = qtyPerBasket > 0 ? (Number(item.quantity) / qtyPerBasket) : Number(item.quantity);
@@ -1058,9 +1063,12 @@
 
                             <td class="text-end">
                                 ${Number(item.quantity).toLocaleString('en-US')}
+                                ${item.unit.toLowerCase() === 'viss' ? 'ပိဿာ' : (item.unit.toLowerCase() === 'pound' ? 'ပေါင်' : escapeHtml(item.unit))}
                             </td>
 
-                            <td>${escapeHtml(item.unit)}</td>
+                            <td class="text-end">
+                                ${Number(item.quantity / item.quantity_per_basket).toLocaleString('en-US')}
+                            </td>
 
                             <td class="text-end">
                                 ${money(item.actual_buy_price)}

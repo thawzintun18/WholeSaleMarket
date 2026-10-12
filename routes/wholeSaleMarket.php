@@ -18,7 +18,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         return view('dashboard.index');
     })->name('dashboard');
 
-    Route::group(['prefix' => '/farmers'], function(){
+    Route::group(['prefix' => '/farmers'], function () {
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
 
         Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
@@ -106,4 +106,10 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
     Route::get('/purchases/{id}/voucher', [PurchaseController::class, 'voucher'])
         ->name('purchases.voucher');
 
+    Route::group(['prefix' => 'DailyPrice'], function () {
+        Route::get('directPage', [DailyPriceController::class, 'directPage'])->name('DailyPrice#directPage');
+        Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
+        Route::get('list', [DailyPriceController::class, 'list'])->name('DailyPrice#list');
+        Route::get('getGrades/{id}', [DailyPriceController::class, 'getGrades'])->name('DailyPrice#getGrades');
+    });
 });

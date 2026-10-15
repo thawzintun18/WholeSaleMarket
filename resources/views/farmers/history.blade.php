@@ -18,6 +18,13 @@ blade
                 တောင်သူအချက်အလက် အဟောင်းနှင့် အသစ်များကို ကြည့်ရှုနိုင်ပါသည်။
             </p>
         </div>
+
+        <div class=" d-flex justify-content-end mt-md-0 mt-2">
+            <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
+        </div>
     </div>
 
     {{-- Search --}}
@@ -33,9 +40,7 @@ blade
 
                     <div class="d-flex gap-2">
 
-                        <select name="farmer_code"
-                                id="farmerSearch"
-                                class="form-select w-50">
+                        <select name="farmer_code" id="farmerSearch" class="form-select w-50">
 
                             <option value="">တောင်သူအားလုံး</option>
 
@@ -48,13 +53,8 @@ blade
 
                         </select>
 
-                        <input
-                            type="date"
-                            id="dateSearch"
-                            name="changed_date"
-                            class="form-control w-50"
-                            value="{{ request('changed_date', now()->toDateString()) }}"
-                        >
+                        <input type="date" id="dateSearch" name="changed_date" class="form-control w-50"
+                            value="{{ request('changed_date', now()->toDateString()) }}">
 
                     </div>
                 </div>
@@ -67,8 +67,7 @@ blade
                 </div>
 
                 <div class="col-md-auto d-flex align-items-end">
-                    <a href="{{ route('farmers#history') }}"
-                       class="btn btn-outline-secondary">
+                    <a href="{{ route('farmers#history') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်မည်
                     </a>
@@ -87,7 +86,7 @@ blade
             <div>
                 <h5 class="mb-1">တောင်သူပြင်ဆင်မှုစာရင်း</h5>
 
-                <small class="text-muted">
+                <small class="text-muted mt-2" style="line-height: 30px">
                     ပြင်ဆင်ထားသော တောင်သူအချက်အလက်မှတ်တမ်းများ
                 </small>
             </div>
@@ -98,13 +97,6 @@ blade
                     <span class="badge bg-light text-dark border">
                         {{ $histories->total() }} မှတ်တမ်း
                     </span>
-                </div>
-
-                <div>
-                    <a href="{{ route('farmers#index') }}"
-                       class="btn btn-light">
-                        နောက်သို့
-                    </a>
                 </div>
 
             </div>
@@ -140,7 +132,6 @@ blade
                 <tbody>
 
                     @forelse ($histories as $history)
-
                         <tr>
                             <td>
                                 {{ $histories->firstItem() + $loop->index }}
@@ -174,8 +165,7 @@ blade
                                 {{ $history->new_village ?: '-' }}
                             </td>
 
-                            <td class="text-success"
-                                style="min-width: 180px; white-space: normal;">
+                            <td class="text-success" style="min-width: 180px; white-space: normal;">
                                 {{ $history->new_notes ?: '-' }}
                             </td>
 
@@ -205,7 +195,6 @@ blade
                                 </div>
                             </td>
                         </tr>
-
                     @endforelse
 
                 </tbody>

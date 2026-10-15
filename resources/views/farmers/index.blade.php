@@ -3,24 +3,27 @@
 @section('page-title', 'Farmers')
 
 @section('breadcrumb')
-    Dashboard / တောင်သူစာရင်း
+    အခြေခံစာရင်းများ / တောင်သူစာရင်း
 @endsection
 
 @section('content')
 
     {{-- ခေါင်းစဉ်နှင့် အသစ်ထည့်ရန် --}}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-md-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="page-title mb-1">တောင်သူစာရင်း</h1>
-            <p class="text-muted mb-0">
+            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
                 တောင်သူများ၏ ကိုယ်ရေးအချက်အလက်များကို စီမံခန့်ခွဲရန်
             </p>
         </div>
 
-        <a href="{{ route('farmers#create#page') }}" class="btn btn-success">
-            <i class="bi bi-plus-lg me-1"></i>
-            တောင်သူအသစ်ထည့်ရန်
-        </a>
+        <div class=" d-flex justify-content-end">
+            <a href="{{ route('farmers#create#page') }}" class="btn btn-success mt-md-0 mt-3">
+                <i class="bi bi-plus-lg me-1"></i>
+                တောင်သူအသစ်ထည့်ရန်
+            </a>
+        </div>
+
     </div>
 
     {{-- ရှာဖွေရန် --}}
@@ -28,7 +31,7 @@
         <form action="{{ route('farmers#index') }}" method="GET">
             <div class="row g-3 align-items-end">
                 <small class=" fs-6">တောင်သူအချက်အလက်သိလျှင်အလွယ်တကူ ရှာဖွေနိုင်သည်</small>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label">တောင်သူ ရှာဖွေရန်</label>
                     <input type="text" name="search" id="search" class="form-control" value="{{ request('search') }}"
                         placeholder="ကုဒ်၊ အမည်၊ ဖုန်းနံပါတ်...">
@@ -59,8 +62,9 @@
                         ရှာဖွေမည်
                     </button>
 
-                    <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
-                        ပြန်လည်သတ်မှတ်
+                    <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary mt-md-0 mt-3">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        ပြန်လည်သတ်မှတ်မည်
                     </a>
                 </div>
 
@@ -71,16 +75,19 @@
     {{-- တောင်သူစာရင်း --}}
     <div class="dashboard-card shadow-lg">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
+        <div class="row d-flex justify-content-between align-items-center mb-3">
+            <div class=" col-md-8">
+
                 <h5 class="mb-1">တောင်သူများစာရင်း</h5>
-                <small class="text-muted fs-6">
+
+                <small class="text-muted fs-6 mt-2" style="line-height: 30px">
                     အရောင်းအဝယ်လုပ်ထားသောတောင်သူများကို သီးသန့်မှတ်သားဖော်ပြထားခြင်းဖြစ်သည် ( နောက်ဆုံးရောင်းသွားသော
                     တောင်သူကို အပေါ်ဆုံးကနေစပြီးပြထားပေးသည် )
                 </small>
+
             </div>
 
-            <div class=" d-md-flex justify-content-end mt-md-0 mt-2">
+            <div class=" col-md-4 d-md-flex justify-content-end mt-md-0 mt-2">
                 <div class="me-2">
                     <span class="badge bg-light text-dark border">
                         စုစုပေါင်း {{ number_format($farmers->total()) }} ဦး
@@ -171,14 +178,18 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-5">
-                                {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
-                                <p class="text-muted mt-2 mb-1">
-                                    တောင်သူစာရင်း မတွေ့ရှိပါ။
-                                </p>
-                                <small class="text-muted">
-                                    ရှာဖွေမှုကို ပြန်စစ်ပါ၊ သို့မဟုတ် တောင်သူအသစ် ထည့်ပါ။
-                                </small>
+                            <td colspan="8" class="empty-state-cell">
+
+                                <div class="empty-state">
+
+                                    <h5>တောင်သူစာရင်း မရှိသေးပါ</h5>
+
+                                    <p>
+                                        တောင်သူကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
+                                    </p>
+
+                                </div>
+
                             </td>
                         </tr>
                     @endforelse

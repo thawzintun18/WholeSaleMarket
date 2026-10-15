@@ -2,28 +2,27 @@
 
 @section('page-title', 'Edit Daily Price')
 
-@section('breadcrumb')
-    Dashboard / Daily Prices / Edit
-@endsection
+@section('breadcrumb', 'ဈေးနှုန်းများ / နေ့စဉ်သီးနှံဈေးနှုန်းများ / နေ့စဉ်သီးနှံဈေးနှုန်းများကိုပြင်ဆင်ရန်')
 
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-md-flex justify-content-between align-items-center mb-4">
 
 
         <div>
-            <h1 class="page-title mb-1">Edit Daily Price</h1>
+            <h1 class="page-title mb-1">နေ့စဉ်သီးနှံဈေးနှုန်းများကိုပြင်ဆင်ရန်</h1>
 
-            <p class="text-muted mb-0">
-                Update the reference buying price.
+            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+                သီးနှံနှင့် အရည်အသွေးအဆင့်အလိုက် သတ်မှတ်ထားသော ဝယ်ဈေးနှုန်းကို ပြင်ဆင်နိုင်ပါသည်။
             </p>
         </div>
 
-        <a href="{{ route('daily-prices.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>
-            Back
-        </a>
-
+        <div class="d-flex justify-content-end">
+            <a href="{{ route('DailyPrice#list') }}" class="btn btn-outline-secondary mt-md-0 mt-3">
+                <i class="bi bi-arrow-left me-1"></i>
+                Back
+            </a>
+        </div>
 
     </div>
 
@@ -32,203 +31,60 @@
 
         <div class="mb-4">
 
-            <h5 class="mb-1">
-                Daily Price Information
+            <h5 class="mb-1" style="line-height: 35px">
+                {{ $dailyPrice->crop_name }}သီးနှံနှင့် {{ $dailyPrice->grade_name }}အရည်အသွေးအဆင့်အလိုက် သတ်မှတ်ထားသော
+                ဝယ်ဈေးနှုန်းကို ပြင်ဆင်နိုင်ပါသည်။
             </h5>
 
-            <small class="text-muted">
-                Update the daily reference buying price.
+            <small class="text-muted" style="line-height: 30px">
+                သတ်မှတ်ထားသော ဝယ်ဈေးနှုန်းကို လိုအပ်သလို ပြင်ဆင်၊ ပြောင်းလဲနိုင်ပါသည်။
             </small>
 
         </div>
 
 
-        <div class="row g-4">
+        <form action="{{ route('DailyPrice#update', $dailyPrice->id) }}" method="POST">
+            @csrf
+            <div class="row g-4">
 
-            {{-- Price Date --}}
-            <div class="col-md-6">
+                <input type="hidden" name="crop_id" value="{{ $dailyPrice->crop_id }}">
 
-                <label class="form-label">
-                    Price Date
-                    <span class="text-danger">*</span>
-                </label>
+                <input type="hidden" name="grade_id" value="{{ $dailyPrice->grade_id }}">
 
-                <input type="date" class="form-control" value="2026-10-08">
+                {{-- Reference Buy Price --}}
+                <div class="col-md-5 offset-md-2">
 
-            </div>
+                    <label class="form-label">
+                        ဝယ်ဈေးနှုန်း
+                        <span class="text-danger">*</span>
+                    </label>
 
+                    <div class="input-group">
 
-            {{-- Crop --}}
-            <div class="col-md-6">
+                        <input type="number" name="reference_buy_price" class="form-control text-end"
+                            value="{{ old('reference_buy_price', $dailyPrice->reference_buy_price) }}"
+                            placeholder="Enter buying price">
 
-                <label class="form-label">
-                    Crop
-                    <span class="text-danger">*</span>
-                </label>
+                        <span class="input-group-text">
+                            ကျပ်
+                        </span>
 
-                <select class="form-select">
+                    </div>
 
-                    <option>
-                        Select Crop
-                    </option>
+                </div>
 
-                    <option selected>
-                        Tomato
-                    </option>
+                {{-- Actions --}}
+                <div class="col-md-3 d-flex justify-content-md-start justify-content-end pt-4">
 
-                    <option>
-                        Potato
-                    </option>
-
-                    <option>
-                        Cabbage
-                    </option>
-
-                    <option>
-                        Onion
-                    </option>
-
-                    <option>
-                        Chilli
-                    </option>
-
-                    <option>
-                        Cauliflower
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            {{-- Grade --}}
-            <div class="col-md-6">
-
-                <label class="form-label">
-                    Grade
-                    <span class="text-danger">*</span>
-                </label>
-
-                <select class="form-select">
-
-                    <option>
-                        Select Grade
-                    </option>
-
-                    <option selected>
-                        Grade A
-                    </option>
-
-                    <option>
-                        Grade B
-                    </option>
-
-                    <option>
-                        Grade C
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            {{-- Reference Buy Price --}}
-            <div class="col-md-6">
-
-                <label class="form-label">
-                    Reference Buy Price
-                    <span class="text-danger">*</span>
-                </label>
-
-                <div class="input-group">
-
-                    <input type="number" class="form-control text-end" value="25000" placeholder="Enter buying price">
-
-                    <span class="input-group-text">
-                        MMK
-                    </span>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-lg me-1"></i>
+                        ဝယ်ဈေးနှုန်းကိုပြင်ဆင်မည်
+                    </button>
 
                 </div>
 
             </div>
-
-        </div>
-
-
-        <hr class="my-4">
-
-
-        {{-- Current Price Info --}}
-        <div class="row g-3 mb-4">
-
-            <div class="col-md-4">
-
-                <div class="bg-light rounded p-3">
-
-                    <small class="text-muted d-block">
-                        Current Crop
-                    </small>
-
-                    <strong>
-                        Tomato
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-4">
-
-                <div class="bg-light rounded p-3">
-
-                    <small class="text-muted d-block">
-                        Current Grade
-                    </small>
-
-                    <strong>
-                        Grade A
-                    </strong>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-md-4">
-
-                <div class="bg-light rounded p-3">
-
-                    <small class="text-muted d-block">
-                        Current Price
-                    </small>
-
-                    <strong>
-                        25,000 MMK
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        {{-- Actions --}}
-        <div class="d-flex justify-content-end gap-2">
-
-            <a href="{{ route('daily-prices.index') }}" class="btn btn-outline-secondary">
-                Cancel
-            </a>
-
-            <button type="button" class="btn btn-primary">
-                <i class="bi bi-check-lg me-1"></i>
-                Update Daily Price
-            </button>
-
-        </div>
-
-
+        </form>
     </div>
 
 @endsection

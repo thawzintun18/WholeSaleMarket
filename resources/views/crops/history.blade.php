@@ -108,8 +108,8 @@
                     <tr>
                         <th rowspan="2">စဉ်</th>
                         <th colspan="3" class=" text-center">အရင်အချက်အလက်</th>
-                        <th colspan="3" class=" text-center">ပြင်ဆင်ပြီးအချက်အလက်</th>
-                        <th rowspan="2">ပြင်ဆင်ချိန်</th>
+                        <th colspan="3" class=" text-center text-success">ပြင်ဆင်ပြီးအချက်အလက်</th>
+                        <th rowspan="2" class=" text-info">ပြင်ဆင်ချိန်</th>
                     </tr>
 
                     <tr>
@@ -117,9 +117,9 @@
                         <th>ပွဲခ</th>
                         <th>တစ်တင်းပါ အရေအတွက်</th>
 
-                        <th>သီးနှံအမည်</th>
-                        <th>ပွဲခ</th>
-                        <th>တစ်တင်းပါ အရေအတွက်</th>
+                        <th class=" text-success">သီးနှံအမည်</th>
+                        <th class=" text-success">ပွဲခ</th>
+                        <th class=" text-success">တစ်တင်းပါ အရေအတွက်</th>
                     </tr>
 
                 </thead>

@@ -57,5 +57,11 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
         Route::get('list', [DailyPriceController::class, 'list'])->name('DailyPrice#list');
         Route::get('getGrades/{id}', [DailyPriceController::class, 'getGrades'])->name('DailyPrice#getGrades');
+        Route::get('delete/{id}', [DailyPriceController::class, 'delete'])->name('DailyPrice#delete');
+        Route::get('trashList', [DailyPriceController::class, 'trashList'])->name('DailyPrice#trashList');
+        Route::get('restore/{id}', [DailyPriceController::class, 'restore'])->name('DailyPrice#restore');
+        Route::get('edit/{id}', [DailyPriceController::class, 'edit'])->name('DailyPrice#edit');
+        Route::post('update/{id}', [DailyPriceController::class, 'update'])->name('DailyPrice#update');
+        Route::get('history', [DailyPriceController::class, 'history'])->name('DailyPrice#history');
     });
 });

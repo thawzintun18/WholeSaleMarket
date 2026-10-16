@@ -195,6 +195,7 @@
                     @else
                         <tr>
                             <td colspan="5" class="empty-state-cell">
+<<<<<<< HEAD
 
                                 <div class="empty-state">
 
@@ -206,7 +207,17 @@
 
                                 </div>
 
+=======
+                                {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
+                                <p class="text-muted mt-2 mb-1">
+                                    သီးနှံစာရင်း မတွေ့ရှိပါ။
+                                </p>
+                                <small class="text-muted">
+                                    ရှာဖွေမှုကို ပြန်စစ်ပါ၊ သို့မဟုတ် သီးနှံအသစ် ထည့်ပါ။
+                                </small>
+>>>>>>> 55d7fba44dccbba6e508243cf6154c1f9b5c3c86
                             </td>
+
                         </tr>
 
                         </td>

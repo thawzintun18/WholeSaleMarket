@@ -38,16 +38,101 @@ class FarmerController extends Controller
         return view('farmers.create');
     }
 
-    public function create(Request $request)
+    // public function create(Request $request)
+    // {
+    //     $data              = $this->validateFarmer($request);
+    //     $data['is_active'] = $request->boolean('is_active', true);
+    //     if ($this->checkDuplicateFarmer($data)) {
+    //         return back()
+    //             ->withInput()
+    //             ->with('warning', 'ဒီအမည် သို့မဟုတ် ဖုန်းနံပါတ်နဲ့ တောင်သူစာရင်း ရှိပြီးသား ဖြစ်နိုင်ပါတယ်။');
+    //     }
+    //     $farmer              = Farmer::create($data);
+    //     $farmer->farmer_code = 'F-' . str_pad(
+    //         (string) $farmer->id,
+    //         6,
+    //         '0',
+    //         STR_PAD_LEFT
+    //     );
+    //     $farmer->save();
+    //     Alert::success('အောင်မြင်ပါသည်', 'ောင်သူစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
+    //     return redirect()
+    //         ->route('farmers#index');
+    // }
+
+    public function search(Request $request)
     {
-        $data              = $this->validateFarmer($request);
-        $data['is_active'] = $request->boolean('is_active', true);
-        if ($this->checkDuplicateFarmer($data)) {
-            return back()
-                ->withInput()
-                ->with('warning', 'ဒီအမည် သို့မဟုတ် ဖုန်းနံပါတ်နဲ့ တောင်သူစာရင်း ရှိပြီးသား ဖြစ်နိုင်ပါတယ်။');
+        $search = trim($request->input('search', ''));
+
+        if ($search === '') {
+            return response()->json([]);
         }
-        $farmer              = Farmer::create($data);
+
+        $farmers = Farmer::query()
+            ->where('is_active', true)
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('farmer_code', 'like', "%{$search}%");
+            })
+            ->select('id', 'farmer_code', 'name', 'phone', 'village')
+            ->orderBy('name')
+            ->limit(10)
+            ->get();
+
+        return response()->json($farmers);
+    }
+
+    /**
+     * တောင်သူအသစ် စာရင်းသွင်းခြင်း In Purchase UI
+     */
+    public function store(Request $request)
+    {
+        // $validated = $request->validate([
+        //     'name' => ['required', 'string', 'max:150'],
+        //     'phone' => ['nullable', 'string', 'max:30'],
+        //     'village' => ['nullable', 'string', 'max:150'],
+        //     'notes' => ['nullable', 'string'],
+        // ]);
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:150',
+                'regex:/.*\S.*/u',
+            ],
+            'phone' => [
+                'nullable',
+                'string',
+                'max:30',
+                'regex:/^[0-9၀-၉+\-\s()]+$/u',
+            ],
+            'village' => [
+                'nullable',
+                'string',
+                'max:150',
+            ],
+            'notes' => [
+                'nullable',
+                'string',
+            ],
+        ], [
+            'name.required' => 'တောင်သူအမည် ဖြည့်ပေးပါ။',
+            'name.max' => 'တောင်သူအမည်သည် အများဆုံး 150 လုံး ဖြစ်ရပါမယ်။',
+            'name.regex' => 'တောင်သူအမည်ကို မှန်ကန်စွာ ဖြည့်ပေးပါ။',
+            'phone.max' => 'ဖုန်းနံပါတ်သည် အများဆုံး 30 လုံး ဖြစ်ရပါမယ်။',
+            'phone.regex' => 'ဖုန်းနံပါတ်ပုံစံ မှန်ကန်စွာ ဖြည့်ပေးပါ။',
+            'village.max' => 'ကျေးရွာအမည်သည် အများဆုံး 150 လုံး ဖြစ်ရပါမယ်။',
+        ]);
+
+        $farmer = Farmer::create([
+            'name' => $validated['name'],
+            'phone' => $validated['phone'] ?? null,
+            'village' => $validated['village'] ?? null,
+            'notes' => $validated['notes'] ?? null,
+            'is_active' => true,
+        ]);
+
         $farmer->farmer_code = 'F-' . str_pad(
             (string) $farmer->id,
             6,
@@ -55,11 +140,22 @@ class FarmerController extends Controller
             STR_PAD_LEFT
         );
         $farmer->save();
-        Alert::success('အောင်မြင်ပါသည်', 'ောင်သူစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
-        return redirect()
-            ->route('farmers#index');
+
+        return response()->json([
+            'message' => 'တောင်သူအသစ် စာရင်းသွင်းပြီးပါပြီ။',
+            'farmer' => [
+                'id' => $farmer->id,
+                'farmer_code' => $farmer->farmer_code,
+                'name' => $farmer->name,
+                'phone' => $farmer->phone,
+                'village' => $farmer->village,
+            ],
+        ], 201);
     }
 
+
+
+    // Process in farmer list
     public function edit($id)
     {
         $farmer = Farmer::select('id', 'farmer_code', 'name', 'phone', 'village', 'notes', 'is_active')
@@ -224,7 +320,6 @@ class FarmerController extends Controller
         return to_route('farmers#index');
     }
 
-    //delete
     public function delete($id)
     {
         $crop = Farmer::findOrFail($id);

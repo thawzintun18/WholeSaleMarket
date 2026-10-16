@@ -203,13 +203,25 @@ class CropController extends Controller
     public function history(Request $request)
     {
         $crop_name = DB::table('crop_histories')
-            ->select(
-                'crop_id',
-                DB::raw('MAX(new_crop_name) as crop_name'),
-            )
+            ->select('crop_id', DB::raw('MAX(new_crop_name) as crop_name'))
             ->groupBy('crop_id')
             ->get();
 
+        $histories = DB::table('crop_histories');
+
+        if ($request->crop_name) {
+            $histories->where(function ($query) use ($request) {
+                $query->where('old_crop_name', $request->crop_name)
+                    ->orWhere('new_crop_name', $request->crop_name);
+            });
+        }
+
+        if ($request->changed_date) {
+            $histories->whereDate('changed_at', $request->changed_date);
+        }
+
+        $histories = $histories->orderByDesc('changed_at')
+            ->paginate(10);
         $histories = DB::table('crop_histories')
             ->when($request->filled('crop_name'), function ($query) use ($request) {$query->where(function ($q) use ($request) {$q->where('old_crop_name', $request->crop_name)
                     ->orWhere('new_crop_name', $request->crop_name);});})
@@ -217,7 +229,6 @@ class CropController extends Controller
             ->orderByDesc('changed_at')->paginate(10);
 
         return view('crops.history', compact('histories', 'crop_name'));
-
     }
 
     //trashList

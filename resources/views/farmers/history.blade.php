@@ -54,7 +54,7 @@ blade
                         </select>
 
                         <input type="date" id="dateSearch" name="changed_date" class="form-control w-50"
-                            value="{{ request('changed_date', now()->toDateString()) }}">
+                            value="{{ request('changed_date') }}">
 
                     </div>
                 </div>

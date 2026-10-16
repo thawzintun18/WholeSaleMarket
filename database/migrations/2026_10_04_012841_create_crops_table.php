@@ -18,9 +18,7 @@ return new class extends Migration
             $table->string('unit')->nullable();
             $table->integer('quantity_per_basket')->nullable();
             $table->timestamps();
-            // Soft Delete
             $table->softDeletes();
-
         });
     }
 

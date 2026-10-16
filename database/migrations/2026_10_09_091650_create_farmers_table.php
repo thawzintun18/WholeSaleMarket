@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('farmers', function (Blueprint $table) {
             $table->id();
-            // ဥပမာ F-000001
             $table->string('farmer_code', 30)->unique()->nullable();
             $table->string('name', 150);
             $table->string('phone', 30)->nullable();

@@ -397,7 +397,7 @@
 
     <div class="login-wrapper">
 
-        <div class="login-card">
+        <div class="login-card shadow-lg">
 
             <div class="row g-0 h-100">
 

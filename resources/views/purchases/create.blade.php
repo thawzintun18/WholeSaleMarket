@@ -1,2318 +1,1319 @@
 @extends('layouts.app')
 
-@section('page-title', 'New Purchase')
+@section('page-title', 'ဝယ်ယူမှုအသစ်')
 
-@section('breadcrumb')
-    Dashboard / Purchases / New Purchase
-@endsection
+@section('breadcrumb', 'ပင်မစာမျက်နှာ / ဝယ်ယူမှု / အသစ်ဖန်တီး')
 
 @section('content')
 
-{{-- =========================================================
-    PAGE HEADER
-========================================================= --}}
-<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="container-fluid px-0">
 
-    <div>
-        <h1 class="page-title mb-1">New Purchase</h1>
-
-        <p class="text-muted mb-0">
-            Create farmer purchase and payment voucher.
-        </p>
-    </div>
-
-    <div class="d-flex gap-2">
-
-        <a href="#" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>
-            Back
-        </a>
-
-        <button type="button" class="btn btn-success" id="savePurchaseBtn">
-            <i class="bi bi-check-lg me-1"></i>
-            Save Purchase
-        </button>
-
-    </div>
-
-</div>
-<form id="purchaseForm">
-
-    {{-- =========================================================
-        PURCHASE INFORMATION
-    ========================================================= --}}
-    <div class="dashboard-card shadow-sm mb-4">
-        <div class="card-section-header mb-4">
-
+        {{-- Page Header --}}
+        <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h5 class="mb-1">
-                    <i class="bi bi-receipt me-2 text-success"></i>
-                    Purchase Information
-                </h5>
-
-                <small class="text-muted">
-                    Basic purchase information
-                </small>
+                <h1 class="h3 fw-bold mb-1">သီးနှံဝယ်ယူမှုဘောင်ချာအသစ် ဖန်တီးမည်</h1>
+                <p class="text-muted mb-0">
+                    ဝယ်ယူမှုစာရင်းများကို သေချာစွာဖြည့်စွက်ပါ ( ဝယ်ယူမှုစာရင်းကို ဆက်မလုပ်တော့ပဲ အစကနေပြန်စမည်ဆိုလျှင်
+                    အသစ်ပြန်စမည်ကိုနှိပ်ပြီး ပြန်စတင်နိုင်ပါသည် )
+                </p>
             </div>
 
-            <span class="badge bg-warning-subtle text-warning border">
-                DRAFT
-            </span>
-
-        </div>
-        <div class="row g-3">
-            {{-- Invoice No --}}
-            <div class="col-md-3">
-
-                <label class="form-label">
-                    Invoice No
-                </label>
-
-                <input
-                    type="text"
-                    name="invoice_no"
-                    class="form-control"
-                    value="INV-20261008-001"
-                    readonly
-                >
-
-            </div>
-
-
-            {{-- Purchase Date --}}
-            <div class="col-md-3">
-
-                <label class="form-label">
-                    Purchase Date
-                </label>
-
-                <input
-                    type="datetime-local"
-                    name="purchase_date"
-                    class="form-control"
-                    value="2026-10-08T10:30"
-                >
-
-            </div>
-
-
-            {{-- Status --}}
-            <div class="col-md-3">
-
-                <label class="form-label">
-                    Status
-                </label>
-
-                <select name="status" class="form-select">
-
-                    <option value="DRAFT" selected>
-                        Draft
-                    </option>
-
-                    <option value="CONFIRMED">
-                        Confirmed
-                    </option>
-
-                    <option value="COMPLETE">
-                        Complete
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            {{-- Note --}}
-            <div class="col-md-3">
-
-                <label class="form-label">
-                    Note
-                </label>
-
-                <input
-                    type="text"
-                    name="note"
-                    class="form-control"
-                    placeholder="Optional note..."
-                >
-
-            </div>
-
+            <a href="{{ route('purchases#create#page') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise"></i> အသစ်ပြန်စမည်
+            </a>
         </div>
 
-    </div>
+        {{-- Farmer Selection --}}
+        <div class="card border-1 shadow-lg mb-4">
+            <div class="card-header bg-white py-3">
+                <div class="row ">
+                    <div class="col-lg-8">
+                        <h5 class="mb-0 fw-bold my-1">
+                            <i class="bi bi-person-check me-2 text-primary"></i>
+                            တောင်သူရွေးချယ်ခြင်း
+                        </h5>
+                    </div>
 
-
-    {{-- =========================================================
-        FARMER SECTION
-    ========================================================= --}}
-    <div class="dashboard-card shadow-sm mb-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-                <h5 class="mb-1">
-                    <i class="bi bi-person me-2 text-success"></i>
-                    Farmer
-                </h5>
-
-                <small class="text-muted">
-                    Select existing farmer or create a new farmer quickly.
-                </small>
+                    <div class="col-lg-4">
+                        <button type="button" class="btn btn-success w-100 my-1" style="height: 40px;" data-bs-toggle="modal"
+                            data-bs-target="#newFarmerModal">
+                            <i class="bi bi-person-plus me-1"></i>
+                            တောင်သူအသစ်ထည့်မည်
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <button
-                type="button"
-                class="btn btn-sm btn-success"
-                data-bs-toggle="modal"
-                data-bs-target="#quickFarmerModal"
-            >
-                <i class="bi bi-person-plus me-1"></i>
-                New Farmer
-            </button>
+            <div class="card-body p-4">
 
-        </div>
+                <div class="row g-3 align-items-end">
+                    <div class="col-lg-12">
+                        <label for="farmer_search" class="form-label fw-semibold">
+                            တောင်သူအမည် / ဖုန်းနံပါတ် / ကုဒ်
+                            <span class="text-danger">*</span>
+                        </label>
+
+                        <div class="position-relative mb-3">
+                            <div class="input-group" style="height: 40px;">
+                                <span class="input-group-text bg-white">
+                                    <i class="bi bi-search"></i>
+                                </span>
+
+                                <input type="text" id="farmer_search" class="form-control"
+                                    placeholder="တောင်သူအချက်အလက် ထည့်ပြီးအလွယ်တကူ ရှာဖွေပြီးရွေးချယ်နိုင်သည် ( မရှိပါက အသစ်ထည့်ပါ )"
+                                    autocomplete="off">
+
+                                <button type="button" class="btn btn-outline-secondary" id="clear_farmer">
+                                    ပယ်ဖျက်မည်
+                                </button>
+                            </div>
+
+                            {{-- Search Results --}}
+                            <div id="farmer_results" class="list-group position-absolute w-100 shadow"
+                                style="z-index: 1050; display: none; max-height: 300px; overflow-y: auto;">
+                            </div>
+                        </div>
+
+                        <small class="text-muted">
+                            ရှိပြီးသားတောင်သူကို ရှာဖွေရွေးချယ်ပါ
+                            ( မရှိပါက အသစ်ထည့်နိုင်သည် )
+                        </small>
+                    </div>
+                </div>
+
+                {{-- Selected Show Farmer --}}
+                <div id="selected_farmer_box"
+                    class="border border-success border-opacity-25 rounded-3 p-3 p-md-4 mt-4 bg-white shadow-sm"
+                    style="display: none;">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+
+                        {{-- Farmer Information --}}
+                        <div class="d-flex align-items-center gap-3 flex-grow-1">
+
+                            <div class="rounded-circle bg-success bg-opacity-10 text-success
+                                    d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 60px; height: 60px;">
+                                <i class="bi bi-person-fill fs-2"></i>
+                            </div>
+
+                            <div class="flex-grow-1">
+
+                                <div class="text-success small fw-semibold mb-1">
+                                    <i class="bi bi-check-circle-fill me-1"></i>
+                                    ရွေးချယ်ထားသော တောင်သူ
+                                </div>
+
+                                <h4 class="fw-bold mb-3" id="selected_farmer_name"></h4>
+
+                                <div class="d-flex flex-wrap gap-3 gap-md-4">
+
+                                    <div>
+                                        <div class="text-secondary small mb-1">
+                                            <i class="bi bi-telephone me-1"></i>
+                                            ဖုန်းနံပါတ်
+                                        </div>
+                                        <div class="fw-semibold fs-6" id="selected_farmer_phone">
+                                        </div>
+                                    </div>
+
+                                    <div class="border-start"></div>
+
+                                    <div>
+                                        <div class="text-secondary small mb-1">
+                                            <i class="bi bi-geo-alt me-1"></i>
+                                            ကျေးရွာအမည်
+                                        </div>
+                                        <div class="fw-semibold fs-6" id="selected_farmer_village">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="text-secondary mt-3">
+                                    <small>
+                                        တောင်သူကုဒ် -
+                                        <span id="selected_farmer_code"></span>
+                                    </small>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        {{-- Change Farmer --}}
+                        <button type="button" id="change_farmer" class="btn btn-outline-success flex-shrink-0">
+                            <i class="bi bi-arrow-repeat me-1"></i>
+                            ပြန်ရွေးမည်
+                        </button>
+
+                    </div>
+                </div>
 
 
-        <div class="row g-3">
-
-            {{-- Farmer Search --}}
-            <div class="col-md-6">
-
-                <label class="form-label">
-                    Farmer
-                </label>
-
-                <select
-                    name="farmer_id"
-                    id="farmerSelect"
-                    class="form-select"
-                >
-
-                    <option value="">
-                        -- Select Farmer --
-                    </option>
-
-                    <option value="1" selected>
-                        U Aung Aung - Lashio
-                    </option>
-
-                    <option value="2">
-                        U Sai Htun - Namtu
-                    </option>
-
-                    <option value="3">
-                        U Kyaw Min - Hsipaw
-                    </option>
-
-                </select>
-
-                <small class="text-muted">
-                    Type to search farmer name, village or phone.
-                </small>
-
-            </div>
-
-
-            {{-- Farmer Phone --}}
-            <div class="col-md-3">
-
-                <label class="form-label">
-                    Phone
-                </label>
-
-                <input
-                    type="text"
-                    id="farmerPhone"
-                    class="form-control"
-                    value="09-421234567"
-                    readonly
-                >
-
-            </div>
-
-
-            {{-- Village --}}
-            <div class="col-md-3">
-
-                <label class="form-label">
-                    Village
-                </label>
-
-                <input
-                    type="text"
-                    id="farmerVillage"
-                    class="form-control"
-                    value="Lashio"
-                    readonly
-                >
-
-            </div>
-
-        </div>
-
-
-        {{-- Farmer Balance Info --}}
-        <div class="row g-3 mt-2">
-
-            <div class="col-md-4">
-
-                <div class="info-box bg-danger">
-
-                    <small class="text-white">
-                        Outstanding Advance
-                    </small>
-
-                    <h5 class="mb-0 text-white">
-                        150,000 Ks
-                    </h5>
-
+                <div id="farmer_error" class="alert alert-danger mt-3 mb-0" style="display: none;">
                 </div>
 
             </div>
+        </div>
 
 
-            <div class="col-md-4">
 
-                <div class="info-box">
+        {{-- Purchase Items: သီးနှံစာရင်းထည့်သွင်းခြင်း --}}
+        <div class="card border-1 shadow-lg mb-4">
+
+            {{-- Header --}}
+            <div class="card-header bg-white py-3">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                    <div>
+                        <h5 class="mb-1 fw-bold">
+                            <i class="bi bi-basket2 me-2 text-primary"></i>
+                            သီးနှံစာရင်းထည့်သွင်းခြင်း
+                        </h5>
+
+                        <small class="text-muted">
+                            တောင်သူရောင်းချသော သီးနှံများကို တစ်မျိုးချင်းထည့်သွင်းပါ။
+                        </small>
+                    </div>
+
+                    <span class="badge bg-primary fs-6" id="item_count">
+                        သီးနှံ ၀ မျိုး
+                    </span>
+
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+
+                {{-- သီးနှံအချက်အလက်ထည့်ရန် --}}
+                <div class="border rounded-3 p-3 p-md-4 mb-4">
+
+                    <h6 class="fw-bold mb-3">
+                        <i class="bi bi-plus-circle me-1 text-success"></i>
+                        သီးနှံအသစ်ထည့်ရန်
+                    </h6>
+
+                    <div class="row g-3">
+
+                        {{-- သီးနှံရွေးချယ်ရန် --}}
+                        <div class="col-lg-6">
+                            <label for="crop_id" class="form-label fw-semibold">
+                                သီးနှံအမည် <span class="text-danger">*</span>
+                            </label>
+
+                            <select id="crop_id" class="form-select">
+                                <option value="">သီးနှံရွေးချယ်ပါ</option>
+
+                                @foreach ($crops as $crop)
+                                    <option value="{{ $crop->id }}" data-unit="{{ $crop->unit }}"
+                                        data-commission="{{ $crop->commission_amount ?? 0 }}"
+                                        data-quantity-per-basket="{{ $crop->quantity_per_basket ?? '' }}">
+                                        {{ $crop->crop_name }}
+                                    </option>
+                                @endforeach
+
+                            </select>
+                        </div>
+
+                        <!-- quantity_per_basket ကို သိမ်းမယ့် Hidden Input -->
+                        <input type="hidden" id="quantity_per_basket" value="">
+
+                        {{-- အမျိုးအစားရွေးချယ်ရန် --}}
+                        <div class="col-lg-6">
+                            <label for="grade_id" class="form-label fw-semibold">
+                                သီးနှံအမျိုးအစား <span class="text-danger">*(သီးနှံအမည် ရွေးပြီးမှရွေးလို့ရမည်)</span>
+                            </label>
+
+                            <select id="grade_id" class="form-select" disabled>
+                                <option value="">အရင်ဆုံး သီးနှံရွေးချယ်ပါ</option>
+                            </select>
+                        </div>
+
+                        {{-- အလေးချိန် / အရေအတွက် --}}
+                        <div class="col-md-6 col-lg-3">
+                            <label for="quantity" class="form-label fw-semibold">
+                                သီးနှံ စုစုပေါင်းအရေးအတွက်
+                                <span class="text-danger">*</span>
+                            </label>
+
+                            <input type="text" id="quantity" class="form-control" min="0.001" step="0.001"
+                                placeholder="ဥပမာ - 100">
+                        </div>
+
+                        {{-- ယူနစ် --}}
+                        <div class="col-md-6 col-lg-3">
+                            <label for="unit" class="form-label fw-semibold">
+                                ယူနစ်
+                            </label>
+
+                            <input type="text" id="unit" class="form-control" readonly
+                                placeholder="သီးနှံရွေးချယ်ပါ">
+                        </div>
+
+                        {{-- ယနေ့ရည်ညွှန်းဈေး --}}
+                        <div class="col-md-6 col-lg-3">
+                            <label for="reference_price" class="form-label fw-semibold">
+                                ယနေ့ ထိပ်ဆဈေး ( နောက်ဆုံးသတ်မှတ်ထားသော ထိပ်ဆ ဈေးကိုပြထားခြင်းဖြစ်သည် )
+                            </label>
+
+                            <input type="text" id="reference_price" class="form-control" min="0"
+                                step="0.01" placeholder="ယနေ့သတ်မှတ်ဈေး" readonly>
+                        </div>
+
+                        {{-- အမှန်တကယ်ဝယ်ဈေး --}}
+                        <div class="col-md-6 col-lg-3">
+                            <label for="actual_buy_price" class="form-label fw-semibold">
+                                အမှန်တကယ်ဝယ်မည့်ဈေး
+                                <span class="text-danger">*( ပေးနိုင့်မည့်ဈေးကို စိတ်ကြိုက် အတိုး အလျှော့ လုပ်နိုင်သည် )</span>
+                            </label>
+
+                           <input type="text" id="actual_buy_price" class="form-control" min="0"
+                                step="0.01" placeholder="ဝယ်ယူမည့်ဈေး">
+                        </div>
+
+                        {{-- ပွဲခ --}}
+                        <div class="col-md-6 col-lg-3">
+                            <label for="commission_amount" class="form-label fw-semibold">
+                                ကော်မရှင်ခ (ပွဲခ)
+                            </label>
+
+                            <input type="text" id="commission_amount" class="form-control" min="0"
+                                step="0.01" value="0" readonly>
+                        </div>
+
+                        {{-- ကားခ --}}
+                        <div class="col-md-6 col-lg-3">
+                            <label for="car_fee_amount" class="form-label fw-semibold text-danger">
+                                ကားခ (မပေးရလျှင် မထည့်လဲရ)
+                            </label>
+
+                            <input type="text" id="car_fee_amount" class="form-control" min="0"
+                                step="0.01" value="0">
+                        </div>
+
+                        {{-- မှတ်ချက် --}}
+                        <div class="col-lg-6">
+                            <label for="item_note" class="form-label fw-semibold">
+                                မှတ်ချက် ( မထည့်လဲရ )
+                            </label>
+
+                            <input type="text" id="item_note" class="form-control" maxlength="255"
+                                placeholder="လိုအပ်ပါက မှတ်ချက်ရေးပါ">
+                        </div>
+
+                        {{-- သီးနှံထည့်ရန် --}}
+                        <div class="col-12 text-center">
+                            <button type="button" id="add_crop_item" class="btn btn-success">
+                                <i class="bi bi-plus-lg me-1"></i>
+                                သီးနှံစာရင်းထဲ ထည့်မည်
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <input type="hidden" name="farmer_id" id="farmer_id">
+                <div id="purchase_items_inputs"></div>
+
+                {{-- ထည့်ပြီးသော သီးနှံစာရင်း --}}
+                <div class="mb-3">
+                    <h6 class="fw-bold mb-1">
+                        <i class="bi bi-list-ul me-2 text-primary"></i>
+                        ထည့်သွင်းထားသော သီးနှံစာရင်း
+                    </h6>
 
                     <small class="text-muted">
-                        Previous Balance
+                        မသိမ်းရသေးသော သီးနှံစာရင်းများကို အောက်တွင် စစ်ဆေးနိုင်ပါသည်။
                     </small>
+                </div>
 
-                    <h5 class="mb-0">
-                        0 Ks
-                    </h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
 
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">စဉ်</th>
+                                <th>သီးနှံ / အမျိုးအစား</th>
+                                <th class="text-end">အရေအတွက်</th>
+                                <th class="text-end">တင်း</th>
+                                <th class="text-end">
+                                    <div>1 တင်းဝယ်ဈေး</div>
+                                    <small class=" text-danger">ပွဲခ မနုတ်ရသေး</small>
+                                </th>
+                                <th class="text-end">ပွဲခ</th>
+                                <th class="text-end">ကားခ</th>
+                                <th class="text-end">
+                                    <div>စုစုပေါင်း</div>
+                                    <small class=" text-danger">ပွဲခ နုတ်ပြီး</small>
+                                </th>
+                                <th class="text-center">လုပ်ဆောင်ချက်</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="purchase_items_body">
+                            <tr id="empty_items_row">
+                                <td colspan="9" class="text-center text-muted py-5">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    သီးနှံစာရင်း မထည့်ရသေးပါ။
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+                </div>
+
+                {{-- စုစုပေါင်းအကျဉ်းချုပ် --}}
+                <div class="row justify-content-end mt-4">
+                    <div class="col-md-6 col-lg-5">
+
+                        <div class="card bg-light border-0">
+                            <div class="card-body">
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>သီးနှံစုစုပေါင်းဖိုး</span>
+                                    <strong id="items_gross_total">0.00</strong>
+                                </div>
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>ပွဲခ + ကားခ စုစုပေါင်း</span>
+                                    <strong id="items_deduction_total">0.00</strong>
+                                </div>
+
+                                <hr>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold">အသားတင်ပေးရန်</span>
+
+                                    <strong class="fs-5 text-success" id="items_net_total">
+                                        0.00
+                                    </strong>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
-
-
-            <div class="col-md-4">
-
-                <div class="info-box bg-success">
-
-                    <small class="text-white">
-                        Current Purchase
-                    </small>
-
-                    <h5 class="mb-0 text-white" id="farmerCurrentAmount">
-                        0 Ks
-                    </h5>
-
-                </div>
-
-            </div>
-
         </div>
+        {{-- သီးနှံစာရင်းအပိုင်း အဆုံး --}}
+
+
+
+
 
     </div>
-
-
-    {{-- =========================================================
-        PURCHASE ITEMS
-    ========================================================= --}}
-    <div class="dashboard-card shadow-sm mb-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-                <h5 class="mb-1">
-                    <i class="bi bi-basket me-2 text-success"></i>
-                    Purchase Items
-                </h5>
-
-                <small class="text-muted">
-                    Add crops purchased from this farmer.
-                </small>
-            </div>
-
-            <button
-                type="button"
-                class="btn btn-success btn-sm"
-                id="addItemBtn"
-            >
-                <i class="bi bi-plus-lg me-1"></i>
-                Add Item
-            </button>
-
-        </div>
-
-
-        <div class="table-responsive">
-
-            <table class="table table-bordered align-middle mb-0">
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th width="40">#</th>
-
-                        <th width="160">
-                            Crop
-                        </th>
-
-                        <th width="140">
-                            Grade
-                        </th>
-
-                        <th width="110">
-                            Qty
-                        </th>
-
-                        <th width="90">
-                            Unit
-                        </th>
-
-                        <th width="120">
-                            Ref. Price
-                        </th>
-
-                        <th width="130">
-                            Buy Price
-                        </th>
-
-                        <th width="120">
-                            Commission
-                        </th>
-
-                        <th width="120">
-                            Car Fee
-                        </th>
-
-                        <th width="140" class="text-end">
-                            Net Amount
-                        </th>
-
-                        <th width="60"></th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="purchaseItems">
-
-                    {{-- ITEM 1 --}}
-                    <tr class="purchase-item">
-
-                        <td class="item-number">
-                            1
-                        </td>
-
-
-                        {{-- Crop --}}
-                        <td>
-
-                            <select
-                                name="items[0][crop_id]"
-                                class="form-select form-select-sm crop-select"
-                            >
-
-                                <option value="">
-                                    Select Crop
-                                </option>
-
-                                <option value="1" selected>
-                                    Tomato
-                                </option>
-
-                                <option value="2">
-                                    Potato
-                                </option>
-
-                                <option value="3">
-                                    Cabbage
-                                </option>
-
-                                <option value="4">
-                                    Onion
-                                </option>
-
-                            </select>
-
-                        </td>
-
-
-                        {{-- Grade --}}
-                        <td>
-
-                            <select
-                                name="items[0][grade_id]"
-                                class="form-select form-select-sm"
-                            >
-
-                                <option value="">
-                                    Select Grade
-                                </option>
-
-                                <option value="1" selected>
-                                    Grade A
-                                </option>
-
-                                <option value="2">
-                                    Grade B
-                                </option>
-
-                                <option value="3">
-                                    Grade C
-                                </option>
-
-                            </select>
-
-                        </td>
-
-
-                        {{-- Quantity --}}
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[0][quantity]"
-                                class="form-control form-control-sm quantity"
-                                value="20"
-                                step="0.001"
-                                min="0"
-                            >
-
-                        </td>
-
-
-                        {{-- Unit --}}
-                        <td>
-
-                            <input
-                                type="text"
-                                name="items[0][unit]"
-                                class="form-control form-control-sm"
-                                value="Basket"
-                            >
-
-                        </td>
-
-
-                        {{-- Reference Price --}}
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[0][reference_price]"
-                                class="form-control form-control-sm reference-price"
-                                value="18000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        {{-- Actual Buy Price --}}
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[0][actual_buy_price]"
-                                class="form-control form-control-sm actual-price"
-                                value="17500"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        {{-- Commission --}}
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[0][commission_amount]"
-                                class="form-control form-control-sm commission"
-                                value="5000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        {{-- Car Fee --}}
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[0][car_fee_amount]"
-                                class="form-control form-control-sm car-fee"
-                                value="3000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        {{-- Net Amount --}}
-                        <td class="text-end">
-
-                            <strong class="item-net">
-                                342,000
-                            </strong>
-
-                        </td>
-
-
-                        {{-- Remove --}}
-                        <td class="text-center">
-
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-danger remove-item"
-                            >
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-
-                    {{-- ITEM 2 --}}
-                    <tr class="purchase-item">
-
-                        <td class="item-number">
-                            2
-                        </td>
-
-                        <td>
-
-                            <select
-                                name="items[1][crop_id]"
-                                class="form-select form-select-sm crop-select"
-                            >
-
-                                <option value="">
-                                    Select Crop
-                                </option>
-
-                                <option value="1">
-                                    Tomato
-                                </option>
-
-                                <option value="2" selected>
-                                    Potato
-                                </option>
-
-                                <option value="3">
-                                    Cabbage
-                                </option>
-
-                                <option value="4">
-                                    Onion
-                                </option>
-
-                            </select>
-
-                        </td>
-
-
-                        <td>
-
-                            <select
-                                name="items[1][grade_id]"
-                                class="form-select form-select-sm"
-                            >
-
-                                <option value="">
-                                    Select Grade
-                                </option>
-
-                                <option value="1">
-                                    Grade A
-                                </option>
-
-                                <option value="2" selected>
-                                    Grade B
-                                </option>
-
-                                <option value="3">
-                                    Grade C
-                                </option>
-
-                            </select>
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[1][quantity]"
-                                class="form-control form-control-sm quantity"
-                                value="10"
-                                step="0.001"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="text"
-                                name="items[1][unit]"
-                                class="form-control form-control-sm"
-                                value="Bag"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[1][reference_price]"
-                                class="form-control form-control-sm reference-price"
-                                value="25000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[1][actual_buy_price]"
-                                class="form-control form-control-sm actual-price"
-                                value="24000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[1][commission_amount]"
-                                class="form-control form-control-sm commission"
-                                value="3000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="number"
-                                name="items[1][car_fee_amount]"
-                                class="form-control form-control-sm car-fee"
-                                value="2000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        <td class="text-end">
-
-                            <strong class="item-net">
-                                235,000
-                            </strong>
-
-                        </td>
-
-
-                        <td class="text-center">
-
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-danger remove-item"
-                            >
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        {{-- Empty State --}}
-        <div
-            id="emptyItemMessage"
-            class="text-center py-5 d-none"
-        >
-
-            <i class="bi bi-basket fs-1 text-muted"></i>
-
-            <p class="text-muted mt-2 mb-2">
-                No purchase items added.
-            </p>
-
-            <button
-                type="button"
-                class="btn btn-sm btn-success"
-                id="emptyAddItemBtn"
-            >
-                <i class="bi bi-plus-lg me-1"></i>
-                Add Item
-            </button>
-
-        </div>
-
-    </div>
-
-    {{-- =========================================================
-        ADVANCE / DEDUCTION
-    ========================================================= --}}
-    <div class="row g-4 mb-4">
-
-
-        {{-- Farmer Advance --}}
-        <div class="col-lg-6">
-
-            <div class="dashboard-card shadow-sm h-100">
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <div>
-
-                        <h5 class="mb-1">
-                            <i class="bi bi-wallet2 me-2 text-warning"></i>
-                            Farmer Advance
-                        </h5>
-
-                        <small class="text-muted">
-                            Deduct advance used by farmer.
-                        </small>
-
-                    </div>
-
-                    <span class="badge bg-warning-subtle text-warning border">
-                        Advance
-                    </span>
-
-                </div>
-
-
-                <div class="alert alert-warning py-2">
-
-                    <small>
-                        Existing advance balance:
-                        <strong>150,000 Ks</strong>
-                    </small>
-
-                </div>
-
-
-                <div class="row g-3">
-
-                    <div class="col-md-7">
-
-                        <label class="form-label">
-                            Advance to Deduct
-                        </label>
-
-                        <select
-                            name="advance_id"
-                            class="form-select"
-                            id="advanceSelect"
-                        >
-
-                            <option value="">
-                                No Advance
-                            </option>
-
-                            <option value="1" selected>
-                                Advance #ADV-001 — 100,000 Ks
-                            </option>
-
-                            <option value="2">
-                                Advance #ADV-002 — 50,000 Ks
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="col-md-5">
-
-                        <label class="form-label">
-                            Amount
-                        </label>
-
-                        <input
-                            type="number"
-                            name="advance_amount"
-                            id="advanceAmount"
-                            class="form-control"
-                            value="100000"
-                            step="0.01"
-                        >
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        {{-- Other Deduction --}}
-        <div class="col-lg-6">
-
-            <div class="dashboard-card shadow-sm h-100">
-
-                <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <div>
-
-                        <h5 class="mb-1">
-                            <i class="bi bi-dash-circle me-2 text-danger"></i>
-                            Other Deduction
-                        </h5>
-
-                        <small class="text-muted">
-                            Additional deduction if necessary.
-                        </small>
-
-                    </div>
-
-                </div>
-
-
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Deduction Amount
-                        </label>
-
-                        <input
-                            type="number"
-                            name="other_deduction"
-                            id="otherDeduction"
-                            class="form-control"
-                            value="0"
-                            step="0.01"
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Note
-                        </label>
-
-                        <input
-                            type="text"
-                            name="deduction_note"
-                            class="form-control"
-                            placeholder="Deduction note..."
-                        >
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    {{-- =========================================================
-        PAYMENT
-    ========================================================= --}}
-
-    <div class="dashboard-card shadow-sm mb-4">
-
-        <div class="d-flex justify-content-between align-items-center mb-3">
-
-            <div>
-
-                <h5 class="mb-1">
-                    <i class="bi bi-cash-stack me-2 text-success"></i>
-                    Payment
-                </h5>
-
-                <small class="text-muted">
-                    Record payment made to farmer.
-                </small>
-
-            </div>
-
-            <button
-                type="button"
-                class="btn btn-sm btn-outline-success"
-                id="addPaymentBtn"
-            >
-                <i class="bi bi-plus-lg me-1"></i>
-                Add Payment
-            </button>
-
-        </div>
-
-
-        <div class="table-responsive">
-
-            <table class="table table-bordered align-middle mb-0">
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th>
-                            Payment Date
-                        </th>
-
-                        <th>
-                            Payment Type
-                        </th>
-
-                        <th>
-                            Amount
-                        </th>
-
-                        <th>
-                            Payment Method
-                        </th>
-
-                        <th>
-                            Note
-                        </th>
-
-                        <th width="60"></th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody id="paymentRows">
-
-                    <tr>
-
-                        <td>
-
-                            <input
-                                type="datetime-local"
-                                name="payments[0][payment_date]"
-                                class="form-control form-control-sm"
-                                value="2026-10-08T11:00"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <select
-                                name="payments[0][payment_type]"
-                                class="form-select form-select-sm"
-                            >
-
-                                <option value="PARTIAL" selected>
-                                    Partial Payment
-                                </option>
-
-                                <option value="FINAL">
-                                    Final Payment
-                                </option>
-
-                            </select>
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="number"
-                                name="payments[0][amount]"
-                                class="form-control form-control-sm payment-amount"
-                                value="300000"
-                                step="0.01"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <select
-                                name="payments[0][payment_method]"
-                                class="form-select form-select-sm"
-                            >
-
-                                <option value="CASH" selected>
-                                    Cash
-                                </option>
-
-                                <option value="BANK">
-                                    Bank
-                                </option>
-
-                                <option value="KBZ_PAY">
-                                    KBZ Pay
-                                </option>
-
-                                <option value="WAVE">
-                                    Wave Money
-                                </option>
-
-                            </select>
-
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="text"
-                                name="payments[0][note]"
-                                class="form-control form-control-sm"
-                                placeholder="Payment note..."
-                            >
-
-                        </td>
-
-
-                        <td class="text-center">
-
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-outline-danger remove-payment"
-                            >
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-
-    {{-- =========================================================
-        SUMMARY
-    ========================================================= --}}
-
-    <div class="row g-4 mb-4">
-
-
-        {{-- Note --}}
-        <div class="col-lg-7">
-
-            <div class="dashboard-card shadow-sm h-100">
-
-                <h5 class="mb-3">
-                    <i class="bi bi-chat-left-text me-2"></i>
-                    Purchase Note
-                </h5>
-
-                <textarea
-                    name="purchase_note"
-                    class="form-control"
-                    rows="6"
-                    placeholder="Additional information..."
-                >Farmer brought vegetables in the morning.</textarea>
-
-            </div>
-
-        </div>
-
-
-        {{-- Summary --}}
-        <div class="col-lg-5">
-
-            <div class="dashboard-card shadow-sm">
-
-                <h5 class="mb-3">
-                    Purchase Summary
-                </h5>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Gross Amount
-                    </span>
-
-                    <strong id="summaryGross">
-                        582,000 Ks
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Commission
-                    </span>
-
-                    <strong id="summaryCommission">
-                        8,000 Ks
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Car Fee
-                    </span>
-
-                    <strong id="summaryCarFee">
-                        5,000 Ks
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Farmer Advance
-                    </span>
-
-                    <strong
-                        id="summaryAdvance"
-                        class="text-danger"
-                    >
-                        -100,000 Ks
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-row">
-
-                    <span>
-                        Other Deduction
-                    </span>
-
-                    <strong
-                        id="summaryOtherDeduction"
-                        class="text-danger"
-                    >
-                        -0 Ks
-                    </strong>
-
-                </div>
-
-
-                <hr>
-
-
-                <div class="summary-total">
-
-                    <span>
-                        Net Amount
-                    </span>
-
-                    <strong id="summaryNet">
-                        469,000 Ks
-                    </strong>
-
-                </div>
-
-
-                <div class="summary-row mt-3">
-
-                    <span>
-                        Total Paid
-                    </span>
-
-                    <strong
-                        id="summaryPaid"
-                        class="text-success"
-                    >
-                        300,000 Ks
-                    </strong>
-
-                </div>
-
-
-                <div class="balance-box mt-3">
-
-                    <div>
-
-                        <small>
-                            Remaining Balance
-                        </small>
-
-                        <h4
-                            class="mb-0"
-                            id="summaryBalance"
-                        >
-                            169,000 Ks
-                        </h4>
-
-                    </div>
-
-                    <i class="bi bi-wallet2 fs-3"></i>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    {{-- =========================================================
-        BOTTOM ACTION
-    ========================================================= --}}
-
-    <div class="dashboard-card shadow-sm mb-5">
-
-        <div class="d-flex justify-content-between align-items-center">
-
-            <div>
-
-                <strong>
-                    Ready to save this purchase?
-                </strong>
-
-                <div class="text-muted small">
-                    You can save as draft and complete the payment later.
-                </div>
-
-            </div>
-
-
-            <div class="d-flex gap-2">
-
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                >
-                    Save as Draft
-                </button>
-
-
-                <button
-                    type="button"
-                    class="btn btn-success"
-                >
-                    <i class="bi bi-check-lg me-1"></i>
-                    Confirm Purchase
-                </button>
-
-
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                >
-                    <i class="bi bi-printer me-1"></i>
-                    Save & Print Voucher
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</form>
-
-
-
-{{-- =========================================================
-    QUICK CREATE FARMER MODAL
-========================================================= --}}
-
-<div
-    class="modal fade"
-    id="quickFarmerModal"
-    tabindex="-1"
-    aria-hidden="true"
->
-
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <div class="modal-header">
-
-                <div>
-
-                    <h5 class="modal-title mb-1">
+    {{-- New Farmer Modal ( farmer အသစ်ထပ်ထည့်တဲ့ UI ) --}}
+    <div class="modal fade" id="newFarmerModal" tabindex="-1" aria-labelledby="newFarmerModalLabel"
+        aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="newFarmerModalLabel">
                         <i class="bi bi-person-plus me-2 text-success"></i>
-                        New Farmer
+                        တောင်သူအသစ် စာရင်းသွင်းရန်
                     </h5>
 
-                    <small class="text-muted">
-                        Quickly register farmer without leaving purchase.
-                    </small>
-
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="modal"
-                ></button>
+                <form id="new_farmer_form">
+                    @csrf
+
+                    <div class="modal-body">
+
+                        <div id="new_farmer_error" class="alert alert-danger" style="display: none;"></div>
+
+                        <div class="mb-3">
+                            <label for="new_farmer_name" class="form-label">
+                                တောင်သူအမည် <span class="text-danger">*</span>
+                            </label>
+
+                            <input type="text" name="name" id="new_farmer_name" class="form-control"
+                                placeholder="တောင်သူအမည် ထည့်ပါ" maxlength="150">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_farmer_phone" class="form-label">
+                                ဖုန်းနံပါတ်
+                            </label>
+
+                            <input type="text" name="phone" id="new_farmer_phone" class="form-control"
+                                placeholder="တောင်သူဖုန်းနံပါတ် ထည့်ပါ" maxlength="30">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_farmer_village" class="form-label">
+                                ကျေးရွာ
+                            </label>
+
+                            <input type="text" name="village" id="new_farmer_village" class="form-control"
+                                placeholder="တောင်သူကျေးရွာအမည် ထည့်ပါ" maxlength="150">
+                        </div>
+
+                        <div class="mb-0">
+                            <label for="new_farmer_notes" class="form-label">
+                                မှတ်ချက်
+                            </label>
+
+                            <textarea name="notes" id="new_farmer_notes" class="form-control" rows="2">မှတ်ချက်ရေးပါ ( မရေးလဲရ )</textarea>
+                        </div>
+
+                        <div class="my-2">
+                            <span class="text-danger">*</span>
+                            <small class=" text-dark fw-bold fs-6">
+                                စာရင်းသွင်းပြီးလျှင်တောင်သူကိုတစ်ခါတည်း ရွေးထားပြီးသားဖြစ်လိမ့်မည်
+                            </small>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                            မလုပ်တော့ပါ
+                        </button>
+
+                        <button type="submit" id="save_farmer_btn" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i>
+                            သိမ်းပြီးရွေးမည်
+                        </button>
+                    </div>
+                </form>
 
             </div>
-
-
-            <div class="modal-body">
-
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Farmer Name <span class="text-danger">*</span>
-                        </label>
-
-                        <input
-                            type="text"
-                            name="new_farmer_name"
-                            id="newFarmerName"
-                            class="form-control"
-                            placeholder="Enter farmer name"
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Phone
-                        </label>
-
-                        <input
-                            type="text"
-                            name="new_farmer_phone"
-                            id="newFarmerPhone"
-                            class="form-control"
-                            placeholder="09xxxxxxxxx"
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Village
-                        </label>
-
-                        <input
-                            type="text"
-                            name="new_farmer_village"
-                            id="newFarmerVillage"
-                            class="form-control"
-                            placeholder="Village"
-                        >
-
-                    </div>
-
-
-                    <div class="col-md-6">
-
-                        <label class="form-label">
-                            Township
-                        </label>
-
-                        <input
-                            type="text"
-                            name="new_farmer_township"
-                            class="form-control"
-                            placeholder="Township"
-                        >
-
-                    </div>
-
-
-                    <div class="col-12">
-
-                        <label class="form-label">
-                            Note
-                        </label>
-
-                        <textarea
-                            name="new_farmer_note"
-                            class="form-control"
-                            rows="2"
-                            placeholder="Optional note..."
-                        ></textarea>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="modal-footer">
-
-                <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-bs-dismiss="modal"
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-success"
-                    id="saveQuickFarmer"
-                >
-                    <i class="bi bi-check-lg me-1"></i>
-                    Create & Select Farmer
-                </button>
-
-            </div>
-
         </div>
-
     </div>
-
-</div>
-
-
-
-{{-- =========================================================
-    PAGE CSS
-========================================================= --}}
-
-<style>
-
-    .card-section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-
-    .info-box {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 14px 16px;
-    }
-
-
-    .summary-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 7px 0;
-        color: #6c757d;
-    }
-
-
-    .summary-row strong {
-        color: #212529;
-    }
-
-
-    .summary-total {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 18px;
-        padding: 10px 0;
-    }
-
-
-    .summary-total strong {
-        color: #198754;
-        font-size: 22px;
-    }
-
-
-    .balance-box {
-        background: #fff3cd;
-        border: 1px solid #ffe69c;
-        border-radius: 8px;
-        padding: 14px 16px;
-
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        color: #664d03;
-    }
-
-
-    .balance-box h4 {
-        color: #664d03;
-    }
-
-
-    .purchase-item td {
-        vertical-align: middle;
-    }
-
-
-    .purchase-item input,
-    .purchase-item select {
-        min-width: 80px;
-    }
-
-
-    #purchaseItems .form-control,
-    #purchaseItems .form-select {
-        font-size: 13px;
-    }
-
-
-    .table thead th {
-        white-space: nowrap;
-        font-size: 13px;
-    }
-
-</style>
-
-
-
-{{-- =========================================================
-    PAGE JAVASCRIPT
-========================================================= --}}
-
-<script>
-
-document.addEventListener('DOMContentLoaded', function () {
-
-    let itemIndex = 2;
-    let paymentIndex = 1;
-
-
-    /* =====================================================
-       FORMAT MONEY
-    ===================================================== */
-
-    function money(value) {
-
-        return Number(value || 0).toLocaleString('en-US');
-
-    }
-
-
-    /* =====================================================
-       CALCULATE ITEM
-    ===================================================== */
-
-    function calculateItem(row) {
-
-        const quantity =
-            parseFloat(row.querySelector('.quantity')?.value) || 0;
-
-        const price =
-            parseFloat(row.querySelector('.actual-price')?.value) || 0;
-
-        const commission =
-            parseFloat(row.querySelector('.commission')?.value) || 0;
-
-        const carFee =
-            parseFloat(row.querySelector('.car-fee')?.value) || 0;
-
-
-        const gross =
-            quantity * price;
-
-        const net =
-            gross - commission - carFee;
-
-
-        const netElement =
-            row.querySelector('.item-net');
-
-        if (netElement) {
-
-            netElement.textContent =
-                money(net);
-
-        }
-
-
-        return {
-            gross: gross,
-            commission: commission,
-            carFee: carFee,
-            net: net
-        };
-
-    }
-
-
-
-    /* =====================================================
-       CALCULATE SUMMARY
-    ===================================================== */
-
-    function calculateSummary() {
-
-        let gross = 0;
-        let commission = 0;
-        let carFee = 0;
-        let net = 0;
-
-
-        document
-            .querySelectorAll('.purchase-item')
-            .forEach(function (row) {
-
-                const item =
-                    calculateItem(row);
-
-                gross += item.gross;
-                commission += item.commission;
-                carFee += item.carFee;
-                net += item.net;
-
-            });
-
-
-        const advance =
-            parseFloat(
-                document.getElementById('advanceAmount')?.value
-            ) || 0;
-
-
-        const otherDeduction =
-            parseFloat(
-                document.getElementById('otherDeduction')?.value
-            ) || 0;
-
-
-        const paid =
-            Array.from(
-                document.querySelectorAll('.payment-amount')
-            )
-            .reduce(function (total, input) {
-
-                return total +
-                    (parseFloat(input.value) || 0);
-
-            }, 0);
-
-
-        /*
-         * net here = item amount after
-         * commission + car fee.
-         *
-         * Then advance and other deduction
-         * are deducted from farmer amount.
-         */
-
-        const finalNet =
-            net - advance - otherDeduction;
-
-        const balance =
-            finalNet - paid;
-
-
-        document.getElementById('summaryGross')
-            .textContent = money(gross) + ' Ks';
-
-        document.getElementById('summaryCommission')
-            .textContent = money(commission) + ' Ks';
-
-        document.getElementById('summaryCarFee')
-            .textContent = money(carFee) + ' Ks';
-
-        document.getElementById('summaryAdvance')
-            .textContent = '-' + money(advance) + ' Ks';
-
-        document.getElementById('summaryOtherDeduction')
-            .textContent = '-' + money(otherDeduction) + ' Ks';
-
-        document.getElementById('summaryNet')
-            .textContent = money(finalNet) + ' Ks';
-
-        document.getElementById('summaryPaid')
-            .textContent = money(paid) + ' Ks';
-
-        document.getElementById('summaryBalance')
-            .textContent = money(balance) + ' Ks';
-
-        document.getElementById('farmerCurrentAmount')
-            .textContent = money(finalNet) + ' Ks';
-
-    }
-
-
-
-    /* =====================================================
-       ITEM INPUT EVENTS
-    ===================================================== */
-
-    document.addEventListener('input', function (event) {
-
-        if (
-            event.target.classList.contains('quantity') ||
-            event.target.classList.contains('actual-price') ||
-            event.target.classList.contains('commission') ||
-            event.target.classList.contains('car-fee') ||
-            event.target.classList.contains('payment-amount') ||
-            event.target.id === 'advanceAmount' ||
-            event.target.id === 'otherDeduction'
-        ) {
-
-            calculateSummary();
-
-        }
-
-    });
-
-
-
-    /* =====================================================
-       ADD ITEM
-    ===================================================== */
-
-    document
-        .getElementById('addItemBtn')
-        .addEventListener('click', addItem);
-
-
-    document
-        .getElementById('emptyAddItemBtn')
-        .addEventListener('click', addItem);
-
-
-    function addItem() {
-
-        const tbody =
-            document.getElementById('purchaseItems');
-
-
-        const row =
-            document.createElement('tr');
-
-        row.classList.add('purchase-item');
-
-
-        row.innerHTML = `
-
-            <td class="item-number">
-                ${itemIndex + 1}
-            </td>
-
-
-            <td>
-
-                <select
-                    name="items[${itemIndex}][crop_id]"
-                    class="form-select form-select-sm crop-select"
-                >
-
-                    <option value="">
-                        Select Crop
-                    </option>
-
-                    <option value="1">
-                        Tomato
-                    </option>
-
-                    <option value="2">
-                        Potato
-                    </option>
-
-                    <option value="3">
-                        Cabbage
-                    </option>
-
-                    <option value="4">
-                        Onion
-                    </option>
-
-                </select>
-
-            </td>
-
-
-            <td>
-
-                <select
-                    name="items[${itemIndex}][grade_id]"
-                    class="form-select form-select-sm"
-                >
-
-                    <option value="">
-                        Select Grade
-                    </option>
-
-                    <option value="1">
-                        Grade A
-                    </option>
-
-                    <option value="2">
-                        Grade B
-                    </option>
-
-                    <option value="3">
-                        Grade C
-                    </option>
-
-                </select>
-
-            </td>
-
-
-            <td>
-
-                <input
-                    type="number"
-                    name="items[${itemIndex}][quantity]"
-                    class="form-control form-control-sm quantity"
-                    value="0"
-                    step="0.001"
-                    min="0"
-                >
-
-            </td>
-
-
-            <td>
-
-                <input
-                    type="text"
-                    name="items[${itemIndex}][unit]"
-                    class="form-control form-control-sm"
-                    value="Basket"
-                >
-
-            </td>
-
-
-            <td>
-
-                <input
-                    type="number"
-                    name="items[${itemIndex}][reference_price]"
-                    class="form-control form-control-sm reference-price"
-                    value="0"
-                    step="0.01"
-                >
-
-            </td>
-
-
-            <td>
-
-                <input
-                    type="number"
-                    name="items[${itemIndex}][actual_buy_price]"
-                    class="form-control form-control-sm actual-price"
-                    value="0"
-                    step="0.01"
-                >
-
-            </td>
-
-
-            <td>
-
-                <input
-                    type="number"
-                    name="items[${itemIndex}][commission_amount]"
-                    class="form-control form-control-sm commission"
-                    value="0"
-                    step="0.01"
-                >
-
-            </td>
-
-
-            <td>
-
-                <input
-                    type="number"
-                    name="items[${itemIndex}][car_fee_amount]"
-                    class="form-control form-control-sm car-fee"
-                    value="0"
-                    step="0.01"
-                >
-
-            </td>
-
-
-            <td class="text-end">
-
-                <strong class="item-net">
-                    0
-                </strong>
-
-            </td>
-
-
-            <td class="text-center">
-
-                <button
-                    type="button"
-                    class="btn btn-sm btn-outline-danger remove-item"
-                >
-
-                    <i class="bi bi-trash"></i>
-
-                </button>
-
-            </td>
-
-        `;
-
-
-        tbody.appendChild(row);
-
-        itemIndex++;
-
-        updateItemNumbers();
-
-        calculateSummary();
-
-    }
-
-
-
-    /* =====================================================
-       REMOVE ITEM
-    ===================================================== */
-
-    document.addEventListener('click', function (event) {
-
-        const button =
-            event.target.closest('.remove-item');
-
-
-        if (!button) {
-            return;
-        }
-
-
-        const rows =
-            document.querySelectorAll('.purchase-item');
-
-
-        if (rows.length <= 1) {
-
-            alert('At least one purchase item is required.');
-
-            return;
-
-        }
-
-
-        button
-            .closest('.purchase-item')
-            .remove();
-
-
-        updateItemNumbers();
-
-        calculateSummary();
-
-    });
-
-
-
-    /* =====================================================
-       UPDATE ITEM NUMBERS
-    ===================================================== */
-
-    function updateItemNumbers() {
-
-        document
-            .querySelectorAll('.purchase-item')
-            .forEach(function (row, index) {
-
-                row.querySelector('.item-number')
-                    .textContent = index + 1;
-
-            });
-
-    }
-
-
-
-    /* =====================================================
-       ADD PAYMENT
-    ===================================================== */
-
-    document
-        .getElementById('addPaymentBtn')
-        .addEventListener('click', function () {
-
-            const tbody =
-                document.getElementById('paymentRows');
-
-
-            const row =
-                document.createElement('tr');
-
-
-            row.innerHTML = `
-
-                <td>
-
-                    <input
-                        type="datetime-local"
-                        name="payments[${paymentIndex}][payment_date]"
-                        class="form-control form-control-sm"
-                    >
-
-                </td>
-
-
-                <td>
-
-                    <select
-                        name="payments[${paymentIndex}][payment_type]"
-                        class="form-select form-select-sm"
-                    >
-
-                        <option value="PARTIAL">
-                            Partial Payment
-                        </option>
-
-                        <option value="FINAL">
-                            Final Payment
-                        </option>
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <input
-                        type="number"
-                        name="payments[${paymentIndex}][amount]"
-                        class="form-control form-control-sm payment-amount"
-                        value="0"
-                        step="0.01"
-                    >
-
-                </td>
-
-
-                <td>
-
-                    <select
-                        name="payments[${paymentIndex}][payment_method]"
-                        class="form-select form-select-sm"
-                    >
-
-                        <option value="CASH">
-                            Cash
-                        </option>
-
-                        <option value="BANK">
-                            Bank
-                        </option>
-
-                        <option value="KBZ_PAY">
-                            KBZ Pay
-                        </option>
-
-                        <option value="WAVE">
-                            Wave Money
-                        </option>
-
-                    </select>
-
-                </td>
-
-
-                <td>
-
-                    <input
-                        type="text"
-                        name="payments[${paymentIndex}][note]"
-                        class="form-control form-control-sm"
-                        placeholder="Payment note..."
-                    >
-
-                </td>
-
-
-                <td class="text-center">
-
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-outline-danger remove-payment"
-                    >
-
-                        <i class="bi bi-trash"></i>
-
-                    </button>
-
-                </td>
-
-            `;
-
-
-            tbody.appendChild(row);
-
-            paymentIndex++;
-
-            calculateSummary();
-
-        });
-
-
-
-    /* =====================================================
-       REMOVE PAYMENT
-    ===================================================== */
-
-    document.addEventListener('click', function (event) {
-
-        const button =
-            event.target.closest('.remove-payment');
-
-
-        if (!button) {
-            return;
-        }
-
-
-        button
-            .closest('tr')
-            .remove();
-
-
-        calculateSummary();
-
-    });
-
-
-
-    /* =====================================================
-       QUICK CREATE FARMER
-    ===================================================== */
-
-    document
-        .getElementById('saveQuickFarmer')
-        .addEventListener('click', function () {
-
-            const name =
-                document.getElementById('newFarmerName').value.trim();
-
-            const phone =
-                document.getElementById('newFarmerPhone').value.trim();
-
-            const village =
-                document.getElementById('newFarmerVillage').value.trim();
-
-
-            if (!name) {
-
-                alert('Farmer name is required.');
-
-                return;
-
+@endsection
+
+{{-- တောင်သူအပိုင်းအတွက် JS အစ --}}
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const searchInput = document.getElementById('farmer_search');
+            const resultsBox = document.getElementById('farmer_results');
+            const farmerIdInput = document.getElementById('farmer_id');
+            const selectedBox = document.getElementById('selected_farmer_box');
+            const errorBox = document.getElementById('farmer_error');
+
+            const searchUrl = @json(route('farmers#search'));
+            const storeUrl = @json(route('farmers#store'));
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+            let searchTimer;
+
+            // Error ပြမည်
+            function showError(message) {
+                errorBox.textContent = message;
+                errorBox.style.display = 'block';
             }
 
+            // Error ဖျောက်မည်
+            function hideError() {
+                errorBox.textContent = '';
+                errorBox.style.display = 'none';
+            }
 
-            /*
-             * Demo only.
-             *
-             * Later:
-             *
-             * fetch('', ...)
-             *
-             * Then get created farmer ID
-             * and add it to farmerSelect.
-             */
+            // တောင်သူရွေးချယ်မည်
+            function selectFarmer(farmer) {
+                farmerIdInput.value = farmer.id;
+
+                document.getElementById('selected_farmer_name').textContent = farmer.name || '';
+                document.getElementById('selected_farmer_code').textContent =
+                    farmer.farmer_code ? 'ကုဒ်: ' + farmer.farmer_code : '';
+                document.getElementById('selected_farmer_phone').textContent =
+                    farmer.phone ? 'ဖုန်း: ' + farmer.phone : '';
+                document.getElementById('selected_farmer_village').textContent =
+                    farmer.village ? 'ကျေးရွာ: ' + farmer.village : '';
+
+                searchInput.value = farmer.name || '';
+
+                selectedBox.style.display = 'block';
+                resultsBox.style.display = 'none';
+
+                hideError();
+            }
+
+            // Search result ပြမည်
+            function renderResults(farmers, query) {
+                resultsBox.replaceChildren();
+
+                if (farmers.length === 0) {
+                    const div = document.createElement('div');
+                    div.className = 'list-group-item d-flex align-items-center justify-content-between p-3';
+
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'text-danger fw-bold fs-6';
+                    textSpan.textContent =
+                        'ရှာဖွေသောအချက်အလက်နှင့် ကိုက်ညီသောတောင်သူမတွေ့ပါ တောင်သူအသစ်ထည့်ရန် ကိုနှိပ်၍ထည့်နိုင်သည်';
+
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'btn btn-sm btn-success';
+                    button.textContent = 'တောင်သူအသစ်ထည့်မည်';
+
+                    button.onclick = function() {
+                        document.getElementById('new_farmer_name').value = query;
+
+                        bootstrap.Modal.getOrCreateInstance(
+                            document.getElementById('newFarmerModal')
+                        ).show();
+                    };
+
+                    div.appendChild(textSpan);
+                    div.appendChild(button);
+                    resultsBox.appendChild(div);
+                    resultsBox.style.display = 'block';
+                    return;
+                }
+
+                // select box farmer list for search btn
+                farmers.forEach(function(farmer) {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'list-group-item list-group-item-action p-3';
+
+                    button.innerHTML = `
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="bg-success bg-opacity-10 text-success rounded-circle
+                                        d-flex align-items-center justify-content-center flex-shrink-0"
+                                style="width: 44px; height: 44px;">
+                                <i class="bi bi-person-fill fs-4"></i>
+                            </div>
+
+                            <div class="flex-grow-1 overflow-hidden">
+
+                                <div class="fw-bold text-dark mb-1 fs-5">
+                                    ${escapeHtml(farmer.name || 'အမည်မရှိ')}
+                                </div>
+
+                                <div class="d-flex flex-wrap gap-3 text-secondary small">
+
+                                    ${farmer.farmer_code ? `
+                                                            <span class=' text-info'>
+                                                                <i class="bi bi-upc-scan me-1"></i>
+                                                                ${escapeHtml(farmer.farmer_code)}
+                                                            </span>
+                                                        ` : ''}
+
+                                    ${farmer.phone ? `
+                                                            <span class=' fw-bold text-dark fs-6'>
+                                                                <i class="bi bi-telephone me-1"></i>
+                                                                ${escapeHtml(farmer.phone)}
+                                                            </span>
+                                                        ` : ''}
+
+                                    ${farmer.village ? `
+                                                            <span class=' fw-bold text-dark fs-6'>
+                                                                <i class="bi bi-geo-alt me-1"></i>
+                                                                ${escapeHtml(farmer.village)}
+                                                            </span>
+                                                        ` : ''}
+
+                                </div>
+                            </div>
+
+                            <div class="text-success flex-shrink-0">
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+
+                        </div>
+                    `;
+
+                    button.onclick = function() {
+                        selectFarmer(farmer);
+                    };
+
+                    resultsBox.appendChild(button);
+                });
+
+                resultsBox.style.display = 'block';
+            }
+
+            // တောင်သူရှာမည်
+            searchInput.addEventListener('input', function() {
+                const query = searchInput.value.trim();
+
+                clearTimeout(searchTimer);
+
+                farmerIdInput.value = '';
+                selectedBox.style.display = 'none';
+                hideError();
+
+                if (!query) {
+                    resultsBox.replaceChildren();
+                    resultsBox.style.display = 'none';
+                    return;
+                }
+
+                searchTimer = setTimeout(async function() {
+                    try {
+                        const response = await fetch(
+                            searchUrl + '?search=' + encodeURIComponent(query), {
+                                headers: {
+                                    'Accept': 'application/json'
+                                }
+                            }
+                        );
+
+                        if (!response.ok) {
+                            throw new Error('တောင်သူရှာဖွေမှု မအောင်မြင်ပါ။');
+                        }
+
+                        const farmers = await response.json();
+
+                        if (searchInput.value.trim() === query) {
+                            renderResults(farmers, query);
+                        }
+
+                    } catch (error) {
+                        showError(error.message);
+                    }
+                }, 300);
+            });
+
+            // တောင်သူရွေးချယ်မှု ဖျက်မည်
+            document.getElementById('clear_farmer').onclick = function() {
+                searchInput.value = '';
+                farmerIdInput.value = '';
+                selectedBox.style.display = 'none';
+                resultsBox.style.display = 'none';
+                hideError();
+                searchInput.focus();
+            };
+
+            // တောင်သူပြန်ရွေးမည်
+            document.getElementById('change_farmer').onclick = function() {
+                farmerIdInput.value = '';
+                selectedBox.style.display = 'none';
+                searchInput.focus();
+            };
+
+            // တောင်သူအသစ် သိမ်းမည်
+            document.getElementById('new_farmer_form').onsubmit = async function(event) {
+                event.preventDefault();
+
+                const form = event.currentTarget;
+                const saveButton = document.getElementById('save_farmer_btn');
+                const modalError = document.getElementById('new_farmer_error');
+
+                const name = document.getElementById('new_farmer_name');
+                const phone = document.getElementById('new_farmer_phone');
+                const village = document.getElementById('new_farmer_village');
 
 
-            const select =
-                document.getElementById('farmerSelect');
+                modalError.textContent = '';
+                modalError.style.display = 'none';
+
+                // အရင် Validation အမှားများကို ရှင်းမည်
+                form.querySelectorAll('.is-invalid').forEach(function(input) {
+                    input.classList.remove('is-invalid');
+                });
+                form.querySelectorAll('.validation-error').forEach(function(error) {
+                    error.remove();
+                });
+                let isValid = true;
+                // Validation Error ပြမည့် Function
+                function showError(input, message) {
+                    input.classList.add('is-invalid');
+
+                    const error = document.createElement('div');
+                    error.className = 'invalid-feedback validation-error';
+                    error.textContent = message;
+
+                    input.insertAdjacentElement('afterend', error);
+                    isValid = false;
+                }
+
+                // 1. တောင်သူအမည်
+                if (!name.value.trim()) {
+                    showError(name, 'တောင်သူအမည် ဖြည့်ပေးပါ။');
+                } else if (name.value.trim().length > 150) {
+                    showError(name, 'တောင်သူအမည်သည် အများဆုံး 150 လုံး ဖြစ်ရပါမယ်။');
+                }
+
+                // 2. ဖုန်းနံပါတ် (မဖြည့်လည်းရ)
+                const phoneValue = phone.value.trim();
+
+                if (phoneValue && !/^[0-9၀-၉+\-\s()]+$/.test(phoneValue)) {
+                    showError(phone, 'ဖုန်းနံပါတ်ကို မှန်ကန်စွာ ဖြည့်ပေးပါ။');
+                } else if (phoneValue.length > 30) {
+                    showError(phone, 'ဖုန်းနံပါတ်သည် အများဆုံး 30 လုံး ဖြစ်ရပါမယ်။');
+                }
+
+                // 3. ကျေးရွာ (မဖြည့်လည်းရ)
+                if (village.value.length > 150) {
+                    showError(village, 'ကျေးရွာအမည်သည် အများဆုံး 150 လုံး ဖြစ်ရပါမယ်။');
+                }
+
+                // Validation မအောင်မြင်လျှင် Request မပို့ပါ
+                if (!isValid) {
+                    form.querySelector('.is-invalid').focus();
+                    return;
+                }
+
+                saveButton.disabled = true;
+                saveButton.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-1"></span> သိမ်းဆည်းနေသည်...';
+
+                try {
+                    const response = await fetch(storeUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: new FormData(form)
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+
+                        if (data.errors) {
+                            Object.entries(data.errors).forEach(function([field, messages]) {
+                                const input = form.querySelector('[name="' + field + '"]');
+
+                                if (input) {
+                                    showError(input, messages[0]);
+                                }
+                            });
+                        } else {
+                            modalError.textContent =
+                                data.message || 'တောင်သူအသစ် သိမ်း၍မရပါ။';
+                            modalError.style.display = 'block';
+                        }
+
+                        const firstInvalid = form.querySelector('.is-invalid');
+
+                        if (firstInvalid) {
+                            firstInvalid.focus();
+                        }
+
+                        return;
+                    }
+
+                    bootstrap.Modal.getOrCreateInstance(
+                        document.getElementById('newFarmerModal')
+                    ).hide();
+
+                    form.reset();
+
+                    selectFarmer(data.farmer);
+
+                } catch (error) {
+                    modalError.textContent = 'Server နှင့် ချိတ်ဆက်၍မရပါ။';
+                    modalError.style.display = 'block';
+
+                } finally {
+                    saveButton.disabled = false;
+                    saveButton.innerHTML =
+                        '<i class="bi bi-check-circle me-1"></i> သိမ်းပြီးရွေးမည်';
+                }
+            };
+
+            // Input ပြင်ဆင်လိုက်လျှင် အမှားစာကို ဖယ်မည်
+            ['new_farmer_name', 'new_farmer_phone', 'new_farmer_village']
+            .forEach(function(id) {
+                const input = document.getElementById(id);
+
+                input.addEventListener('input', function() {
+                    input.classList.remove('is-invalid');
+
+                    const next = input.nextElementSibling;
+
+                    if (next && next.classList.contains('validation-error')) {
+                        next.remove();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+{{-- တောင်သူအပိုင်းအတွက် JS အဆုံး --}}
 
 
-            const option =
-                document.createElement('option');
+{{-- သီးနှံစာရင်းအတွက် သီးနှံဈေး အလိုအလျောက်ပြပေးတဲ့ JS အစ --}}
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const cropSelect = document.getElementById('crop_id');
+            const gradeSelect = document.getElementById('grade_id');
+            const qtyPerBasketInput = document.getElementById('quantity_per_basket');
+            const unitInput = document.getElementById('unit');
+            const commissionInput = document.getElementById('commission_amount');
+            const referencePriceInput = document.getElementById('reference_price');
+            const actualPriceInput = document.getElementById('actual_buy_price');
+
+            // သီးနှံရွေးလိုက်လျှင် Grade ရှာမည်
+            cropSelect.addEventListener('change', async function() {
+
+                const cropId = this.value;
+                const option = this.options[this.selectedIndex];
+
+                gradeSelect.innerHTML =
+                    '<option value="">အမျိုးအစားရွေးချယ်ပါ</option>';
+
+                gradeSelect.disabled = true;
+                referencePriceInput.value = '';
+
+                // unitInput.value = option.dataset.unit || '';
+                const rawUnit = option.dataset.unit || '';
+                let displayUnit = rawUnit;
+                if (rawUnit.toLowerCase() === 'viss') {
+                    displayUnit = 'ပိဿာ';
+                } else if (rawUnit.toLowerCase() === 'pound') {
+                    displayUnit = 'ပေါင်';
+                }
+                unitInput.value = displayUnit;
+
+                commissionInput.value = option.dataset.commission || 0;
+                const qtyPerBasket = option.getAttribute('data-quantity-per-basket') || 0;
+                qtyPerBasketInput.value = qtyPerBasket;
+
+                if (!cropId) {
+                    return;
+                }
+
+                const response = await fetch(
+                    `{{ url('/whole-sale-market/purchases/grades') }}/${cropId}`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+
+                const grades = await response.json();
+
+                grades.forEach(function(grade) {
+
+                    const option = document.createElement('option');
+
+                    option.value = grade.id;
+                    option.textContent = grade.grade_name;
+
+                    gradeSelect.appendChild(option);
+                });
+
+                gradeSelect.disabled = false;
+            });
+
+            // Grade ရွေးလိုက်လျှင် ယနေ့ဈေး ရှာမည်
+            gradeSelect.addEventListener('change', async function() {
+
+                const cropId = cropSelect.value;
+                const gradeId = this.value;
+
+                referencePriceInput.value = '';
+
+                if (!cropId || !gradeId) {
+                    return;
+                }
+
+                const params = new URLSearchParams({
+                    crop_id: cropId,
+                    grade_id: gradeId
+                });
+
+                const response = await fetch(
+                    `{{ route('purchases#reference-price') }}?${params}`, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+
+                const data = await response.json();
+
+                referencePriceInput.value = data.reference_price;
+                actualPriceInput.value = data.reference_price;
+            });
+
+        });
+    </script>
+@endpush
+{{-- သီသီးနှံစာရင်းအတွက် သီးနှံဈေး အလိုအလျောက်ပြပေးတဲ့ JS အဆုံး --}}
 
 
-            option.value = '999';
+{{-- သီးနှံစာရင်း တွက်တဲ့အပိုင်း JS အစ --}}
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-            option.textContent =
-                name + ' - ' + village;
+            const cropSelect = document.getElementById('crop_id');
+            const gradeSelect = document.getElementById('grade_id');
+            const quantityInput = document.getElementById('quantity');
+            const qtyPerBasketInput = document.getElementById('quantity_per_basket');
+            const unitInput = document.getElementById('unit');
+            const referencePriceInput = document.getElementById('reference_price');
+            const actualPriceInput = document.getElementById('actual_buy_price');
+            const commissionInput = document.getElementById('commission_amount');
+            const carFeeInput = document.getElementById('car_fee_amount');
+            const noteInput = document.getElementById('item_note');
+            const addButton = document.getElementById('add_crop_item');
+            const tableBody = document.getElementById('purchase_items_body');
+            const hiddenInputs = document.getElementById('purchase_items_inputs');
 
-            option.selected = true;
+            let items = [];
+            let editingIndex = null;
+
+            const gradesUrl = @json(url('/purchases/grades'));
+
+            // ငွေကြေးပုံစံ
+            function money(value) {
+                return Number(value || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            // Input ထဲက ငွေတန်ဖိုး
+            function numberValue(input) {
+                return Number(input.value || 0);
+            }
+
+            function calculate(item) {
+                const qtyPerBasket = Number(item.quantity_per_basket) || 0;
+                const totalBaskets = qtyPerBasket > 0 ? (Number(item.quantity) / qtyPerBasket) : Number(item.quantity);
+
+                const actual_buy_price_after_sub_commission_amt = Number(item.actual_buy_price) - Number(item.commission_amount);
+                item.gross_amount = Number((totalBaskets * actual_buy_price_after_sub_commission_amt).toFixed(2));
+
+                item.total_deduction = Number(item.car_fee_amount);
+
+                item.net_amount = Number((item.gross_amount - item.total_deduction).toFixed(2));
+                // console.table(item);
+            }
+
+            // Form ကိုရှင်းမည်
+            function resetFields() {
+                cropSelect.value = '';
+
+                gradeSelect.innerHTML =
+                    '<option value="">အရင်ဆုံး သီးနှံရွေးချယ်ပါ</option>';
+
+                gradeSelect.disabled = true;
+
+                quantityInput.value = '';
+                unitInput.value = '';
+                referencePriceInput.value = '';
+                actualPriceInput.value = '';
+                commissionInput.value = 0;
+                carFeeInput.value = 0;
+                noteInput.value = '';
+
+                // Hidden Input ကိုပါ ရှင်းလင်းပေးရန်
+                const qtyPerBasketInput = document.getElementById('quantity_per_basket');
+                if (qtyPerBasketInput) {
+                    qtyPerBasketInput.value = '';
+                }
+
+                editingIndex = null;
+
+                addButton.innerHTML =
+                    '<i class="bi bi-plus-lg me-1"></i> သီးနှံစာရင်းထဲ ထည့်မည်';
+            }
+
+            // သီးနှံစာရင်းနှင့် စုစုပေါင်းကို ပြမည်
+            function renderItems() {
+                tableBody.replaceChildren();
+                hiddenInputs.replaceChildren();
+
+                if (items.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                သီးနှံစာရင်း မထည့်ရသေးပါ။
+                            </td>
+                        </tr>
+                        `;
+                    }
+
+                    let grossTotal = 0;
+                    let deductionTotal = 0;
+                    let netTotal = 0;
+
+                    items.forEach(function(item, index) {
+                        calculate(item);
+
+                        grossTotal += item.gross_amount;
+                        deductionTotal += item.total_deduction;
+                        netTotal += item.net_amount;
+
+                        const row = document.createElement('tr');
+
+                        row.innerHTML = `
+                            <td class="text-center">${index + 1}</td>
+
+                            <td>
+                                <div class="fw-bold">
+                                    ${escapeHtml(item.crop_name)}
+                                </div>
+                                <small class="text-muted">
+                                    ${escapeHtml(item.grade_name)}
+                                </small>
+                            </td>
+
+                            <td class="text-end">
+                                ${Number(item.quantity).toLocaleString('en-US')}
+                                ${item.unit.toLowerCase() === 'viss' ? 'ပိဿာ' : (item.unit.toLowerCase() === 'pound' ? 'ပေါင်' : escapeHtml(item.unit))}
+                            </td>
+
+                            <td class="text-end">
+                                ${Number(item.quantity / item.quantity_per_basket).toLocaleString('en-US')}
+                            </td>
+
+                            <td class="text-end">
+                                ${money(item.actual_buy_price)}
+                            </td>
+
+                            <td class="text-end">
+                                ${money(item.commission_amount)}
+                            </td>
+
+                            <td class="text-end">
+                                ${money(item.car_fee_amount)}
+                            </td>
+
+                            <td class="text-end fw-bold">
+                                ${money(item.net_amount)}
+                            </td>
+
+                            <td class="text-center text-nowrap">
+
+                                <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-action="delete" data-index="${index}">
+                                    <i class="bi bi-trash me-2"></i>ဖျက်မည်
+                                </button>
+                            </td>
+                        `;
+
+                    tableBody.appendChild(row);
+
+                    // နောက်ပိုင်း Purchase သိမ်းရန်
+                    Object.entries({
+                        crop_id: item.crop_id,
+                        grade_id: item.grade_id,
+                        quantity: item.quantity,
+                        unit: item.unit,
+                        reference_price: item.reference_price,
+                        actual_buy_price: item.actual_buy_price,
+                        commission_amount: item.commission_amount,
+                        car_fee_amount: item.car_fee_amount,
+                        note: item.note
+                    }).forEach(function([key, value]) {
+                        const input = document.createElement('input');
+
+                        input.type = 'hidden';
+                        input.name = `purchase_items[${index}][${key}]`;
+                        input.value = value ?? '';
+
+                        hiddenInputs.appendChild(input);
+                    });
+                });
+
+                document.getElementById('item_count').textContent =
+                    `သီးနှံ ${items.length} မျိုး`;
+
+                document.getElementById('items_gross_total').textContent =
+                    money(grossTotal);
+
+                document.getElementById('items_deduction_total').textContent =
+                    money(deductionTotal);
+
+                document.getElementById('items_net_total').textContent =
+                    money(netTotal);
+            }
+
+            // သီးနှံစာရင်းထဲ ထည့်မည်
+            addButton.addEventListener('click', function() {
+
+                const cropOption =
+                    cropSelect.options[cropSelect.selectedIndex];
+
+                const gradeOption =
+                    gradeSelect.options[gradeSelect.selectedIndex];
+
+                const quantity = numberValue(quantityInput);
+                const actualPrice = numberValue(actualPriceInput);
+                const commission = numberValue(commissionInput);
+                const carFee = numberValue(carFeeInput);
+
+                if (!cropSelect.value) {
+                    alert('သီးနှံရွေးချယ်ပါ။');
+                    cropSelect.focus();
+                    return;
+                }
+
+                if (!gradeSelect.value) {
+                    alert('သီးနှံအမျိုးအစား ရွေးချယ်ပါ။');
+                    gradeSelect.focus();
+                    return;
+                }
+
+                if (quantity <= 0 || !Number.isFinite(quantity)) {
+                    alert('အရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။');
+                    quantityInput.focus();
+                    return;
+                }
+
+                if (
+                    actualPrice < 0 ||
+                    !Number.isFinite(actualPrice) ||
+                    actualPriceInput.value.trim() === ''
+                ) {
+                    alert('အမှန်တကယ်ဝယ်ဈေး ဖြည့်ပါ။');
+                    actualPriceInput.focus();
+                    return;
+                }
+
+                if (
+                    commission < 0 || carFee < 0 ||
+                    !Number.isFinite(commission) ||
+                    !Number.isFinite(carFee)
+                ) {
+                    alert('ပွဲခနှင့် ကားခကို မှန်ကန်စွာ ဖြည့်ပါ။');
+                    return;
+                }
+
+                const item = {
+                    crop_id: cropSelect.value,
+                    crop_name: cropOption.textContent.trim(),
+
+                    grade_id: gradeSelect.value,
+                    grade_name: gradeOption.textContent.trim(),
+
+                    quantity: quantity,
+                    unit: unitInput.value,
+                    quantity_per_basket: numberValue(qtyPerBasketInput) || 0,
+
+                    reference_price: numberValue(referencePriceInput),
+                    actual_buy_price: actualPrice,
+
+                    commission_amount: commission,
+                    car_fee_amount: carFee,
+
+                    note: noteInput.value.trim()
+                };
+
+                if (editingIndex !== null) {
+                    items[editingIndex] = item;
+                } else {
+                    items.push(item);
+                }
+
+                renderItems();
+                resetFields();
+            });
+
+            // ဖျက်ခြင်း
+            tableBody.addEventListener('click', async function(event) {
+
+                const button = event.target.closest('button[data-action]');
+
+                if (!button) return;
+
+                const index = Number(button.dataset.index);
+                const action = button.dataset.action;
+                const item = items[index];
+
+                if (!item) return;
+
+                if (action === 'delete') {
+                    if (!confirm('ဒီသီးနှံစာရင်းကို ဖျက်မှာ သေချာပါသလား။')) {
+                        return;
+                    }
+
+                    items.splice(index, 1);
+                    renderItems();
+
+                    if (editingIndex === index) {
+                        resetFields();
+                    }
+
+                    return;
+                }
+            });
+
+            renderItems();
+
+        });
+    </script>
+@endpush
+{{-- သီးနှံစာရင်း တွက်တဲ့အပိုင်း JS အဆုံး --}}
 
 
-            select.appendChild(option);
 
 
-            document.getElementById('farmerPhone')
-                .value = phone;
+{{-- Phone number Input (Only) တွေမှာ number တွေကို myn to eng ပြောင်းပေးတဲ့ JS  --}}
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-            document.getElementById('farmerVillage')
-                .value = village;
+            const phoneInputs = ['phone', 'new_farmer_phone', 'farmer_search'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
+            phoneInputs.forEach(function(id) {
+                const input = document.getElementById(id);
 
-            const modalElement =
-                document.getElementById('quickFarmerModal');
+                if (!input) return;
 
-
-            const modal =
-                bootstrap.Modal.getInstance(modalElement);
-
-
-            modal.hide();
-
-
-            document.getElementById('newFarmerName')
-                .value = '';
-
-            document.getElementById('newFarmerPhone')
-                .value = '';
-
-            document.getElementById('newFarmerVillage')
-                .value = '';
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
+                });
+            });
 
         });
 
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, function(char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                } [char];
+            });
+        }
+    </script>
+@endpush
 
 
-    /* =====================================================
-       INITIAL CALCULATION
-    ===================================================== */
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInputs = ['quantity', 'reference_price', 'actual_buy_price', 'commission_amount', 'car_fee_amount'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
-    calculateSummary();
+            priceInputs.forEach(function(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
 
-});
+                input.addEventListener('input', function() {
+                    let val = this.value;
 
-</script>
+                    // ၁။ မြန်မာနံပါတ်များကို အင်္ဂလိပ်နံပါတ်သို့ ပြောင်းခြင်း
+                    val = val.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
 
-@endsection
+                    // ၂။ နံပါတ် (0-9) နှင့် ဒဿသမ (.) မှလွဲ၍ ကျန်စာလုံးများနှင့် ကော်မာများအားလုံးကို ဖြတ်ထုတ်ခြင်း
+                    val = val.replace(/[^0-9.]/g, '');
+
+                    this.value = val;
+                });
+            });
+        });
+    </script>
+@endpush

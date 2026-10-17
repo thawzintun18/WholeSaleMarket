@@ -63,6 +63,12 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('create/page', [PurchaseController::class, 'createPage'])->name('purchases#create#page');
         Route::get('grades/{crop}', [PurchaseController::class, 'getGrades'])->name('purchases#grades');
         Route::get('reference-price', [PurchaseController::class, 'getReferencePrice'])->name('purchases#reference-price');
+
+        Route::post('/create', [PurchaseController::class, 'store'])
+            ->name('purchases#store');
+        Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])
+            ->whereNumber('purchaseId')
+            ->name('purchases#voucher');
     });
 
 

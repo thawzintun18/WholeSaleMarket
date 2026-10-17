@@ -17,13 +17,11 @@ return new class extends Migration
             $table->unsignedBigInteger('crop_id');
             $table->unsignedBigInteger('grade_id');
             $table->decimal('quantity', 15, 3);
-            $table->string('unit', 30);
             $table->decimal('reference_price', 15, 2)->default(0);
             $table->decimal('actual_buy_price', 15, 2);
             $table->decimal('commission_amount', 15, 2)->default(0);
             $table->decimal('car_fee_amount', 15, 2)->default(0);
             $table->decimal('gross_amount', 15, 2);
-            $table->decimal('net_amount', 15, 2);
             $table->string('note', 255)->nullable();
             $table->timestamps();
             $table->softDeletes();

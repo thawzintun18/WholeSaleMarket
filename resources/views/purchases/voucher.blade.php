@@ -1,378 +1,351 @@
-blade
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voucher - {{ $purchase->invoice_no }}</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+@section('page-title', 'Purchase Voucher')
 
+@section('breadcrumb')
+    Dashboard / ဝယ်ယူမှုအသစ် / ဘောင်ချာ
+@endsection
+@section('content')
+
+    <div class="container-fluid">
+
+        {{-- Action Buttons --}}
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-3 d-print-none">
+            <a href="{{ route('purchases#create#page') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                Purchase အသစ်
+            </a>
+
+            <button type="button" class="btn btn-primary" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>
+                ဘောက်ချာထုတ်မည်
+            </button>
+        </div>
+
+        {{-- Voucher Card --}}
+
+        <div class="card border shadow-lg bg-white print-card">
+            <div class="card-body p-3 p-md-4">
+
+                {{-- 1. ပွဲရုံအချက်အလက် --}}
+                <div class="text-center border-bottom pb-3 mb-3">
+                    <h4 class="fw-bold text-dark mb-1">
+                        ဒေါ်ဝင်းမြင့် (မြရတနာ) ပွဲရုံ
+                    </h4>
+
+                    <div class=" text-dark">
+                        သီးနှံနှင့် ပဲမျိုးစုံရောင်းဝယ်ရေး
+                    </div>
+
+                    <div class=" text-dark">
+                        ဖုန်း - 09773771821 / 09778626912 / 09781782904
+                    </div>
+
+                    <div class="mt-2">
+                        <span class="border rounded px-3 py-1 fw-bold">
+                            အမှတ်(၅၉)၊ (၇)လမ်း၊ ရန်ကင်းရပ်၊ မကွေးမြို့။
+                        </span>
+                    </div>
+                </div>
+
+                {{-- 2. တောင်သူနှင့် ဘောက်ချာအချက်အလက် --}}
+                <div class="row g-2 mb-3">
+
+                    <div class="col-6">
+                        <div class="border rounded p-2 h-100">
+                            {{-- <div class="fw-bold border-bottom pb-1 mb-2">
+                                တောင်သူအချက်အလက်
+                            </div> --}}
+
+                            <div class="small mb-1">
+                                တောင်သူအမည် -
+                                <span class="fw-bold">
+                                    {{ $farmer->name }}
+                                </span>
+                            </div>
+
+                            <div class="small">
+                                နေရပ်/ဖုန်း -
+                                {{ $farmer->village ?: '—' }} / {{ $farmer->phone ?: '—' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="border rounded p-2 h-100">
+                            {{-- <div class="fw-bold border-bottom pb-1 mb-2">
+                                ဘောက်ချာအချက်အလက်
+                            </div> --}}
+
+                            <div class="small mb-1">
+                                ဘောက်ချာအမှတ် -
+                                <span class="fw-bold">
+                                    {{ $purchase->invoice_no }}
+                                </span>
+                            </div>
+
+                            <div class="small mb-1">
+                                နေ့စွဲ -
+                                <span class="fw-semibold">
+                                    {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }} {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('h:i A') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- 3. သီးနှံစာရင်း --}}
+                <div class=" mb-5">
+                    <table class="table table-bordered table-sm align-middle mb-0"
+                        style="width: 100%; table-layout: fixed; font-size: 14px;">
+
+                        <thead class="table-light text-center">
+                            <tr>
+                                <th style="width: 5%;">စဉ်</th>
+                                <th style="width: 25%;">သီးနှံ / အမျိုးအစား</th>
+                                <th style="width: 17%;">အလေးချိန်</th>
+                                <th style="width: 10%;">တင်း</th>
+                                <th style="width: 13%;">1တင်းဈေး</th>
+                                <th style="width: 12%;">ပွဲခ</th>
+                                <th style="width: 18%;">သီးနှံတန်ဖိုး</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach ($items as $index => $item)
+                                @php
+                                    $qpb = (float) ($item->quantity_per_basket ?? 0);
+
+                                    $basketCount = $qpb > 0 ? (float) $item->quantity / $qpb : (float) $item->quantity;
+
+                                    $unit = strtolower($item->unit ?? '');
+
+                                    $displayUnit =
+                                        $unit === 'viss' ? 'ပိဿာ' : ($unit === 'pound' ? 'ပေါင်' : $item->unit);
+                                @endphp
+
+                                <tr>
+                                    <td class="text-center">
+                                        {{ $index + 1 }}
+                                    </td>
+
+                                    <td class="text-start">
+                                        <div class="fw-bold">
+                                            {{ $item->crop_name ?? 'သီးနှံ' }}
+                                        </div>
+
+                                        <div>
+                                            ({{ $gradeNames[$item->grade_id] ?? 'အမျိုးအစား' }})
+                                        </div>
+
+                                        @if ($item->note)
+                                            <div class="small">
+                                                မှတ်ချက် - {{ $item->note }}
+                                            </div>
+                                        @endif
+                                    </td>
+
+                                    <td class="text-end">
+                                        {{ number_format((float) $item->quantity, 2) }}
+                                        <span>{{ $displayUnit }}</span>
+                                    </td>
+
+                                    <td class="text-end">
+                                        {{ number_format($basketCount, 2) }}
+                                    </td>
+
+                                    <td class="text-end">
+                                        {{ number_format((float) $item->actual_buy_price, 2) }}
+                                    </td>
+
+                                    <td class="text-end">
+                                        {{ number_format((float) $item->commission_amount, 2) }}
+                                    </td>
+
+                                    <td class="text-end fw-bold">
+                                        {{ number_format((float) $item->gross_amount, 2) }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- 4. ငွေစာရင်းချုပ် --}}
+                <div class="row g-3">
+
+                    {{-- သတိပြုရန် --}}
+                    <div class="col-5">
+                        <div class="border rounded p-2 small">
+                            <div class="mb-2 small text-muted">
+                                • အချက်အလက်များကို သေချာစစ်ဆေးပါ။
+                            </div>
+
+                            <div class=" small text-muted">
+                                • မှားယွင်းမှုရှိပါက စာရင်းသွင်းသူထံ ချက်ချင်းအကြောင်းကြားပါ။
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ငွေစာရင်း --}}
+                    <div class="col-7">
+                        <table class="table table-sm table-borderless mb-0" style="font-size: 15px;">
+                            <tbody>
+                                <tr>
+                                    <td>ပွဲခနှုတ်ပြီး သီးနှံတန်ဖိုး</td>
+                                    <td class="text-end fw-semibold">
+                                        {{ number_format((float) $purchase->total_amount, 2) }} ကျပ်
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>ကားခ စုစုပေါင်း</td>
+                                    <td class="text-end fw-semibold">
+                                        {{ number_format((float) $totalCarFee, 2) }} ကျပ်
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>ကြိုသုံး / အခြားနုတ်ငွေ</td>
+                                    <td class="text-end fw-semibold">
+                                        -
+                                        {{ number_format((float) ($purchase->advance_deduction + $purchase->other_deduction), 2) }}
+                                        ကျပ်
+                                    </td>
+                                </tr>
+
+                                <tr class="border-top">
+                                    <td class="fw-bold pt-2">
+                                        အသားတင်ကျသင့်ငွေ
+                                    </td>
+                                    <td class="text-end fw-bold pt-2">
+                                        {{ number_format((float) $purchase->net_amount, 2) }} ကျပ်
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>ပေးပြီးငွေ</td>
+                                    <td class="text-end fw-semibold">
+                                        {{ number_format((float) $purchase->total_paid, 2) }} ကျပ်
+                                    </td>
+                                </tr>
+
+                                <tr class="border-top">
+                                    <td class="fw-bold pt-2">
+                                        ကျန်ငွေရှင်းရန်
+                                    </td>
+                                    <td class="text-end fw-bold pt-2">
+                                        {{ number_format((float) $purchase->balance_amount, 2) }} ကျပ်
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+
+                {{-- 5. အောက်ခြေစာ --}}
+                <div class="text-center mt-3 pt-2 border-top small">
+                    <small class=" text-muted">
+                        "တောင်သူဦးကြီးများ သီးနှံအထွက်တိုး၍ ဈေးကောင်းရရှိကြပါစေ"
+                        ဒေါ်ဝင်းမြင့် (မြရတနာ) မှ ဆုမွန်ကောင်းတောင်းအပ်ပါသည်။
+                    </small>
+                </div>
+
+            </div>
+        </div>
+
+
+
+    </div>
+
+@endsection
+@push('styles')
     <style>
-        body {
-            background: #f1f3f5;
-            font-family: Arial, sans-serif;
-            color: #222;
-            font-size: 13px;
-        }
-
-        .voucher {
-            background: #fff;
-            max-width: 900px;
-            margin: 25px auto;
-            padding: 35px;
-            border: 1px solid #ddd;
-        }
-
-        .voucher-header {
-            text-align: center;
-            padding-bottom: 18px;
-            border-bottom: 2px solid #222;
-            margin-bottom: 20px;
-        }
-
-        .voucher-header h2 {
-            font-size: 25px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .voucher-title {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 18px;
-            font-weight: bold;
-            letter-spacing: 2px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px 25px;
-            margin-bottom: 20px;
-        }
-
-        .info-item {
-            display: flex;
-            gap: 8px;
-        }
-
-        .info-item span:first-child {
-            color: #666;
-            min-width: 105px;
-        }
-
-        .table th {
-            background: #f1f3f5;
-            white-space: nowrap;
-        }
-
-        .table td,
-        .table th {
-            padding: 9px 7px;
-            vertical-align: middle;
-        }
-
-        .summary {
-            width: 340px;
-            max-width: 100%;
-            margin-left: auto;
-        }
-
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            padding: 7px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .summary-row.total {
-            font-size: 16px;
-            font-weight: bold;
-            border-top: 2px solid #222;
-            border-bottom: 2px solid #222;
-        }
-
-        .signatures {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 25px;
-            margin-top: 65px;
-            text-align: center;
-        }
-
-        .signature-line {
-            border-top: 1px solid #555;
-            padding-top: 8px;
-        }
-
-        .voucher-footer {
-            text-align: center;
-            margin-top: 30px;
-            color: #666;
-        }
-
-        .no-print {
-            max-width: 900px;
-            margin: 20px auto 0;
-            display: flex;
-            justify-content: space-between;
-        }
-
         @media print {
             @page {
-                size: A4 portrait;
-                margin: 12mm;
+                size: A5 landscape;
+                margin: 5mm;
             }
 
+            html,
             body {
-                background: #fff;
-                font-size: 11px;
+                width: 100%;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
-            .voucher {
-                max-width: none;
-                margin: 0;
-                padding: 0;
-                border: none;
+            body * {
+                visibility: hidden !important;
             }
 
-            .no-print {
+            .print-card,
+            .print-card * {
+                visibility: visible !important;
+            }
+
+            .print-card {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                background: white !important;
+            }
+
+            .print-card .card-body {
+                padding: 0 !important;
+            }
+
+            .d-print-none {
                 display: none !important;
             }
 
+            .container,
+            .container-fluid {
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
             .table {
-                break-inside: auto;
+                width: 100% !important;
+                font-size: 10px !important;
+                margin-bottom: 0 !important;
             }
 
-            tr {
-                break-inside: avoid;
+            .table th,
+            .table td {
+                padding: 3px !important;
+                vertical-align: middle !important;
             }
 
-            .signatures {
-                break-inside: avoid;
+            .row {
+                --bs-gutter-x: 0.5rem;
             }
 
-            .table th {
-                background: #eee !important;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
+            .mb-5 {
+                margin-bottom: 0.5rem !important;
+            }
+
+            .shadow-lg {
+                box-shadow: none !important;
+            }
+
+            .print-card,
+            .print-card table,
+            .print-card tr {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
             }
         }
     </style>
-</head>
-
-<body>
-
-<div class="no-print">
-    <a href="{{ route('purchases.show', $purchase->id) }}"
-       class="btn btn-outline-secondary btn-sm">
-        Back to Purchase
-    </a>
-
-    <button onclick="window.print()" class="btn btn-success btn-sm">
-        <i class="bi bi-printer"></i> Print Voucher
-    </button>
-</div>
-
-<div class="voucher">
-
-    {{-- Business Header --}}
-    <div class="voucher-header">
-        <h2>WHOLESALE MARKET</h2>
-        <div>Farmer Purchase & Payment Voucher</div>
-        <div class="text-muted mt-1">
-            Address: ______________________________
-        </div>
-        <div class="text-muted">
-            Phone: ________________________________
-        </div>
-    </div>
-
-    <div class="voucher-title">PURCHASE VOUCHER</div>
-
-    {{-- Invoice Information --}}
-    <div class="info-grid">
-        <div class="info-item">
-            <span>Invoice No.</span>
-            <strong>{{ $purchase->invoice_no }}</strong>
-        </div>
-
-        <div class="info-item">
-            <span>Purchase Date</span>
-            <strong>
-                {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y h:i A') }}
-            </strong>
-        </div>
-
-        <div class="info-item">
-            <span>Farmer Name</span>
-            <strong>{{ $purchase->farmer->name ?? '-' }}</strong>
-        </div>
-
-        <div class="info-item">
-            <span>Phone</span>
-            <strong>{{ $purchase->farmer->phone ?? '-' }}</strong>
-        </div>
-
-        <div class="info-item">
-            <span>Village</span>
-            <strong>{{ $purchase->farmer->village ?? '-' }}</strong>
-        </div>
-
-        <div class="info-item">
-            <span>Status</span>
-            <strong>{{ $purchase->status }}</strong>
-        </div>
-    </div>
-
-    {{-- Crop Details --}}
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Crop</th>
-                <th>Grade</th>
-                <th class="text-end">Quantity</th>
-                <th>Unit</th>
-                <th class="text-end">Buy Price</th>
-                <th class="text-end">Gross</th>
-                <th class="text-end">Commission</th>
-                <th class="text-end">Car Fee</th>
-                <th class="text-end">Net</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach ($purchase->items as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->crop->crop_name ?? '-' }}</td>
-                    <td>{{ $item->grade->grade_name ?? '-' }}</td>
-
-                    <td class="text-end">
-                        {{ number_format($item->quantity, 3) }}
-                    </td>
-
-                    <td>{{ $item->unit }}</td>
-
-                    <td class="text-end">
-                        {{ number_format($item->actual_buy_price, 2) }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ number_format($item->gross_amount, 2) }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ number_format($item->commission_amount, 2) }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ number_format($item->car_fee_amount, 2) }}
-                    </td>
-
-                    <td class="text-end">
-                        {{ number_format($item->net_amount, 2) }}
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    {{-- Payment History --}}
-    <h6 class="fw-bold mt-4 mb-2">Payment Details</h6>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Payment Type</th>
-                <th>Method</th>
-                <th>Note</th>
-                <th class="text-end">Amount (Ks)</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @forelse ($purchase->payments as $payment)
-                <tr>
-                    <td>
-                        {{ \Carbon\Carbon::parse($payment->payment_date)->format('d-m-Y h:i A') }}
-                    </td>
-
-                    <td>{{ $payment->payment_type }}</td>
-                    <td>{{ $payment->payment_method }}</td>
-                    <td>{{ $payment->note ?: '-' }}</td>
-
-                    <td class="text-end">
-                        {{ number_format($payment->amount, 2) }}
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="text-center">
-                        No payment recorded.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    {{-- Financial Summary --}}
-    <div class="summary mt-4">
-
-        <div class="summary-row">
-            <span>Total Amount</span>
-            <strong>{{ number_format($purchase->total_amount, 2) }} Ks</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Total Deduction</span>
-            <strong>{{ number_format($purchase->total_deduction, 2) }} Ks</strong>
-        </div>
-
-        <div class="summary-row total">
-            <span>Net Amount</span>
-            <span>{{ number_format($purchase->net_amount, 2) }} Ks</span>
-        </div>
-
-        <div class="summary-row">
-            <span>Total Paid</span>
-            <strong>{{ number_format($purchase->total_paid, 2) }} Ks</strong>
-        </div>
-
-        <div class="summary-row">
-            <span>Balance Due</span>
-            <strong>{{ number_format($purchase->balance_amount, 2) }} Ks</strong>
-        </div>
-
-    </div>
-
-    @if ($purchase->note)
-        <div class="mt-4">
-            <strong>Note:</strong> {{ $purchase->note }}
-        </div>
-    @endif
-
-    {{-- Signatures --}}
-    <div class="signatures">
-        <div class="signature-line">Farmer Signature</div>
-        <div class="signature-line">Received By</div>
-        <div class="signature-line">Authorized By</div>
-    </div>
-
-    <div class="voucher-footer">
-        Thank you for your business.
-        <div class="small mt-1">
-            Printed: {{ now()->format('d-m-Y h:i A') }}
-        </div>
-    </div>
-
-</div>
-
-</body>
-</html>
-
+@endpush

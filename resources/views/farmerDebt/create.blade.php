@@ -6,7 +6,25 @@
 
 @section('content')
 
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row gap-2 mb-4">
+
+        {{-- တောင်သူအသစ်ထည့်ခြင်း --}}
+        <a href="{{ route('FarmerDebt#directPage') }}"
+            class="btn {{ request()->routeIs('FarmerDebt#directPage') ? 'btn-dark' : 'btn-outline-dark' }}">
+            <i class="bi bi-person-plus me-2"></i>
+            တောင်သူအသစ်ထည့်ရန်
+        </a>
+
+        {{-- ရှိပြီးသားတောင်သူအတွက် ကြိုသုံးငွေ --}}
+        <a href="{{ route('FarmerDebt#directPageSettlement') }}"
+            class="btn {{ request()->routeIs('FarmerDebt#directPageSettlement') ? 'btn-dark' : 'btn-outline-dark' }}">
+            <i class="bi bi-cash-stack me-2"></i>
+            ကြိုသုံးငွေထုတ်ပေးရန်
+        </a>
+
+    </div>
+
+    <div class="d-md-flex justify-content-between align-items-center mb-4 mt-3">
 
         <div>
             <h1 class="page-title mb-1" style="line-height: 38px">

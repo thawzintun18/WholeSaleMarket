@@ -123,6 +123,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('settlement/{id}', [FarmerDebtController::class, 'settlement'])->name('FarmerDebt#settlement');
         Route::post('settlementCreate/{id}', [FarmerDebtController::class, 'settlementCreate'])->name('FarmerDebt#settlementCreate');
         Route::get('settlementList/{id}', [FarmerDebtController::class, 'settlementList'])->name('FarmerDebt#settlementList');
-
+        Route::get('directPageSettlement', [FarmerDebtController::class, 'directPageSettlement'])->name('FarmerDebt#directPageSettlement');
+        Route::post('createSettlement', [FarmerDebtController::class, 'createSettlement'])->name('FarmerDebt#createSettlement');
     });
 });

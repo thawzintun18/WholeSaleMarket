@@ -158,122 +158,126 @@
     </div>
 
 
+    @if ($farmerDebt->debt_type == 'CashLoan')
 
-    {{-- Grade Table --}}
-    <div class="dashboard-card shadow-sm">
+        {{-- Grade Table --}}
+        <div class="dashboard-card shadow-sm">
 
-        <div class="d-md-flex justify-content-between align-items-center mb-3">
+            <div class="d-md-flex justify-content-between align-items-center mb-3">
 
-            <div>
+                <div>
 
-                <h5 class="mb-1" style="line-height: 38px">
-                    အကြွေးပြန်ဆပ်မှုစာရင်း
-                </h5>
+                    <h5 class="mb-1" style="line-height: 38px">
+                        အကြွေးပြန်ဆပ်မှုစာရင်း
+                    </h5>
 
-                <small class="text-muted mt-2">
-                    စာရင်းသွင်းထားသော အကြွေးပြန်ဆပ်မှုစာရင်းများ
-                </small>
+                    <small class="text-muted mt-2">
+                        စာရင်းသွင်းထားသော အကြွေးပြန်ဆပ်မှုစာရင်းများ
+                    </small>
 
-            </div>
-
-
-            <div class="d-md-flex justify-content-end mt-md-0 mt-2">
-                <div class="me-2">
-                    <span class="badge bg-light text-dark border">
-                        {{ $settlement->count() }} မှတ်တမ်း
-                    </span>
                 </div>
+
+
+                <div class="d-md-flex justify-content-end mt-md-0 mt-2">
+                    <div class="me-2">
+                        <span class="badge bg-light text-dark border">
+                            {{ $settlement->count() }} မှတ်တမ်း
+                        </span>
+                    </div>
+                </div>
+
             </div>
 
-        </div>
+            <div class="table-responsive">
 
-        <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
 
-            <table class="table table-hover align-middle mb-0">
+                    <thead>
 
-                <thead>
-
-                    <tr>
-                        <th style="width: 60px;">စဉ်</th>
-                        <th>အကြွေးဆပ်သည့်နေ့ရက်</th>
-                        <th>တောင်သူအမည်</th>
-                        <th>လာဆပ်သောငွေ</th>
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    @if ($settlement->count() > 0)
-
-                        @foreach ($settlement as $item)
-                            <tr>
-
-                                <td>{{ $loop->iteration }}</td>
-
-                                <td>
-                                    <div>{{ \Carbon\Carbon::parse($item->settlement_date)->format('d-m-Y') }}</div>
-                                    <small class="text-muted">
-                                        {{ \Carbon\Carbon::parse($item->settlement_date)->format('h:i A') }}
-                                    </small>
-                                </td>
-
-                                <td>
-                                    {{ $item->name }}
-                                </td>
-
-                                <td class="">
-
-                                    <p>{{ number_format($item->amount, 0) }} <small
-                                            class="small text-secondary">ကျပ်</small></p>
-
-                                </td>
-
-                            </tr>
-                        @endforeach
-                    @else
                         <tr>
-                            <td colspan="10" class="empty-state-cell">
-                                <div class="empty-state">
-
-                                    <h5>အကြွေးပြန်ဆပ်မှုစာရင်း မရှိသေးပါ</h5>
-
-                                    <p>
-                                        အကြွေးပြန်ဆပ်မှုစာရင်းကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
-                                    </p>
-                                </div>
-                            </td>
+                            <th style="width: 60px;">စဉ်</th>
+                            <th>အကြွေးဆပ်သည့်နေ့ရက်</th>
+                            <th>တောင်သူအမည်</th>
+                            <th>လာဆပ်သောငွေ</th>
                         </tr>
-                    @endif
-                </tbody>
-            </table>
 
+                    </thead>
+
+
+                    <tbody>
+
+                        @if ($settlement->count() > 0)
+
+                            @foreach ($settlement as $item)
+                                <tr>
+
+                                    <td>{{ $loop->iteration }}</td>
+
+                                    <td>
+                                        <div>{{ \Carbon\Carbon::parse($item->settlement_date)->format('d-m-Y') }}</div>
+                                        <small class="text-muted">
+                                            {{ \Carbon\Carbon::parse($item->settlement_date)->format('h:i A') }}
+                                        </small>
+                                    </td>
+
+                                    <td>
+                                        {{ $item->name }}
+                                    </td>
+
+                                    <td class="">
+
+                                        <p>{{ number_format($item->amount, 0) }} <small
+                                                class="small text-secondary">ကျပ်</small></p>
+
+                                    </td>
+
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="10" class="empty-state-cell">
+                                    <div class="empty-state">
+
+                                        <h5>အကြွေးပြန်ဆပ်မှုစာရင်း မရှိသေးပါ</h5>
+
+                                        <p>
+                                            အကြွေးပြန်ဆပ်မှုစာရင်းကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+
+            </div>
+
+
+            {{-- Pagination Example --}}
+            <div class="d-md-flex justify-content-between align-items-center mt-4">
+
+                <p class="text-muted">
+                    မှတ်တမ်း {{ $settlement->firstItem() ?? 0 }}
+                    မှ {{ $settlement->lastItem() ?? 0 }}
+                    အထိ ပြသထားပြီး
+                    စုစုပေါင်း {{ $settlement->total() }} မျိုး ရှိပါသည်။
+                </p>
+
+                <nav class=" d-flex justify-content-end">
+
+                    <ul class="pagination pagination-sm mb-0">
+
+                        <span> {{ $settlement->links() }} </span>
+
+                    </ul>
+
+                </nav>
+
+            </div>
         </div>
 
+    @endif
 
-        {{-- Pagination Example --}}
-        <div class="d-md-flex justify-content-between align-items-center mt-4">
-
-            <p class="text-muted">
-                မှတ်တမ်း {{ $settlement->firstItem() ?? 0 }}
-                မှ {{ $settlement->lastItem() ?? 0 }}
-                အထိ ပြသထားပြီး
-                စုစုပေါင်း {{ $settlement->total() }} မျိုး ရှိပါသည်။
-            </p>
-
-            <nav class=" d-flex justify-content-end">
-
-                <ul class="pagination pagination-sm mb-0">
-
-                    <span> {{ $settlement->links() }} </span>
-
-                </ul>
-
-            </nav>
-
-        </div>
-    </div>
 
 @endsection
 

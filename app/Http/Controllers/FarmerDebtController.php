@@ -6,6 +6,7 @@ use App\Models\FarmerDebt;
 use App\Models\PurchaseDebtSettlement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class FarmerDebtController extends Controller
@@ -95,6 +96,85 @@ class FarmerDebtController extends Controller
 
     }
 
+    //directPageSettlement
+    public function directPageSettlement(Request $request)
+    {
+        $search = trim($request->input('search', ''));
+
+        $farmers = collect();
+
+        if ($search !== '') {
+            $farmers = Farmer::query()
+                ->where(function ($query) use ($search) {
+                    $query->where('farmer_code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('village', 'like', "%{$search}%");
+                })
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->limit(20)
+                ->get();
+        }
+
+        $farmer           = null;
+        $totalDebtBalance = 0;
+
+        if ($request->filled('farmer_id')) {
+            $farmer = Farmer::where('is_active', true)
+                ->find($request->farmer_id);
+
+            if ($farmer) {
+                $totalDebtBalance = FarmerDebt::where(
+                    'farmer_id',
+                    $farmer->id
+                )
+                    ->whereIn('status', ['Open', 'Partial'])
+                    ->sum('balance_amount');
+            }
+        }
+
+        return view('farmerDebt.existCreate', compact(
+            'search',
+            'farmers',
+            'farmer',
+            'totalDebtBalance'
+        ));
+    }
+
+    //createSettlement
+    public function createSettlement(Request $request)
+    {
+        $validated = $request->validate([
+            'farmer_id' => ['required', 'integer', 'exists:farmers,id'],
+            'debt_type' => [
+                'required',
+                Rule::in(['PurchaseAdvance', 'CashLoan']),
+            ],
+            'amount'    => ['required', 'numeric', 'min:0.01', 'max:9999999999999.99'],
+        ]);
+
+        $farmer = Farmer::where('is_active', true)
+            ->findOrFail($validated['farmer_id']);
+
+        DB::transaction(function () use ($validated, $farmer) {
+            FarmerDebt::create([
+                'farmer_id'      => $farmer->id,
+                'debt_type'      => $validated['debt_type'],
+                'debt_date'      => now(),
+                'amount'         => $validated['amount'],
+                'settled_amount' => 0,
+                'balance_amount' => $validated['amount'],
+                'status'         => 'Open',
+            ]);
+        });
+
+        Alert::success('အောင်မြင်ပါသည်', 'ကြိုသုံးငွေကို အောင်မြင်စွာစာရင်းသွင်းပြီးပါပြီ။');
+
+        return to_route('FarmerDebt#list');
+
+    }
+
     //list
     public function list()
     {
@@ -106,11 +186,31 @@ class FarmerDebtController extends Controller
         )->select(
             'farmer_debts.*',
             'farmers.farmer_code',
-            'farmers.name'
-        )->orderBy(
-            'farmer_debts.created_at',
-            'desc'
-        )->paginate(10);
+            'farmers.name',
+            'farmers.farmer_code'
+        )->when(
+            request('searchData'),
+            function ($query) {
+                $query->whereAny([
+                    'farmers.name',
+                    'farmers.farmer_code',
+                    'farmer_debts.amount',
+                    'farmer_debts.settled_amount',
+                    'farmer_debts.balance_amount',
+                ], 'like', '%' . request('searchData') . '%');
+            }
+        )->when(
+            request('searchDate'),
+            function ($query) {
+                $query->where(
+                    'farmer_debts.debt_date',
+                    request('searchDate'));
+            }
+        )
+            ->orderBy(
+                'farmer_debts.created_at',
+                'desc'
+            )->paginate(10);
 
         return view('farmerDebt.index', compact('farmerDebt'));
     }

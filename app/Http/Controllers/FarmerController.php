@@ -30,6 +30,8 @@ class FarmerController extends Controller
 
         $farmers = $farmers->orderBy('id', 'desc')->paginate(10);
 
+        // dd($farmers->toArray());
+
         return view('farmers.index', compact('farmers'));
     }
 

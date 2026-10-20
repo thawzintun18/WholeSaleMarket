@@ -164,9 +164,16 @@
                             </td>
 
                             <td class="text-center">
+
+                                {{-- @if ($farmer->debt_type && $farmer->status)
+                                    <a href="{{ route('FarmerDebt#settlementList', $farmer->farmer_debt_id) }}"
+                                        class="btn btn-sm btn-primary" title="ပြင်ဆင်ရန်">
+                                        အကြွေးပြန်ဆပ်မှုစာရင်း
+                                    </a>
+                                @endif --}}
+
                                 <a href="{{ route('farmers#edit#page', $farmer->id) }}"
                                     class="btn btn-sm btn-outline-primary" title="ပြင်ဆင်ရန်">
-                                    {{-- <i class="bi bi-pencil"></i> --}}
                                     ပြင်ရန်
                                 </a>
 

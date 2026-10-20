@@ -62,7 +62,7 @@
                         ရှာဖွေမည်
                     </button>
 
-                    <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary mt-md-0 mt-3">
+                    <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်မည်
                     </a>
@@ -76,7 +76,7 @@
     <div class="dashboard-card shadow-lg">
 
         <div class="row d-flex justify-content-between align-items-center mb-3">
-            <div class=" col-md-8">
+            <div class=" col-md-7">
 
                 <h5 class="mb-1">တောင်သူများစာရင်း</h5>
 
@@ -87,19 +87,19 @@
 
             </div>
 
-            <div class=" col-md-4 d-md-flex justify-content-end mt-md-0 mt-2">
+            <div class=" col-md-5 d-md-flex justify-content-end mt-md-0 mt-2">
                 <div class="me-2">
                     <span class="badge bg-light text-dark border">
                         စုစုပေါင်း {{ number_format($farmers->total()) }} ဦး
                     </span>
                 </div>
 
-                <div class="d-flex mt-md-0 mt-2">
+                <div class="d-md-flex mt-md-0 mt-2">
                     <div class=" me-2">
                         <a href="{{ route('farmers#history') }}" class=" btn btn-primary">ပြင်ဆင်မှုစာရင်း</a>
                     </div>
 
-                    <div class=" me-2">
+                    <div class=" me-2 mt-md-0 mt-2">
                         <a href="{{ route('farmers#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောစာရင်း</a>
                     </div>
                 </div>

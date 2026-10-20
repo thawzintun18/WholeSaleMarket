@@ -11,13 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grades', function (Blueprint $table) {
+        Schema::create('purchase_debt_settlements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('crop_id')->constrained('crops')->restrictOnDelete();
-            $table->string('grade_name', 50);
+
+            $table->foreignId('farmer_debt_id')
+                ->constrained('farmer_debts')
+                ->restrictOnDelete();
+
+            $table->decimal('amount', 15, 2);
+
+            $table->dateTime('settlement_date')->useCurrent();
+
             $table->timestamps();
             $table->softDeletes();
-            $table->unique(['crop_id', 'grade_name']);
+
+            $table->index('settlement_date');
+
         });
     }
 
@@ -26,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('grades');
+        Schema::dropIfExists('purchase_debt_settlements');
     }
 };

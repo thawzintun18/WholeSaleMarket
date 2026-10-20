@@ -4,6 +4,7 @@ use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropQualityController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\FarmerDebtController;
 use App\Http\Controllers\PurchaseController;
 use Illuminate\Support\Facades\Route;
 
@@ -113,5 +114,15 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('edit/{id}', [DailyPriceController::class, 'edit'])->name('DailyPrice#edit');
         Route::post('update/{id}', [DailyPriceController::class, 'update'])->name('DailyPrice#update');
         Route::get('history', [DailyPriceController::class, 'history'])->name('DailyPrice#history');
+    });
+
+    Route::group(['prefix' => 'FarmerDebt'], function () {
+        Route::get('directPage', [FarmerDebtController::class, 'directPage'])->name('FarmerDebt#directPage');
+        Route::post('create', [FarmerDebtController::class, 'create'])->name('FarmerDebt#create');
+        Route::get('list', [FarmerDebtController::class, 'list'])->name('FarmerDebt#list');
+        Route::get('settlement/{id}', [FarmerDebtController::class, 'settlement'])->name('FarmerDebt#settlement');
+        Route::post('settlementCreate/{id}', [FarmerDebtController::class, 'settlementCreate'])->name('FarmerDebt#settlementCreate');
+        Route::get('settlementList/{id}', [FarmerDebtController::class, 'settlementList'])->name('FarmerDebt#settlementList');
+
     });
 });

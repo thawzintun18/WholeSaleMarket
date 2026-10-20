@@ -95,41 +95,38 @@ class FarmerController extends Controller
         //     'notes' => ['nullable', 'string'],
         // ]);
         $validated = $request->validate([
-            'name' => [
+            'name'    => [
                 'required',
                 'string',
                 'max:150',
-                'regex:/.*\S.*/u',
+                'regex:/\A[\p{Latin}\p{Myanmar}\p{M}\s]+\z/u',
             ],
-            'phone' => [
-                'nullable',
-                'string',
-                'max:30',
-                'regex:/^[0-9၀-၉+\-\s()]+$/u',
-            ],
-            'village' => [
-                'nullable',
-                'string',
-                'max:150',
-            ],
-            'notes' => [
-                'nullable',
-                'string',
-            ],
+            'phone'   => 'required|string|max:30|regex:/^[0-9၀-၉+\-\s()]+$/u',
+            'village' => 'required|string|max:150|regex:/\A[\p{Myanmar}\p{M}\s]+\z/u',
+            'notes'   => 'nullable|string',
         ], [
-            'name.required' => 'တောင်သူအမည် ဖြည့်ပေးပါ။',
-            'name.max' => 'တောင်သူအမည်သည် အများဆုံး 150 လုံး ဖြစ်ရပါမယ်။',
-            'name.regex' => 'တောင်သူအမည်ကို မှန်ကန်စွာ ဖြည့်ပေးပါ။',
-            'phone.max' => 'ဖုန်းနံပါတ်သည် အများဆုံး 30 လုံး ဖြစ်ရပါမယ်။',
-            'phone.regex' => 'ဖုန်းနံပါတ်ပုံစံ မှန်ကန်စွာ ဖြည့်ပေးပါ။',
-            'village.max' => 'ကျေးရွာအမည်သည် အများဆုံး 150 လုံး ဖြစ်ရပါမယ်။',
+            'name.required'    => 'တောင်သူအမည်ကို ထည့်သွင်းပေးပါ။',
+            'name.max'         => 'တောင်သူအမည်သည် စာလုံးရေ ၁၅၀ ထက် မကျော်ရပါ။',
+            'name.regex'       => 'တောင်သူအမည်တွင် English နှင့် မြန်မာအက္ခရာများကိုသာ ထည့်သွင်းပေးပါ။',
+
+            'phone.required'   => 'ဖုန်းနံပါတ်ကို ထည့်သွင်းပေးပါ။',
+            'phone.string'     => 'ဖုန်းနံပါတ်ကို မှန်ကန်စွာ ထည့်သွင်းပေးပါ။',
+            'phone.max'        => 'ဖုန်းနံပါတ်သည် စာလုံးရေ ၃၀ ထက် မကျော်ရပါ။',
+            'phone.regex'      => 'ဖုန်းနံပါတ်ပုံစံ မှန်ကန်စွာ ဖြည့်ပေးပါ။',
+
+            'village.required' => 'ကျေးရွာအမည်ကို ထည့်သွင်းပေးပါ။',
+            'village.string'   => 'ကျေးရွာအမည်ကို မှန်ကန်စွာ ထည့်သွင်းပေးပါ။',
+            'village.max'      => 'ကျေးရွာအမည်သည် စာလုံးရေ ၁၅၀ ထက် မကျော်ရပါ။',
+            'village.regex'    => 'ကျေးရွာအမည်ကို မြန်မာစာလုံးများဖြင့်သာ ထည့်သွင်းပေးပါ။',
+
+            'notes.string'     => 'မှတ်ချက်ကို မှန်ကန်စွာ ထည့်သွင်းပေးပါ။',
         ]);
 
         $farmer = Farmer::create([
-            'name' => $validated['name'],
-            'phone' => $validated['phone'] ?? null,
-            'village' => $validated['village'] ?? null,
-            'notes' => $validated['notes'] ?? null,
+            'name'      => $validated['name'],
+            'phone'     => $validated['phone'] ?? null,
+            'village'   => $validated['village'] ?? null,
+            'notes'     => $validated['notes'] ?? null,
             'is_active' => true,
         ]);
 
@@ -143,17 +140,15 @@ class FarmerController extends Controller
 
         return response()->json([
             'message' => 'တောင်သူအသစ် စာရင်းသွင်းပြီးပါပြီ။',
-            'farmer' => [
-                'id' => $farmer->id,
+            'farmer'  => [
+                'id'          => $farmer->id,
                 'farmer_code' => $farmer->farmer_code,
-                'name' => $farmer->name,
-                'phone' => $farmer->phone,
-                'village' => $farmer->village,
+                'name'        => $farmer->name,
+                'phone'       => $farmer->phone,
+                'village'     => $farmer->village,
             ],
         ], 201);
     }
-
-
 
     // Process in farmer list
     public function edit($id)

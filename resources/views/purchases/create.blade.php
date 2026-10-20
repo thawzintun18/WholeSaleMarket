@@ -35,8 +35,8 @@
                     </div>
 
                     <div class="col-lg-4">
-                        <button type="button" class="btn btn-success w-100 my-1" style="height: 40px;" data-bs-toggle="modal"
-                            data-bs-target="#newFarmerModal">
+                        <button type="button" class="btn btn-success w-100 my-1" style="height: 40px;"
+                            data-bs-toggle="modal" data-bs-target="#newFarmerModal">
                             <i class="bi bi-person-plus me-1"></i>
                             တောင်သူအသစ်ထည့်မည်
                         </button>
@@ -232,7 +232,7 @@
                         {{-- အလေးချိန် / အရေအတွက် --}}
                         <div class="col-md-6 col-lg-3">
                             <label for="quantity" class="form-label fw-semibold">
-                                သီးနှံ စုစုပေါင်းအရေးအတွက်
+                                သီးနှံ စုစုပေါင်းအရေအတွက်
                                 <span class="text-danger">*</span>
                             </label>
 
@@ -264,10 +264,11 @@
                         <div class="col-md-6 col-lg-3">
                             <label for="actual_buy_price" class="form-label fw-semibold">
                                 အမှန်တကယ်ဝယ်မည့်ဈေး
-                                <span class="text-danger">*( ပေးနိုင့်မည့်ဈေးကို စိတ်ကြိုက် အတိုး အလျှော့ လုပ်နိုင်သည် )</span>
+                                <span class="text-danger">*( ပေးနိုင့်မည့်ဈေးကို စိတ်ကြိုက် အတိုး အလျှော့ လုပ်နိုင်သည်
+                                    )</span>
                             </label>
 
-                           <input type="text" id="actual_buy_price" class="form-control" min="0"
+                            <input type="text" id="actual_buy_price" class="form-control" min="0"
                                 step="0.01" placeholder="ဝယ်ယူမည့်ဈေး">
                         </div>
 
@@ -595,25 +596,25 @@
                                 <div class="d-flex flex-wrap gap-3 text-secondary small">
 
                                     ${farmer.farmer_code ? `
-                                                            <span class=' text-info'>
-                                                                <i class="bi bi-upc-scan me-1"></i>
-                                                                ${escapeHtml(farmer.farmer_code)}
-                                                            </span>
-                                                        ` : ''}
+                                                                <span class=' text-info'>
+                                                                    <i class="bi bi-upc-scan me-1"></i>
+                                                                    ${escapeHtml(farmer.farmer_code)}
+                                                                </span>
+                                                            ` : ''}
 
                                     ${farmer.phone ? `
-                                                            <span class=' fw-bold text-dark fs-6'>
-                                                                <i class="bi bi-telephone me-1"></i>
-                                                                ${escapeHtml(farmer.phone)}
-                                                            </span>
-                                                        ` : ''}
+                                                                <span class=' fw-bold text-dark fs-6'>
+                                                                    <i class="bi bi-telephone me-1"></i>
+                                                                    ${escapeHtml(farmer.phone)}
+                                                                </span>
+                                                            ` : ''}
 
                                     ${farmer.village ? `
-                                                            <span class=' fw-bold text-dark fs-6'>
-                                                                <i class="bi bi-geo-alt me-1"></i>
-                                                                ${escapeHtml(farmer.village)}
-                                                            </span>
-                                                        ` : ''}
+                                                                <span class=' fw-bold text-dark fs-6'>
+                                                                    <i class="bi bi-geo-alt me-1"></i>
+                                                                    ${escapeHtml(farmer.village)}
+                                                                </span>
+                                                            ` : ''}
 
                                 </div>
                             </div>
@@ -980,9 +981,11 @@
 
             function calculate(item) {
                 const qtyPerBasket = Number(item.quantity_per_basket) || 0;
-                const totalBaskets = qtyPerBasket > 0 ? (Number(item.quantity) / qtyPerBasket) : Number(item.quantity);
+                const totalBaskets = qtyPerBasket > 0 ? (Number(item.quantity) / qtyPerBasket) : Number(item
+                    .quantity);
 
-                const actual_buy_price_after_sub_commission_amt = Number(item.actual_buy_price) - Number(item.commission_amount);
+                const actual_buy_price_after_sub_commission_amt = Number(item.actual_buy_price) - Number(item
+                    .commission_amount);
                 item.gross_amount = Number((totalBaskets * actual_buy_price_after_sub_commission_amt).toFixed(2));
 
                 item.total_deduction = Number(item.car_fee_amount);
@@ -1034,22 +1037,22 @@
                             </td>
                         </tr>
                         `;
-                    }
+                }
 
-                    let grossTotal = 0;
-                    let deductionTotal = 0;
-                    let netTotal = 0;
+                let grossTotal = 0;
+                let deductionTotal = 0;
+                let netTotal = 0;
 
-                    items.forEach(function(item, index) {
-                        calculate(item);
+                items.forEach(function(item, index) {
+                    calculate(item);
 
-                        grossTotal += item.gross_amount;
-                        deductionTotal += item.total_deduction;
-                        netTotal += item.net_amount;
+                    grossTotal += item.gross_amount;
+                    deductionTotal += item.total_deduction;
+                    netTotal += item.net_amount;
 
-                        const row = document.createElement('tr');
+                    const row = document.createElement('tr');
 
-                        row.innerHTML = `
+                    row.innerHTML = `
                             <td class="text-center">${index + 1}</td>
 
                             <td>
@@ -1293,7 +1296,9 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const priceInputs = ['quantity', 'reference_price', 'actual_buy_price', 'commission_amount', 'car_fee_amount'];
+            const priceInputs = ['quantity', 'reference_price', 'actual_buy_price', 'commission_amount',
+                'car_fee_amount'
+            ];
             const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
             priceInputs.forEach(function(id) {

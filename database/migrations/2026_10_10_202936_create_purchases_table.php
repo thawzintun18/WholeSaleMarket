@@ -17,8 +17,10 @@ return new class extends Migration
             $table->unsignedBigInteger('farmer_id');
             $table->dateTime('purchase_date');
             $table->string('status', 20)->default('Confirm'); // Confirm Temp Complete
-            $table->decimal('total_amount', 15, 2)->default(0);
-            $table->decimal('total_deduction', 15, 2)->default(0);
+            $table->decimal('total_gross_amount', 15, 2)->default(0);
+            $table->decimal('advance_sub_amount', 15, 2)->default(0);
+            $table->string('car_no', 255);
+            $table->decimal('car_fee_amount', 15, 2)->default(0);
             $table->decimal('net_amount', 15, 2)->default(0);
             $table->decimal('total_paid', 15, 2)->default(0);
             $table->decimal('balance_amount', 15, 2)->default(0);

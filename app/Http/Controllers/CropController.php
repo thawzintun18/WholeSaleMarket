@@ -245,12 +245,13 @@ class CropController extends Controller
             })
             ->orderByDesc('deleted_at')
             ->paginate(10);
+
         $crop_name = Crop::onlyTrashed()
             ->select('crop_name')
             ->distinct()
             ->orderBy('crop_name')
             ->get();
-        // dd($crop_name->toArray());
+
         return view('crops.trashList', compact('crops', 'crop_name'));
     }
 

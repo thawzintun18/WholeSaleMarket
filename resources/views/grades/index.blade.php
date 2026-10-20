@@ -221,11 +221,6 @@
                                         လက်ရှိတွင် သီးနှံအရည်အသွေး ထည့်သွင်းထားခြင်းမရှိသေးပါ။
                                     </p>
 
-                                    <a href="{{ route('Quality#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-                                        <i class="bi bi-plus-lg me-1"></i>
-                                        သီးနှံအရည်အသွေးထပ်ထည့်ရန်
-                                    </a>
-
                                 </div>
 
                             </td>

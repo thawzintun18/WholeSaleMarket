@@ -1,11 +1,10 @@
 <?php
 
 use App\Http\Controllers\CropController;
+use App\Http\Controllers\CropQualityController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
-use App\Http\Controllers\GradeController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\CropQualityController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
@@ -59,7 +58,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('history', [CropQualityController::class, 'history'])->name('Quality#history');
     });
 
-    Route::group(['prefix' => 'purchases'], function() {
+    Route::group(['prefix' => 'purchases'], function () {
         Route::get('create/page', [PurchaseController::class, 'createPage'])->name('purchases#create#page');
         Route::get('grades/{crop}', [PurchaseController::class, 'getGrades'])->name('purchases#grades');
         Route::get('reference-price', [PurchaseController::class, 'getReferencePrice'])->name('purchases#reference-price');
@@ -71,22 +70,19 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
             ->name('purchases#voucher');
     });
 
+    // Route::resource('crops', CropController::class)
+    //     ->except(['show']);
+    // Route::resource('grades', GradeController::class)
+    //     ->except(['show']);
 
+    // Route::get('/daily-prices', [DailyPriceController::class, 'index'])
+    //     ->name('daily-prices.index');
 
+    // Route::get('/daily-prices/create', [DailyPriceController::class, 'create'])
+    //     ->name('daily-prices.create');
 
-    Route::resource('crops', CropController::class)
-        ->except(['show']);
-    Route::resource('grades', GradeController::class)
-        ->except(['show']);
-
-    Route::get('/daily-prices', [DailyPriceController::class, 'index'])
-        ->name('daily-prices.index');
-
-    Route::get('/daily-prices/create', [DailyPriceController::class, 'create'])
-        ->name('daily-prices.create');
-
-    Route::get('/daily-prices/{id}/edit', [DailyPriceController::class, 'edit'])
-        ->name('daily-prices.edit');
+    // Route::get('/daily-prices/{id}/edit', [DailyPriceController::class, 'edit'])
+    //     ->name('daily-prices.edit');
 
     // Route::get('/farmers', [FarmerController::class, 'index'])
     //     ->name('farmers.index');
@@ -117,5 +113,11 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
         Route::get('list', [DailyPriceController::class, 'list'])->name('DailyPrice#list');
         Route::get('getGrades/{id}', [DailyPriceController::class, 'getGrades'])->name('DailyPrice#getGrades');
+        Route::get('delete/{id}', [DailyPriceController::class, 'delete'])->name('DailyPrice#delete');
+        Route::get('trashList', [DailyPriceController::class, 'trashList'])->name('DailyPrice#trashList');
+        Route::get('restore/{id}', [DailyPriceController::class, 'restore'])->name('DailyPrice#restore');
+        Route::get('edit/{id}', [DailyPriceController::class, 'edit'])->name('DailyPrice#edit');
+        Route::post('update/{id}', [DailyPriceController::class, 'update'])->name('DailyPrice#update');
+        Route::get('history', [DailyPriceController::class, 'history'])->name('DailyPrice#history');
     });
 });

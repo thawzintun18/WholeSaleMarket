@@ -29,22 +29,24 @@
 
                 {{-- 1. ပွဲရုံအချက်အလက် --}}
                 <div class="text-center border-bottom pb-3 mb-3">
-                    <h4 class="fw-bold text-dark mb-1">
-                        ဒေါ်ဝင်းမြင့် (မြရတနာ) ပွဲရုံ
-                    </h4>
-
-                    <div class=" text-dark">
-                        သီးနှံနှင့် ပဲမျိုးစုံရောင်းဝယ်ရေး
+                    <div class="text-dark mb-1">
+                        ဒေါ်ဝင်းမြင့်
                     </div>
 
-                    <div class=" text-dark">
-                        ဖုန်း - 09773771821 / 09778626912 / 09781782904
+                    <div class="text-dark mb-1">
+                        ကိုချိုလေး + မစိန်စိန်မြင့်
                     </div>
 
-                    <div class="mt-2">
-                        <span class="border rounded px-3 py-1 fw-bold">
-                            အမှတ်(၅၉)၊ (၇)လမ်း၊ ရန်ကင်းရပ်၊ မကွေးမြို့။
-                        </span>
+                    <div class="text-dark fs-3 fw-bold mb-1">
+                        မြရတနာ ပွဲရုံနှင့်ဆီစက်
+                    </div>
+
+                    <div class="text-dark mb-1">
+                        အမှတ်စီ(၆၁+၁၇၂)၊ ရန်ကင်း(၇)လမ်း၊ မကွေးမြို့။
+                    </div>
+
+                    <div class="mt-2 fw-bold text-dark">
+                        ၀၉-၄၄၂၀၆၄၃၂၉၊ ၀၉-၄၄၅၈၇၆၄၁၁၊ ၀၉-၄၀၁၅၅၉၁၁၉
                     </div>
                 </div>
 
@@ -53,10 +55,6 @@
 
                     <div class="col-6">
                         <div class="border rounded p-2 h-100">
-                            {{-- <div class="fw-bold border-bottom pb-1 mb-2">
-                                တောင်သူအချက်အလက်
-                            </div> --}}
-
                             <div class="small mb-1">
                                 တောင်သူအမည် -
                                 <span class="fw-bold">
@@ -73,9 +71,6 @@
 
                     <div class="col-6">
                         <div class="border rounded p-2 h-100">
-                            {{-- <div class="fw-bold border-bottom pb-1 mb-2">
-                                ဘောက်ချာအချက်အလက်
-                            </div> --}}
 
                             <div class="small mb-1">
                                 ဘောက်ချာအမှတ် -
@@ -87,7 +82,8 @@
                             <div class="small mb-1">
                                 နေ့စွဲ -
                                 <span class="fw-semibold">
-                                    {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }} {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('h:i A') }}
+                                    {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}
+                                    {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('h:i A') }}
                                 </span>
                             </div>
                         </div>
@@ -107,7 +103,7 @@
                                 <th style="width: 17%;">အလေးချိန်</th>
                                 <th style="width: 10%;">တင်း</th>
                                 <th style="width: 13%;">1တင်းဈေး</th>
-                                <th style="width: 12%;">ပွဲခ</th>
+                                <th style="width: 12%;">ကားနံပါတ်</th>
                                 <th style="width: 18%;">သီးနှံတန်ဖိုး</th>
                             </tr>
                         </thead>
@@ -116,13 +112,18 @@
                             @foreach ($items as $index => $item)
                                 @php
                                     $qpb = (float) ($item->quantity_per_basket ?? 0);
-
-                                    $basketCount = $qpb > 0 ? (float) $item->quantity / $qpb : (float) $item->quantity;
-
                                     $unit = strtolower($item->unit ?? '');
 
-                                    $displayUnit =
-                                        $unit === 'viss' ? 'ပိဿာ' : ($unit === 'pound' ? 'ပေါင်' : $item->unit);
+                                    // ပေါင် ဖြစ်ပါက အိတ်အလေးချိန် (ဥပမာ - ၁ ပေါင်) နှုတ်ပြီး တင်းတွက်ရန်
+                                    $calcQuantity = (float) $item->quantity;
+                                    if ($unit === 'pound') {
+                                        $bagCount = (int) ($item->bag_count ?? 0);
+                                        $deductionPerBag = 1; // လိုအပ်သလို ချိန်ညှိရန်
+                                        $calcQuantity = $calcQuantity - ($bagCount * $deductionPerBag);
+                                        if ($calcQuantity < 0) $calcQuantity = 0;
+                                    }
+                                    $basketCount = $qpb > 0 ? $calcQuantity / $qpb : $calcQuantity;
+                                    $displayUnit = $unit === 'viss' ? 'ပိဿာ' : ($unit === 'pound' ? "ပေါင် ({$item->bag_count} အိတ်)" : $item->unit);
                                 @endphp
 
                                 <tr>
@@ -160,7 +161,7 @@
                                     </td>
 
                                     <td class="text-end">
-                                        {{ number_format((float) $item->commission_amount, 2) }}
+                                        {{  $item->car_no }}
                                     </td>
 
                                     <td class="text-end fw-bold">
@@ -193,14 +194,14 @@
                         <table class="table table-sm table-borderless mb-0" style="font-size: 15px;">
                             <tbody>
                                 <tr>
-                                    <td>ပွဲခနှုတ်ပြီး သီးနှံတန်ဖိုး</td>
+                                    <td>သီးနှံတန်ဖိုး</td>
                                     <td class="text-end fw-semibold">
                                         {{ number_format((float) $purchase->total_amount, 2) }} ကျပ်
                                     </td>
                                 </tr>
 
                                 <tr>
-                                    <td>ကားခ စုစုပေါင်း</td>
+                                    <td>ကားခ</td>
                                     <td class="text-end fw-semibold">
                                         {{ number_format((float) $totalCarFee, 2) }} ကျပ်
                                     </td>
@@ -217,7 +218,7 @@
 
                                 <tr class="border-top">
                                     <td class="fw-bold pt-2">
-                                        အသားတင်ကျသင့်ငွေ
+                                        သင့်ငွေ
                                     </td>
                                     <td class="text-end fw-bold pt-2">
                                         {{ number_format((float) $purchase->net_amount, 2) }} ကျပ်

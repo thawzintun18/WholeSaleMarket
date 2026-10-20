@@ -55,7 +55,7 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->toArray());
+        dd($request->toArray());
         $data = $request->validate([
             'farmer_id'                            => ['required', 'integer', 'exists:farmers,id'],
             'advance_deduction'                    => ['nullable', 'numeric', 'min:0'],
@@ -68,7 +68,8 @@ class PurchaseController extends Controller
             'purchase_items.*.unit'                => ['required', 'string', 'max:30'],
             'purchase_items.*.reference_price'     => ['nullable', 'numeric', 'min:0'],
             'purchase_items.*.actual_buy_price'    => ['required', 'numeric', 'min:0'],
-            'purchase_items.*.commission_amount'   => ['nullable', 'numeric', 'min:0'],
+            // 'purchase_items.*.commission_amount'   => ['nullable', 'numeric', 'min:0'],
+            // 'purchase_items.*.car_no'              => ['nullable', 'string', 'max:255'],
             'purchase_items.*.car_fee_amount'      => ['nullable', 'numeric', 'min:0'],
             'purchase_items.*.note'                => ['nullable', 'string', 'max:255'],
         ], [
@@ -86,22 +87,19 @@ class PurchaseController extends Controller
             $advanceDeduction,
             $otherDeduction
         ) {
-            $totalAmount = 0;
-            $totalCarFee = 0;
+            $totalGrossAmount = 0;
+            // $totalCarFee = 0;
             $items       = [];
 
             // 1. သီးနှံတစ်မျိုးချင်းစီ တွက်ချက်ခြင်း
             foreach ($data['purchase_items'] as $index => $row) {
-
                 $crop = DB::table('crops')
                     ->where('id', $row['crop_id'])
                     ->first();
-
                 $grade = DB::table('grades')
                     ->where('id', $row['grade_id'])
                     ->where('crop_id', $row['crop_id'])
                     ->first();
-
                 if (! $crop || ! $grade) {
                     throw ValidationException::withMessages([
                         "purchase_items.$index.grade_id" =>
@@ -109,11 +107,18 @@ class PurchaseController extends Controller
                     ]);
                 }
 
-                $quantity    = (float) $row['quantity'];
-                $actualPrice = (float) $row['actual_buy_price'];
-                $commission  = (float) ($row['commission_amount'] ?? 0);
-                $carFee      = (float) ($row['car_fee_amount'] ?? 0);
+                $quantity     = (float) $row['quantity'];
+                $actualPrice  = (float) $row['actual_buy_price'];
+                $commission   = (float) ($row['commission_amount'] ?? 0);
 
+                $unit = strtolower($crop->unit ?? '');
+                $bagCount = (int) ($row['bag_count'] ?? 0);
+                if ($unit === 'pound' && $bagCount <= 0) {
+                    throw ValidationException::withMessages([
+                        "purchase_items.$index.bag_count" =>
+                        'ကျေးဇူးပြု၍ အိတ်အရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။',
+                    ]);
+                }
                 if ($commission > $actualPrice) {
                     throw ValidationException::withMessages([
                         "purchase_items.$index.commission_amount" =>
@@ -121,64 +126,55 @@ class PurchaseController extends Controller
                     ]);
                 }
 
-                // တင်း အရေအတွက် တွက်ချက်ခြင်း
-                $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
-
-                $basketCount = $quantityPerBasket > 0
-                    ? $quantity / $quantityPerBasket
-                    : $quantity;
-
-                // သီးနှံကျသင့်ငွေ
-                $grossAmount = round(
-                    $basketCount * ($actualPrice - $commission),
-                    2
-                );
-
-                if ($carFee > $grossAmount) {
-                    throw ValidationException::withMessages([
-                        "purchase_items.$index.car_fee_amount" =>
-                        'ကားခသည် သီးနှံကျသင့်ငွေထက် မများရပါ။',
-                    ]);
+                $calculationQty = $quantity;
+                if ($unit === 'pound') {
+                    $deductionPerBag = 1; // လိုအပ်သလို ချိန်ညှိနိုင်သည်
+                    $calculationQty = $quantity - ($bagCount * $deductionPerBag);
+                    if ($calculationQty < 0) $calculationQty = 0;
                 }
+                $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
+                $basketCount = $quantityPerBasket > 0
+                    ? $calculationQty / $quantityPerBasket
+                    : $calculationQty;
+                $rawAmount = round($basketCount * ($actualPrice - $commission), 2);
+                $grossAmt = floor($rawAmount / 1000) * 1000;
+                $remainderAmt = round($rawAmount - $grossAmt, 2);
 
                 $items[] = [
                     'crop_id'           => $crop->id,
                     'grade_id'          => $grade->id,
                     'quantity'          => $quantity,
+                    'bag_count'         => ($unit === 'pound') ? $bagCount : 0,
                     'reference_price'   => $row['reference_price'] ?? 0,
                     'actual_buy_price'  => $actualPrice,
                     'commission_amount' => $commission,
-                    'car_fee_amount'    => $carFee,
-                    'gross_amount'      => $grossAmount,
+                    'gross_amount'      => $grossAmt,
+                    'remainder_amount'  => $remainderAmt,
                     'note'              => $row['note'] ?? null,
                 ];
 
-                $totalAmount += $grossAmount;
-                $totalCarFee += $carFee;
+                $totalGrossAmount += $grossAmt;
             }
 
-            $totalAmount = round($totalAmount, 2);
-            $totalCarFee = round($totalCarFee, 2);
+            $totalGrossAmount = round($totalGrossAmount, 2);
+            // $totalCarFee = round($totalCarFee, 2);
 
             // 2. နုတ်ငွေ တွက်ချက်ခြင်း
-            $manualDeduction = round(
-                $advanceDeduction + $otherDeduction,
-                2
-            );
-
-            if ($manualDeduction > $totalAmount - $totalCarFee) {
-                throw ValidationException::withMessages([
-                    'advance_deduction' =>
-                    'နုတ်ငွေစုစုပေါင်းသည် ကားခနုတ်ပြီး ကျန်ငွေထက် မများရပါ။',
-                ]);
-            }
-
-            $totalDeduction = round(
-                $totalCarFee + $manualDeduction,
-                2
-            );
-
-            $netAmount = round($totalAmount - $totalDeduction, 2);
+            // $manualDeduction = round(
+            //     $advanceDeduction + $otherDeduction,
+            //     2
+            // );
+            // if ($manualDeduction > $totalGrossAmount - $totalCarFee) {
+            //     throw ValidationException::withMessages([
+            //         'advance_deduction' =>
+            //         'နုတ်ငွေစုစုပေါင်းသည် ကားခနုတ်ပြီး ကျန်ငွေထက် မများရပါ။',
+            //     ]);
+            // }
+            // $totalDeduction = round(
+            //     $totalCarFee + $manualDeduction,
+            //     2
+            // );
+            // $netAmount = round($totalGrossAmount - $totalDeduction, 2);
 
             // 3. Purchase စာရင်း သိမ်းခြင်း
             $purchaseId = DB::table('purchases')->insertGetId([
@@ -186,8 +182,10 @@ class PurchaseController extends Controller
                 'farmer_id'       => $data['farmer_id'],
                 'purchase_date'   => now(),
                 'status'          => $netAmount <= 0 ? 'Complete' : 'Confirm',
-                'total_amount'    => $totalAmount,
-                'total_deduction' => $totalDeduction,
+                'total_gross_amount'    => $totalGrossAmount,
+                // 'total_deduction' => $totalDeduction,
+                // 'car_no'            => $carNo,
+                // 'car_fee_amount'    => $carFee,
                 'net_amount'      => $netAmount,
                 'total_paid'      => 0,
                 'balance_amount'  => $netAmount,
@@ -200,7 +198,6 @@ class PurchaseController extends Controller
                 $item['purchase_id'] = $purchaseId;
                 $item['created_at']  = now();
                 $item['updated_at']  = now();
-
                 DB::table('purchase_items')->insert($item);
             }
 

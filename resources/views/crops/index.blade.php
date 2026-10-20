@@ -195,13 +195,17 @@
                     @else
                         <tr>
                             <td colspan="5" class="empty-state-cell">
-                                {{-- <i class="bi bi-people fs-1 text-muted"></i> --}}
-                                <p class="text-muted mt-2 mb-1">
-                                    သီးနှံစာရင်း မတွေ့ရှိပါ။
-                                </p>
-                                <small class="text-muted">
-                                    ရှာဖွေမှုကို ပြန်စစ်ပါ၊ သို့မဟုတ် သီးနှံအသစ် ထည့်ပါ။
-                                </small>
+
+                                <div class="empty-state">
+
+                                    <h5>သီးနှံစာရင်း မရှိသေးပါ</h5>
+
+                                    <p>
+                                        သီးနှံကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
+                                    </p>
+
+                                </div>
+
                             </td>
 
                         </tr>

@@ -161,7 +161,7 @@
                                     </td>
 
                                     <td class="text-end">
-                                        {{  $item->car_no }}
+                                        {{  $purchase->car_no }}
                                     </td>
 
                                     <td class="text-end fw-bold">
@@ -196,23 +196,43 @@
                                 <tr>
                                     <td>သီးနှံတန်ဖိုး</td>
                                     <td class="text-end fw-semibold">
-                                        {{ number_format((float) $purchase->total_amount, 2) }} ကျပ်
+                                        {{ number_format((float) $purchase->total_gross_amount, 2) }} ကျပ်
+                                    </td>
+                                </tr>
+
+                                <!-- အကြွေးနုတ်ငွေများ (PurchaseAdvance နဲ့ CashLoan တစ်ခုချင်းစီပြရန်) -->
+                                <tr>
+                                    <td colspan="2" class="p-0">
+                                        <table class="table table-sm table-borderless mb-0 w-100" style="font-size: 14px;">
+                                            @if(isset($debtSettlements) && count($debtSettlements) > 0)
+                                                @foreach($debtSettlements as $settlement)
+                                                    @php
+                                                        $typeName = $settlement->debt_type === 'PurchaseAdvance' ? 'ကြိုသုံး' : 'တောကြွေး';
+                                                    @endphp
+                                                    <tr>
+                                                        <td>
+                                                            {{ $typeName }}
+                                                            <small class="text-muted">({{ \Carbon\Carbon::parse($settlement->debt_date)->format('Y-m-d') }})</small>
+                                                        </td>
+                                                        <td class="text-end text-danger fw-semibold">
+                                                            - {{ number_format((float) $settlement->amount, 2) }} ကျပ်
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td class=" text-muted">ကြိုသုံး / အခြားနုတ်ငွေ</td>
+                                                    <td class="text-end fw-semibold">0.00 ကျပ်</td>
+                                                </tr>
+                                            @endif
+                                        </table>
                                     </td>
                                 </tr>
 
                                 <tr>
                                     <td>ကားခ</td>
                                     <td class="text-end fw-semibold">
-                                        {{ number_format((float) $totalCarFee, 2) }} ကျပ်
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>ကြိုသုံး / အခြားနုတ်ငွေ</td>
-                                    <td class="text-end fw-semibold">
-                                        -
-                                        {{ number_format((float) ($purchase->advance_deduction + $purchase->other_deduction), 2) }}
-                                        ကျပ်
+                                        {{ number_format((float) $purchase->car_fee_amount, 2) }} ကျပ်
                                     </td>
                                 </tr>
 

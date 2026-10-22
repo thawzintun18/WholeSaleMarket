@@ -8,7 +8,7 @@
 
 @section('content')
 
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class=" d-md-flex justify-content-between align-items-center mb-4">
 
         <div>
             <h1 class="page-title mb-1">သီးနှံစာရင်း</h1>
@@ -99,12 +99,12 @@
                     </span>
                 </div>
 
-                <div class="d-flex mt-md-0 mt-2">
+                <div class="d-md-flex mt-md-0 mt-2">
                     <div class=" me-2">
                         <a href="{{ route('Crop#history') }}" class=" btn btn-primary">သီးနှံပြင်ဆင်မှုစာရင်း</a>
                     </div>
 
-                    <div class=" me-2">
+                    <div class=" me-2 mt-md-0 mt-2">
                         <a href="{{ route('Crop#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောသီးနှံစာရင်း</a>
                     </div>
                 </div>
@@ -195,7 +195,6 @@
                     @else
                         <tr>
                             <td colspan="5" class="empty-state-cell">
-
                                 <div class="empty-state">
 
                                     <h5>သီးနှံစာရင်း မရှိသေးပါ</h5>
@@ -203,23 +202,14 @@
                                     <p>
                                         သီးနှံကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
                                     </p>
-
                                 </div>
-
                             </td>
-
-                        </tr>
-
-                        </td>
                         </tr>
                     @endif
-
                 </tbody>
-
             </table>
 
         </div>
-
         {{-- Pagination Example --}}
         <div class="d-md-flex justify-content-between align-items-center mt-4">
 
@@ -241,7 +231,6 @@
             </nav>
 
         </div>
-
     </div>
 
 @endsection

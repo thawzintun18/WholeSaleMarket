@@ -11,13 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('farmer_advances', function (Blueprint $table) {
+
+        Schema::create('purchase_debt_settlements', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('farmer_id');
-            $table->dateTime('advance_date');
+            $table->unsignedBigInteger('purchase_id')->nullable();
+            $table->foreignId('farmer_debt_id')->constrained('farmer_debts')->restrictOnDelete();
             $table->decimal('amount', 15, 2);
+            $table->dateTime('settlement_date')->useCurrent();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('settlement_date');
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('farmer_advances');
+        Schema::dropIfExists('purchase_debt_settlements');
     }
 };

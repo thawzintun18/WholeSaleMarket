@@ -80,7 +80,7 @@
                         ရှာဖွေရန်
                     </button>
 
-                    <a href="{{ route('DailyPrice#trashList') }}" class="btn btn-outline-secondary mt-md-0 mt-3">
+                    <a href="{{ route('DailyPrice#trashList') }}" class="btn btn-outline-secondary">
                         <i class="bi bi-arrow-counterclockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်ရန်
                     </a>

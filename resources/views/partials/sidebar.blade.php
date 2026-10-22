@@ -57,14 +57,21 @@
 
         </a>
 
+        <a href="{{ route('FarmerDebt#list') }}" class="{{ request()->routeIs('FarmerDebt#list') ? 'active' : '' }}">
+
+            <i class="bi bi-cash-stack"></i>
+            <span>ကြိုသုံးငွေစာရင်း</span>
+
+        </a>
+
 
         {{-- Purchase --}}
         <div class="menu-title">
             Purchase
         </div>
 
-        <a href="{{route('purchases#create#page')}}"
-           class="{{ request()->routeIs('purchases#create#page') ? 'active' : '' }}">
+        <a href="{{ route('purchases#create#page') }}"
+            class="{{ request()->routeIs('purchases#create#page') ? 'active' : '' }}">
 
             <i class="bi bi-cart-plus"></i>
             <span>အဝယ် ( တောဘောင်ချာ )</span>

@@ -1,25 +1,23 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FarmerAdvance extends Model
+class FarmerDebt extends Model
 {
-    use HasFactory, SoftDeletes;
 
-    public $timestamps = false;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'farmer_id',
-        'advance_date',
+        'debt_type',
+        'debt_date',
         'amount',
+        'settled_amount',
+        'balance_amount',
+        'status',
     ];
 
-    protected $casts = [
-        'advance_date' => 'datetime',
-        'amount' => 'decimal:2',
-    ];
 }

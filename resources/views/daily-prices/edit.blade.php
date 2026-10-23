@@ -61,7 +61,7 @@
 
                     <div class="input-group">
 
-                        <input type="number" name="reference_buy_price" class="form-control text-end"
+                        <input type="number" name="reference_buy_price" id="price" class="form-control text-end"
                             value="{{ old('reference_buy_price', $dailyPrice->reference_buy_price) }}"
                             placeholder="Enter buying price">
 
@@ -88,3 +88,19 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const price = document.getElementById('price');
+
+            if (!price) return;
+
+            price.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+        });
+    </script>
+@endpush

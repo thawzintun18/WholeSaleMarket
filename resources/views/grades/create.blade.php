@@ -81,7 +81,7 @@
                         <div class="col-md-4">
                             <label class="form-label">အရည်အသွေးအမည်</label>
 
-                            <input type="text" name="grades[0][grade_name]"
+                            <input type="text" name="grades[0][grade_name]" id="grade_name"
                                 class="form-control grade-input @error('grades.0.grade_name')
                                 is-invalid
                             @enderror"
@@ -175,6 +175,18 @@
                     row.querySelector('.grade-input').value = '';
                 }
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const grade_name = document.getElementById('grade_name');
+
+            if (!grade_name) return;
+
+            grade_name.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
         });
     </script>
 @endsection

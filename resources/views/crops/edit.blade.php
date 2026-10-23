@@ -45,7 +45,7 @@
                             <span class="text-danger">*</span>
                         </label>
 
-                        <input type="text" name="crop_name" id="edit_crop_name"
+                        <input type="text" name="crop_name" id="crop_name"
                             class="form-control p-2 @error('crop_name') is-invalid @enderror"
                             value="{{ old('crop_name', $crop->crop_name) }}" placeholder="ဥပမာ - ပြောင်း၊ နှမ်း">
 
@@ -64,7 +64,7 @@
                             <span class="text-danger">*</span>
                         </label>
 
-                        <input type="number" name="commission_amount" id="edit_commission_amount"
+                        <input type="number" name="commission_amount" id="commission_amount"
                             class="form-control p-2 @error('commission_amount') is-invalid @enderror"
                             value="{{ old('commission_amount', $crop->commission_amount) }}" placeholder="ဥပမာ - 2000">
 
@@ -85,7 +85,7 @@
                             <span class="text-danger">*</span>
                         </label>
 
-                        <input type="number" name="quantity_per_basket" id="edit_quantity_per_basket"
+                        <input type="number" name="quantity_per_basket" id="quantity_per_basket"
                             class="form-control p-2 @error('quantity_per_basket') is-invalid @enderror"
                             value="{{ old('quantity_per_basket', $crop->quantity_per_basket) }}" min="0"
                             step="0.01" placeholder="ဥပမာ - 20">
@@ -111,7 +111,7 @@
                             <span class="text-danger">*</span>
                         </label>
 
-                        <select name="unit" id="edit_unit" class="form-select p-2 @error('unit') is-invalid @enderror">
+                        <select name="unit" id="unit" class="form-select p-2 @error('unit') is-invalid @enderror">
 
                             <option value="" disabled {{ old('unit') ? '' : 'selected' }}>
                                 ယူနစ်ရွေးချယ်ပါ
@@ -157,3 +157,37 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const crop_name = document.getElementById('crop_name');
+            const commission_amount = document.getElementById('commission_amount');
+            const quantity_per_basket = document.getElementById('quantity_per_basket');
+
+
+            if (!crop_name) return;
+            if (!commission_amount) return;
+            if (!quantity_per_basket) return;
+
+            crop_name.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+
+            commission_amount.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+
+            quantity_per_basket.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+
+        });
+    </script>
+@endpush

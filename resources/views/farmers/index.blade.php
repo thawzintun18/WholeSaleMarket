@@ -163,17 +163,19 @@
                                 @endif
                             </td>
 
-                            <td class="text-center">
+                            <td class=" d-flex justify-content-end">
 
-                                {{-- @if ($farmer->debt_type && $farmer->status)
-                                    <a href="{{ route('FarmerDebt#settlementList', $farmer->farmer_debt_id) }}"
-                                        class="btn btn-sm btn-primary" title="ပြင်ဆင်ရန်">
+
+                                @if ($farmer->has_outstanding_debt)
+                                    <a href="{{ route('farmer#farmerSettlementList', $farmer->id) }}"
+                                        class="btn btn-sm btn-outline-primary" title="အကြွေးပြန်ဆပ်မှုစာရင်း">
                                         အကြွေးပြန်ဆပ်မှုစာရင်း
                                     </a>
-                                @endif --}}
+                                @endif
+
 
                                 <a href="{{ route('farmers#edit#page', $farmer->id) }}"
-                                    class="btn btn-sm btn-outline-primary" title="ပြင်ဆင်ရန်">
+                                    class="btn btn-sm btn-outline-dark mx-2" title="ပြင်ဆင်ရန်">
                                     ပြင်ရန်
                                 </a>
 

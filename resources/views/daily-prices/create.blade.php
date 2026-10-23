@@ -120,7 +120,7 @@
                         <div class="col-md-4">
                             <label class="form-label">ရည်ညွှန်းဝယ်ဈေး (ကျပ်)</label>
 
-                            <input type="number" name="grades[__INDEX__][reference_buy_price]"
+                            <input type="number" name="grades[__INDEX__][reference_buy_price]" id="price"
                                 class="form-control @error('grades.*.reference_buy_price') is-invalid @enderror"
                                 placeholder="ဥပမာ - 100000" min="0" max="9999999999999.99" step="0.01">
 
@@ -288,6 +288,18 @@
                 $row.find('input').val('');
             });
 
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const price = document.getElementById('price');
+
+            if (!price) return;
+
+            price.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
         });
     </script>
 @endsection

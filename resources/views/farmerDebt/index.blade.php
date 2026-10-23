@@ -210,9 +210,9 @@
                                     </div>
                                 </td>
 
-                                <td class="text-center">
+                                <td>
 
-                                    <div class="d-flex justify-content-center">
+                                    <div class="d-flex justify-content-end">
 
                                         @if (($item->debt_type == 'CashLoan' && $item->status == 'Open') || $item->status == 'Partial')
                                             <a href="{{ route('FarmerDebt#settlement', $item->id) }}"

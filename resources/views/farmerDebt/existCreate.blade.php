@@ -4,7 +4,7 @@
 
 @section('breadcrumb',
     'ဈေးနှုန်းများ / ကြိုသုံးငွေယူထားသောတောင်သူစာရင်း /
-    ရှိပြီးသားတောင်သူအတွက်ကြိုသုံးငွေထုတ်ပေးခြင်း')
+    ကြိုသုံးငွေထုတ်ပေးခြင်း')
 
 @section('content')
 
@@ -67,7 +67,7 @@
                         </button>
                     </div>
 
-                    <div class="form-text">
+                    <div class="form-text" style="line-height: 30px">
                         တောင်သူကုဒ်၊ အမည်၊ ဖုန်းနံပါတ် သို့မဟုတ် ရွာအမည်
                         တစ်ခုခုဖြင့် ရှာနိုင်ပါသည်။
                     </div>
@@ -134,22 +134,22 @@
 
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-12 col-md-6 col-lg-3">
+                        <div class=" col-md-6 col-lg-3 col-6">
                             <div class="text-secondary small">တောင်သူကုဒ်</div>
                             <div class="fw-semibold">{{ $farmer->farmer_code ?? '-' }}</div>
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-3">
+                        <div class=" col-md-6 col-lg-3 col-6">
                             <div class="text-secondary small">တောင်သူအမည်</div>
                             <div class="fw-semibold">{{ $farmer->name }}</div>
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-3">
+                        <div class=" col-md-6 col-lg-3 col-6">
                             <div class="text-secondary small">ဖုန်းနံပါတ်</div>
                             <div class="fw-semibold">{{ $farmer->phone ?? '-' }}</div>
                         </div>
 
-                        <div class="col-12 col-md-6 col-lg-3">
+                        <div class=" col-md-6 col-lg-3 col-6">
                             <div class="text-secondary small">ရွာအမည်</div>
                             <div class="fw-semibold">{{ $farmer->village ?? '-' }}</div>
                         </div>
@@ -202,8 +202,8 @@
                                     placeholder="ငွေပမာဏထည့်ပါ" required>
                             </div>
 
-                            <div class="col-12 d-flex justify-content-end gap-2">
-                                <div class=" d-md-flex">
+                            <div class=" d-flex justify-content-end gap-2">
+                                <div class=" d-flex justify-content-end">
 
                                     <a href="{{ route('FarmerDebt#directPageSettlement') }}"
                                         class="btn btn-outline-danger me-2">

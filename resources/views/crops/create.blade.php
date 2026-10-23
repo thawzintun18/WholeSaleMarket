@@ -156,3 +156,37 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const crop_name = document.getElementById('crop_name');
+            const commission_amount = document.getElementById('commission_amount');
+            const quantity_per_basket = document.getElementById('quantity_per_basket');
+
+
+            if (!crop_name) return;
+            if (!commission_amount) return;
+            if (!quantity_per_basket) return;
+
+            crop_name.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+
+            commission_amount.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+
+            quantity_per_basket.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+
+        });
+    </script>
+@endpush

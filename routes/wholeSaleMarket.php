@@ -2,10 +2,12 @@
 
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropQualityController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FarmerDebtController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
@@ -128,6 +130,17 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('settlementList/{id}', [FarmerDebtController::class, 'settlementList'])->name('FarmerDebt#settlementList');
         Route::get('directPageSettlement', [FarmerDebtController::class, 'directPageSettlement'])->name('FarmerDebt#directPageSettlement');
         Route::post('createSettlement', [FarmerDebtController::class, 'createSettlement'])->name('FarmerDebt#createSettlement');
+    });
+
+    Route::group(['prefix' => 'Customer'], function () {
+        Route::post('create', [CustomerController::class, 'create'])->name('Customer#create');
+        Route::get('search', [CustomerController::class, 'search'])->name('Customer#search');
+    });
+
+    Route::group(['prefix' => 'Sale'], function () {
+        Route::get('directPage', [SaleController::class, 'directPage'])->name('Sale#directPage');
+        Route::post('create', [SaleController::class, 'create'])->name('Sale#create');
+        Route::get('avgPrice/{crop_id}', [SaleController::class, 'avgPrice'])->name('Sale#avgPrice');
     });
 
 });

@@ -596,25 +596,25 @@
                                 <div class="d-flex flex-wrap gap-3 text-secondary small">
 
                                     ${farmer.farmer_code ? `
-                                                                <span class=' text-info'>
-                                                                    <i class="bi bi-upc-scan me-1"></i>
-                                                                    ${escapeHtml(farmer.farmer_code)}
-                                                                </span>
-                                                            ` : ''}
+                                                                        <span class=' text-info'>
+                                                                            <i class="bi bi-upc-scan me-1"></i>
+                                                                            ${escapeHtml(farmer.farmer_code)}
+                                                                        </span>
+                                                                    ` : ''}
 
                                     ${farmer.phone ? `
-                                                                <span class=' fw-bold text-dark fs-6'>
-                                                                    <i class="bi bi-telephone me-1"></i>
-                                                                    ${escapeHtml(farmer.phone)}
-                                                                </span>
-                                                            ` : ''}
+                                                                        <span class=' fw-bold text-dark fs-6'>
+                                                                            <i class="bi bi-telephone me-1"></i>
+                                                                            ${escapeHtml(farmer.phone)}
+                                                                        </span>
+                                                                    ` : ''}
 
                                     ${farmer.village ? `
-                                                                <span class=' fw-bold text-dark fs-6'>
-                                                                    <i class="bi bi-geo-alt me-1"></i>
-                                                                    ${escapeHtml(farmer.village)}
-                                                                </span>
-                                                            ` : ''}
+                                                                        <span class=' fw-bold text-dark fs-6'>
+                                                                            <i class="bi bi-geo-alt me-1"></i>
+                                                                            ${escapeHtml(farmer.village)}
+                                                                        </span>
+                                                                    ` : ''}
 
                                 </div>
                             </div>

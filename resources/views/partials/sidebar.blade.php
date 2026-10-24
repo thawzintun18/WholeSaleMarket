@@ -78,6 +78,13 @@
 
         </a>
 
+        <a href="{{ route('Sale#directPage') }}" class="{{ request()->routeIs('Sale#directPage') ? 'active' : '' }}">
+
+            <i class="bi bi-cart-plus"></i>
+            <span>အရောင်း ( မြို့ဘောင်ချာ )</span>
+
+        </a>
+
         <a href="" class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
 
             <i class="bi bi-receipt"></i>

@@ -1,12 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Crop;
 use App\Models\DailyPrice;
 use App\Models\Grade;
 use Illuminate\Http\Request;
-
 
 class PurchaseController extends Controller
 {
@@ -40,7 +38,7 @@ class PurchaseController extends Controller
         // dd($price->toArray());
 
         return response()->json([
-            'reference_price' => $price ?? 0
+            'reference_price' => $price ?? 0,
         ]);
     }
 

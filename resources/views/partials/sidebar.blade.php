@@ -70,11 +70,11 @@
             Purchase
         </div>
 
-        <a href="{{ route('purchases#create#page') }}"
-            class="{{ request()->routeIs('purchases#create#page') ? 'active' : '' }}">
 
-            <i class="bi bi-cart-plus"></i>
-            <span>အဝယ် ( တောဘောင်ချာ )</span>
+        <a href="{{ route('purchases#index') }}" class="{{ request()->routeIs('purchases#index') ? 'active' : '' }}">
+
+            <i class="bi bi-receipt"></i>
+            <span>တောဘောင်ချာစာရင်း</span>
 
         </a>
 
@@ -85,10 +85,11 @@
 
         </a>
 
-        <a href="" class="{{ request()->routeIs('purchases.index') ? 'active' : '' }}">
+        <a href="{{ route('purchases#create#page') }}"
+            class="{{ request()->routeIs('purchases#create#page') ? 'active' : '' }}">
 
-            <i class="bi bi-receipt"></i>
-            <span>Purchase List</span>
+            <i class="bi bi-cart-plus"></i>
+            <span>အဝယ် ( တောဘောင်ချာ )</span>
 
         </a>
 

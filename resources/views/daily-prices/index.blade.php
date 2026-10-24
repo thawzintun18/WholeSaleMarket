@@ -38,7 +38,7 @@
                     <label class="form-label">ပထမရက်စွဲ</label>
 
                     <input type="date" name="first_date" class="form-control"
-                        value="{{ request('first_date', now()->subDay()->toDateString()) }}" required>
+                        value="{{ request('first_date') }}" required>
                 </div>
 
                 {{-- ဒုတိယရက်စွဲ --}}
@@ -46,7 +46,7 @@
                     <label class="form-label">ဒုတိယရက်စွဲ</label>
 
                     <input type="date" name="second_date" class="form-control"
-                        value="{{ request('second_date', now()->toDateString()) }}" required>
+                        value="{{ request('second_date') }}" required>
                 </div>
 
                 {{-- သီးနှံ --}}
@@ -232,12 +232,12 @@
                                 {{-- ဈေးတက်၊ ဈေးကျ --}}
                                 <td>
                                     @if ($item->price_status === 'တက်')
-                                        <span class="text-dark fw-bold">
+                                        <span class="text-success fw-bold">
                                             ▲ ဈေးတက်
                                             (+{{ number_format($item->price_difference, 2) }} ကျပ်)
                                         </span>
                                     @elseif ($item->price_status === 'ကျ')
-                                        <span class="text-dark fw-bold">
+                                        <span class="text-danger fw-bold">
                                             ▼ ဈေးကျ
                                             ({{ number_format($item->price_difference, 2) }} ကျပ်)
                                         </span>

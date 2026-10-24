@@ -76,6 +76,7 @@ class FarmerController extends Controller
             return response()->json([]);
         }
 
+        // ၁။ တောင်သူများကို အရင်ရှာမည်
         $farmers = Farmer::query()
             ->where('is_active', true)
             ->where(function ($query) use ($search) {
@@ -88,6 +89,20 @@ class FarmerController extends Controller
             ->limit(10)
             ->get();
 
+        // ၂။ ရှာတွေ့တဲ့ တောင်သူတွေအတွက် အကြွေးစာရင်းများကို သီးသန့်ဆွဲထုတ်မည် (Duplicate မဖြစ်စေရန်)
+        $farmerIds = $farmers->pluck('id');
+
+        $debts = \App\Models\FarmerDebt::whereIn('farmer_id', $farmerIds)
+            ->whereIn('status', ['Open', 'Partial'])
+            ->orderBy('debt_date', 'asc')
+            ->get()
+            ->groupBy('farmer_id');
+
+        // ၃။ တောင်သူတစ်ဦးချင်းစီထဲသို့ အကြွေးစာရင်းများကို ထည့်သွင်းပေးမည်
+        $farmers->each(function ($farmer) use ($debts) {
+            $farmer->debts = $debts->get($farmer->id, collect([]));
+        });
+
         return response()->json($farmers);
     }
 
@@ -96,12 +111,6 @@ class FarmerController extends Controller
      */
     public function store(Request $request)
     {
-        // $validated = $request->validate([
-        //     'name' => ['required', 'string', 'max:150'],
-        //     'phone' => ['nullable', 'string', 'max:30'],
-        //     'village' => ['nullable', 'string', 'max:150'],
-        //     'notes' => ['nullable', 'string'],
-        // ]);
         $validated = $request->validate([
             'name'    => [
                 'required',
@@ -138,12 +147,7 @@ class FarmerController extends Controller
             'is_active' => true,
         ]);
 
-        $farmer->farmer_code = 'F-' . str_pad(
-            (string) $farmer->id,
-            6,
-            '0',
-            STR_PAD_LEFT
-        );
+        $farmer->farmer_code = 'F-' . str_pad((string) $farmer->id, 6, '0', STR_PAD_LEFT);
         $farmer->save();
 
         return response()->json([

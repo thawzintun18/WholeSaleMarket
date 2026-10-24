@@ -118,38 +118,38 @@
 
             <div class="row g-3">
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100">
-                        <div class="text-secondary small mb-2">
+                    <div class="dashboard-card shadow-sm p-3 h-100 text-dark bg-info fw-bold text-dark ">
+                        <div class="small mb-2">
                             မူလအကြွေးငွေ
                         </div>
-                        <div class="fs-4 fw-bold">
+                        <div class="fs-4">
                             {{ number_format($farmerDebt->amount, 0) }}
                         </div>
-                        <div class="small text-secondary">ကျပ်</div>
+                        <div class="small">ကျပ်</div>
                     </div>
                 </div>
 
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100">
-                        <div class="text-secondary small mb-2">
+                    <div class="dashboard-card shadow-sm p-3 h-100 bg-success fw-bold text-dark ">
+                        <div class="small mb-2">
                             ပြန်ဆပ်ပြီးငွေ
                         </div>
-                        <div class="fs-4 fw-bold">
+                        <div class="fs-4">
                             {{ number_format($farmerDebt->settled_amount ?? 0, 0) }}
                         </div>
-                        <div class="small text-secondary">ကျပ်</div>
+                        <div class="small">ကျပ်</div>
                     </div>
                 </div>
 
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100">
-                        <div class="text-secondary small mb-2">
+                    <div class="dashboard-card shadow-sm p-3 h-100 bg-danger fw-bold text-dark ">
+                        <div class=" small mb-2">
                             လက်ကျန်အကြွေး
                         </div>
-                        <div class="fs-4 fw-bold">
+                        <div class="fs-4">
                             {{ number_format($farmerDebt->balance_amount ?? 0, 0) }}
                         </div>
-                        <div class="small text-secondary">ကျပ်</div>
+                        <div class="small">ကျပ်</div>
                     </div>
                 </div>
             </div>

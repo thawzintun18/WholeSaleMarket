@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('farmer_advances', function (Blueprint $table) {
+        Schema::create('stock_balances', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('farmer_id');
-            $table->dateTime('advance_date');
-            $table->decimal('amount', 15, 2);
+            $table->foreignId('crop_id')->unique()->constrained('crops')->restrictOnDelete();
+            $table->decimal('quantity_on_hand', 15, 2)->default(0);
+            $table->decimal('average_cost', 15, 2)->default(0);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('farmer_advances');
+        Schema::dropIfExists('stock_balances');
     }
 };

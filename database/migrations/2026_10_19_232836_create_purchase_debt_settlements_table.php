@@ -11,22 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         Schema::create('purchase_debt_settlements', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('farmer_debt_id')
-                ->constrained('farmer_debts')
-                ->restrictOnDelete();
-
+            $table->unsignedBigInteger('purchase_id')->nullable();
+            $table->foreignId('farmer_debt_id')->constrained('farmer_debts')->restrictOnDelete();
             $table->decimal('amount', 15, 2);
-
             $table->dateTime('settlement_date')->useCurrent();
-
             $table->timestamps();
             $table->softDeletes();
 
             $table->index('settlement_date');
-
         });
     }
 

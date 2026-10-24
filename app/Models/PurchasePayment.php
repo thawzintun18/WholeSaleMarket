@@ -4,22 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class FarmerAdvance extends Model
+class PurchasePayment extends Model
 {
-    use HasFactory, SoftDeletes;
-
-    public $timestamps = false;
-
+    use HasFactory;
     protected $fillable = [
-        'farmer_id',
-        'advance_date',
+        'purchase_id',
+        'payment_date',
         'amount',
+        'payment_type',
     ];
 
     protected $casts = [
-        'advance_date' => 'datetime',
+        'payment_date' => 'datetime',
         'amount' => 'decimal:2',
     ];
 }

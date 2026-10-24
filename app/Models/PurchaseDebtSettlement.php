@@ -9,6 +9,7 @@ class PurchaseDebtSettlement extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'purchase_id',
         'farmer_debt_id',
         'amount',
         'settlement_date',

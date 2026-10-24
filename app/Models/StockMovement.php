@@ -25,8 +25,8 @@ class StockMovement extends Model
 
     protected $casts = [
         'movement_date' => 'datetime',
-        'quantity_in' => 'decimal:3',
-        'quantity_out' => 'decimal:3',
+        'quantity_in' => 'decimal:2',
+        'quantity_out' => 'decimal:2',
         'unit_cost' => 'decimal:2',
     ];
 }

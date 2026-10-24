@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('crop_id');
             $table->dateTime('movement_date');
-            $table->decimal('quantity_in', 15, 3)->default(0);
-            $table->decimal('quantity_out', 15, 3)->default(0);
+            $table->decimal('quantity_in', 15, 2)->default(0);
+            $table->decimal('quantity_out', 15, 2)->default(0);
             $table->string('unit', 30);
             $table->decimal('unit_cost', 15, 2)->default(0);
             $table->enum('reference_type', ['Purchase', 'Sale', 'Opening', 'Adjustment'])->nullable();

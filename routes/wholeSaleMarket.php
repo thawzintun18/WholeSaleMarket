@@ -60,15 +60,17 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
     });
 
     Route::group(['prefix' => 'purchases'], function () {
+        Route::get('list', [PurchaseController::class, 'index'])->name('purchases#index');
+        // ဝယ်ယူမှု ကျန်ငွေ ထပ်မံပေးချေရန် Route
+        Route::post('/{id}/pay-balance', [PurchaseController::class, 'payBalance'])
+            ->name('purchases#payBalance');
+
         Route::get('create/page', [PurchaseController::class, 'createPage'])->name('purchases#create#page');
         Route::get('grades/{crop}', [PurchaseController::class, 'getGrades'])->name('purchases#grades');
         Route::get('reference-price', [PurchaseController::class, 'getReferencePrice'])->name('purchases#reference-price');
 
-        Route::post('/create', [PurchaseController::class, 'store'])
-            ->name('purchases#store');
-        Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])
-            ->whereNumber('purchaseId')
-            ->name('purchases#voucher');
+        Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
+        Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
     });
 
     // Route::resource('crops', CropController::class)

@@ -11,9 +11,10 @@
 
         {{-- Action Buttons --}}
         <div class="d-flex justify-content-between align-items-center gap-2 mb-3 d-print-none">
-            <a href="{{ route('purchases#create#page') }}" class="btn btn-outline-secondary">
+            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
-                Purchase အသစ်
+                {{-- Purchase အသစ် --}}
+                Back
             </a>
 
             <button type="button" class="btn btn-primary" onclick="window.print()">
@@ -214,7 +215,7 @@
                                                             {{ $typeName }}
                                                             <small class="text-muted">({{ \Carbon\Carbon::parse($settlement->debt_date)->format('Y-m-d') }})</small>
                                                         </td>
-                                                        <td class="text-end text-danger fw-semibold">
+                                                        <td class="text-end fw-bold">
                                                             - {{ number_format((float) $settlement->amount, 2) }} ကျပ်
                                                         </td>
                                                     </tr>
@@ -222,7 +223,7 @@
                                             @else
                                                 <tr>
                                                     <td class=" text-muted">ကြိုသုံး / အခြားနုတ်ငွေ</td>
-                                                    <td class="text-end fw-semibold">0.00 ကျပ်</td>
+                                                    <td class="text-end fw-bold">0.00 ကျပ်</td>
                                                 </tr>
                                             @endif
                                         </table>
@@ -231,7 +232,7 @@
 
                                 <tr>
                                     <td>ကားခ</td>
-                                    <td class="text-end fw-semibold">
+                                    <td class="text-end fw-bold">
                                         {{ number_format((float) $purchase->car_fee_amount, 2) }} ကျပ်
                                     </td>
                                 </tr>

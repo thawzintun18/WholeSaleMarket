@@ -14,9 +14,165 @@ use Illuminate\Validation\ValidationException;
 
 class PurchaseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('purchases.index');
+        $search   = $request->input('search');
+        $status   = $request->input('status');
+        $cropId   = $request->input('crop_id');
+
+        // Quick Date Filter (today, this_week, this_month) သို့မဟုတ် Custom From/To Date
+        $quickFilter = $request->input('quick_filter');
+        $fromDate    = $request->input('from_date');
+        $toDate      = $request->input('to_date');
+        if ($quickFilter === 'today') {
+            $fromDate = now()->toDateString();
+            $toDate   = now()->toDateString();
+        } elseif ($quickFilter === 'this_week') {
+            $fromDate = now()->startOfWeek()->toDateString();
+            $toDate   = now()->endOfWeek()->toDateString();
+        } elseif ($quickFilter === 'this_month') {
+            $fromDate = now()->startOfMonth()->toDateString();
+            $toDate   = now()->endOfMonth()->toDateString();
+        } else {
+            // Default အနေဖြင့် မပါလာပါက ယနေ့ (သို့မဟုတ် လိုသလိုသတ်မှတ်နိုင်သည်)
+            $fromDate = $fromDate ?: now()->toDateString();
+            $toDate   = $toDate ?: now()->toDateString();
+        }
+
+        // 1. Purchases Query Builder
+        $query = DB::table('purchases')
+            ->join('farmers', 'purchases.farmer_id', '=', 'farmers.id')
+            ->select(
+                'purchases.*',
+                'farmers.name as farmer_name',
+                'farmers.phone as farmer_phone',
+                'farmers.village as farmer_village'
+            )
+            ->orderBy('purchases.purchase_date', 'desc')
+            ->orderBy('purchases.id', 'desc');
+
+        if ($cropId) {
+            $query->join('purchase_items', 'purchases.id', '=', 'purchase_items.purchase_id')
+                  ->where('purchase_items.crop_id', $cropId)
+                  ->distinct();
+        }
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('purchases.invoice_no', 'like', "%{$search}%")
+                  ->orWhere('farmers.name', 'like', "%{$search}%")
+                  ->orWhere('farmers.phone', 'like', "%{$search}%")
+                  ->orWhere('farmers.village', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status === 'pending') {
+            $query->where('purchases.balance_amount', '>', 0);
+        } elseif ($status === 'complete') {
+            $query->where('purchases.balance_amount', '<=', 0);
+        }
+
+        if ($fromDate && $toDate) {
+            $query->whereBetween('purchases.purchase_date', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59']);
+        }
+
+        $purchases = $query->paginate(15)->withQueryString();
+
+        // 2. Purchase Items များကို တွဲယူခြင်း
+        foreach ($purchases as $purchase) {
+            $purchase->items = DB::table('purchase_items')
+                ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
+                ->join('grades', 'purchase_items.grade_id', '=', 'grades.id')
+                ->select(
+                    'purchase_items.*',
+                    'crops.crop_name',
+                    'crops.unit',
+                    'grades.grade_name'
+                )
+                ->where('purchase_items.purchase_id', $purchase->id)
+                ->get();
+        }
+
+        $crops = DB::table('crops')->select('id', 'crop_name')->get();
+
+        // 3. ရွေးချယ်ထားသော ရက်စွဲ Range အလိုက် Summary (KPI) တွက်ချက်ခြင်း
+        $summaryQuery = DB::table('purchases');
+        if ($fromDate && $toDate) {
+            $summaryQuery->whereBetween('purchase_date', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59']);
+        }
+
+        // စုစုပေါင်း ပေးရန်ကျန်ငွေ (Pending Balance) - Note: Pending ကတော့ လက်ရှိ အချိန်အထိ ကျန်နေသမျှကို ပြသရန် ပိုသင့်တော်သည်
+        $totalPendingBalance = DB::table('purchases')->where('balance_amount', '>', 0)->sum('balance_amount');
+
+        $filteredGrossTotal  = (clone $summaryQuery)->sum('total_gross_amount');
+        $filteredVoucherCount = (clone $summaryQuery)->count();
+
+        // ရွေးချယ်ထားသော ရက်အတွင်း အကြွေးပြန်နှုတ်ရရှိငွေ
+        $filteredDebtSettled = DB::table('purchase_debt_settlements');
+        if ($fromDate && $toDate) {
+            $filteredDebtSettled->whereBetween('settlement_date', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59']);
+        }
+        $filteredDebtSettledAmount = $filteredDebtSettled->sum('amount');
+
+        $summary = (object) [
+            'total_pending_balance' => $totalPendingBalance,
+            'filtered_gross_total'  => $filteredGrossTotal,
+            'filtered_debt_settled' => $filteredDebtSettledAmount,
+            'filtered_voucher_count'=> $filteredVoucherCount,
+        ];
+
+        return view('purchases.index', compact('purchases', 'crops', 'summary', 'fromDate', 'toDate', 'quickFilter'));
+    }
+
+    public function payBalance(Request $request, $purchaseId)
+    {
+        // dd($request->toArray());
+        $request->validate([
+            'pay_amount' => ['required', 'numeric', 'min:0.01'],
+        ], [
+            'pay_amount.required' => 'ပေးချေမည့်ငွေ ပမာဏကို ထည့်သွင်းပါ။',
+            'pay_amount.numeric'  => 'ပေးချေမည့်ငွေသည် ဂဏန်းဖြစ်ရပါမည်။',
+            'pay_amount.min'      => 'ပေးချေမည့်ငွေသည် သုညထက် ကြီးရပါမည်။',
+        ]);
+
+        $payAmount = (float) $request->input('pay_amount');
+
+        DB::transaction(function () use ($purchaseId, $payAmount) {
+            $purchase = DB::table('purchases')->where('id', $purchaseId)->first();
+
+            if ($purchase && $purchase->balance_amount > 0) {
+                // ကျန်ငွေထက် ပိုပေးမိပါက ကျန်ငွေ ပမာဏအတိုင်းသာ ယူမည်
+                $actualPaid = min($payAmount, (float) $purchase->balance_amount);
+
+                $newTotalPaid   = (float) $purchase->total_paid + $actualPaid;
+                $newBalance     = (float) $purchase->balance_amount - $actualPaid;
+                $newStatus      = $newBalance <= 0 ? 'Complete' : 'Confirm';
+
+                //1. Purchases ဇယားကို Update လုပ်ခြင်း
+                DB::table('purchases')
+                    ->where('id', $purchaseId)
+                    ->update([
+                        'total_paid'     => $newTotalPaid,
+                        'balance_amount' => $newBalance,
+                        'status'         => $newStatus,
+                        'updated_at'     => now(),
+                    ]);
+
+                // 2. purchase_payments ဇယားတွင် ငွေပေးချေမှု မှတ်တမ်းအသစ် ထည့်သွင်းခြင်း
+                DB::table('purchase_payments')->insert([
+                    'purchase_id'  => $purchaseId,
+                    'payment_date' => now(),
+                    'amount'       => $actualPaid,
+                    'payment_type' => 'additional', // ဘောင်ချာထုတ်ပြီးမှ ထပ်ပေးသောကြောင့် additional ဟု မှတ်မည်
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+        });
+
+        return redirect()
+            ->back()
+            ->with('success', 'ကျန်ငွေ ပေးချေမှု အောင်မြင်ပါသည်။');
     }
 
     public function createPage()
@@ -61,6 +217,7 @@ class PurchaseController extends Controller
             'farmer_id'                            => ['required', 'integer', 'exists:farmers,id'],
             'car_no'                               => ['nullable', 'string', 'max:255'],
             'car_fee_amount'                       => ['nullable', 'numeric', 'min:0'],
+            'paid_amount'                          => ['nullable', 'numeric', 'min:0'],
             'debts'                                => ['nullable', 'array'],
             'debts.*'                              => ['nullable', 'numeric', 'min:0'],
             'advance_deduction'                    => ['nullable', 'numeric', 'min:0'],
@@ -69,6 +226,7 @@ class PurchaseController extends Controller
             'purchase_items.*.crop_id'             => ['required', 'integer', 'exists:crops,id'],
             'purchase_items.*.grade_id'            => ['required', 'integer', 'exists:grades,id'],
             'purchase_items.*.quantity'            => ['required', 'numeric', 'gt:0'],
+            'purchase_items.*.bag_count'           => ['nullable', 'numeric'],
             'purchase_items.*.quantity_per_basket' => ['nullable', 'numeric', 'min:0'],
             'purchase_items.*.unit'                => ['required', 'string', 'max:30'],
             'purchase_items.*.reference_price'     => ['nullable', 'numeric', 'min:0'],
@@ -82,6 +240,8 @@ class PurchaseController extends Controller
             'purchase_items.min'           => 'သီးနှံစာရင်း အနည်းဆုံးတစ်မျိုး ထည့်ပါ။',
             'purchase_items.*.quantity.gt' => 'သီးနှံအရေအတွက်သည် သုညထက် ကြီးရပါမည်။',
         ]);
+
+        // dd($data->toArray());
 
         $carNo =$data['car_no'] ?? '';
         $carFee = (float) ($data['car_fee_amount'] ?? 0);
@@ -208,7 +368,8 @@ class PurchaseController extends Controller
                 ]);
             }
             // Frontend က ပို့လိုက်သော ပေးချေငွေ (Paid Amount) ကို ယူမည် (မပါလာပါက Net Amount အပြည့်ပေးသည်ဟု ယူဆမည်)
-            $totalPaid = (float) ($data['paid_amount'] ?? $netAmount);
+            $totalPaid = (float) ($data['paid_amount'] ?? 0);
+            // dd($totalPaid);
             if ($totalPaid < 0) {
                 $totalPaid = 0;
             }
@@ -239,6 +400,18 @@ class PurchaseController extends Controller
                 'updated_at'           => now(),
             ]);
 
+            // `purchase_payments` တွင် initial payment မှတ်တမ်းတင်ရန်
+            if ($totalPaid > 0) {
+                DB::table('purchase_payments')->insert([
+                    'purchase_id'  => $purchaseId,
+                    'payment_date' => now(),
+                    'amount'       => $totalPaid,
+                    'payment_type' => 'initial', // ဘောင်ချာထုတ်ချိန် ပေးချေငွေ
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+
             // 4. Purchase Item စာရင်းများ သိမ်းခြင်း
             foreach ($items as$item) {
                 $item['purchase_id'] =$purchaseId;
@@ -246,6 +419,61 @@ class PurchaseController extends Controller
                 $item['updated_at']  = now();
                 DB::table('purchase_items')->insert($item);
             }
+
+
+
+            // 6. Stock Management (စတော့ စာရင်းသွင်းခြင်းနှင့် လက်ကျန် update လုပ်ခြင်း)
+            foreach ($items as$item) {
+                $cropId =$item['crop_id'];
+                $qtyIn  = (float)$item['quantity']; // ဝယ်ယူလာသော ပမာဏ
+
+                // သီးနှံဇယား (crops) ထဲက unit ကို ယူရန်
+                $cropInfo = DB::table('crops')->where('id',$cropId)->first();
+                $unitName =$cropInfo->unit ?? 'unit';
+
+                // ကုန်ကျစရိတ် (unit_cost) - actual_buy_price ကို သုံးနိုင်သည်
+                $unitCost = (float)$item['actual_buy_price'];
+
+                // 6.1 `stock_movements` တွင် အဝင် (quantity_in) မှတ်တမ်းတင်ခြင်း
+                DB::table('stock_movements')->insert([
+                    'crop_id'        => $cropId,
+                    'movement_date'  => now(),
+                    'quantity_in'    => $qtyIn,
+                    'quantity_out'   => 0,
+                    'unit'           => $unitName,
+                    'unit_cost'      => $unitCost,
+                    'reference_type' => 'Purchase',
+                    'reference_id'   => $purchaseId,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
+
+                // 6.2 `stock_balances` တွင် လက်ကျန် (quantity_on_hand) ကို စစ်ဆေး၍ ပေါင်းထည့်ခြင်း သို့မဟုတ် အသစ်ဆောက်ခြင်း
+                $existingStock = DB::table('stock_balances')->where('crop_id',$cropId)->first();
+
+                if ($existingStock) {
+                    $newQuantityOnHand = (float) $existingStock->quantity_on_hand + $qtyIn;
+
+                    // လောလောဆယ် purchase အချိန်မှာ average_cost ကို မတွက်သေးဘဲ quantity ကိုသာ ပေါင်းပေးမည်
+                    // (Average cost ကို နောက်ပိုင်း အဝယ်ချုပ်ချိန် / Action လုပ်ချိန်မှ ပြန်တွက်မည်)
+                    DB::table('stock_balances')
+                        ->where('crop_id', $cropId)
+                        ->update([
+                            'quantity_on_hand' => $newQuantityOnHand,
+                            'updated_at'       => now(),
+                        ]);
+                } else {
+                    // အကယ်၍ ထိုသီးနှံအတွက် stock balance မရှိသေးပါက အသစ်ဆောက်မည် (average_cost ကို 0 သို့မဟုတ် လက်ရှိဝယ်ဈေးခဏထားမည်)
+                    DB::table('stock_balances')->insert([
+                        'crop_id'          => $cropId,
+                        'quantity_on_hand' => $qtyIn,
+                        'average_cost'     => $unitCost, // လိုအပ်ပါက 0 ထားနိုင်သည်
+                        'created_at'       => now(),
+                        'updated_at'       => now(),
+                    ]);
+                }
+            }
+
 
             // 5. အကြွေးဆပ်မှုများကို `purchase_debt_settlements` တွင် သိမ်းပြီး `farmer_debts` ကို Update လုပ်ခြင်း
             foreach ($settlementsData as $st) {

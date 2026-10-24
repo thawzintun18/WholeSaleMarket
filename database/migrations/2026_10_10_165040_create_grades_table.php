@@ -18,9 +18,7 @@ return new class extends Migration
                 ->restrictOnDelete();
             $table->string('grade_name', 50);
             $table->timestamps();
-            // Soft Delete အတွက် deleted_at column
             $table->softDeletes();
-            // သီးနှံတစ်မျိုးတည်းအောက်တွင် Grade အမည် မထပ်စေရန်
             $table->unique(['crop_id', 'grade_name']);
         });
     }

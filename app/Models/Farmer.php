@@ -21,4 +21,12 @@ class Farmer extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function farmerDebts()
+    {
+
+        return $this->hasMany(FarmerDebt::class);
+
+    }
+
 }

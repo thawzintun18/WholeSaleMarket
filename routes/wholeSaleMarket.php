@@ -33,6 +33,9 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('trashList', [FarmerController::class, 'trashList'])->name('farmers#trashList');
         Route::get('restore/{id}', [FarmerController::class, 'restore'])->name('farmers#restore');
         Route::get('delete/{id}', [FarmerController::class, 'delete'])->name('farmers#delete');
+
+        //farmer settlement
+        Route::get('farmerSettlementList/{id}', [FarmerController::class, 'farmerSettlementList'])->name('farmer#farmerSettlementList');
     });
 
     Route::group(['prefix' => 'Crop'], function () {
@@ -131,6 +134,8 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('settlement/{id}', [FarmerDebtController::class, 'settlement'])->name('FarmerDebt#settlement');
         Route::post('settlementCreate/{id}', [FarmerDebtController::class, 'settlementCreate'])->name('FarmerDebt#settlementCreate');
         Route::get('settlementList/{id}', [FarmerDebtController::class, 'settlementList'])->name('FarmerDebt#settlementList');
-
+        Route::get('directPageSettlement', [FarmerDebtController::class, 'directPageSettlement'])->name('FarmerDebt#directPageSettlement');
+        Route::post('createSettlement', [FarmerDebtController::class, 'createSettlement'])->name('FarmerDebt#createSettlement');
     });
+
 });

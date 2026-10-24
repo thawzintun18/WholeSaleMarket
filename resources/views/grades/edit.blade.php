@@ -81,3 +81,19 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const grade_name = document.getElementById('grade_name');
+
+            if (!grade_name) return;
+
+            grade_name.addEventListener('input', function() {
+                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                    return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
+                });
+            });
+        });
+    </script>
+@endpush

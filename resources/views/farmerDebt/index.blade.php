@@ -34,36 +34,10 @@
         <form action="{{ route('FarmerDebt#list') }}" method="GET">
             <div class="row g-3">
 
-                {{-- သီးနှံအလိုက် စစ်ထုတ်ရန် --}}
                 <div class="col-md-4">
 
                     <label class="form-label">
-                        သီးနှံအမည်
-                    </label>
-
-                    <form action="{{ route('Quality#list') }}" method="GET">
-                        <select name="crop_id" class="form-select" onchange="this.form.submit()">
-
-                            <option value="" {{ request('crop_id') == '' ? 'selected' : '' }}>
-                                သီးနှံအားလုံးအတွက် ကြည့်ရန်
-                            </option>
-
-                            {{-- @foreach ($crops as $item)
-                                <option value="{{ $item->id }}" {{ request('crop_id') == $item->id ? 'selected' : '' }}>
-                                    {{ $item->crop_name }} သီးနှံအတွက် ကြည့်ရန်
-                                </option>
-                            @endforeach --}}
-
-                        </select>
-                    </form>
-
-                </div>
-
-                {{-- အဆင့်အမည် ရှာဖွေရန် --}}
-                <div class="col-md-4">
-
-                    <label class="form-label">
-                        အဆင့်အမည် ရှာဖွေရန်
+                        ကြိုသုံးငွေယူထားသော တောင်သူရှာဖွေရန်
                     </label>
 
                     <div class="input-group">
@@ -73,7 +47,26 @@
                         </span>
 
                         <input type="text" name="searchData" value="{{ request('searchData') }}" id="search"
-                            class="form-control" placeholder="အဆင့်အမည် ရိုက်ထည့်ပါ...">
+                            class="form-control" placeholder="တောင်သူအမည် ရိုက်ထည့်ပါ...">
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        အကြွေးယူသည့်နေ့ရက်နှင့်ရှာဖွေရန်
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+
+                        <input type="date" name="searchDate" value="{{ request('searchDate') }}" id="search"
+                            class="form-control">
 
                     </div>
 
@@ -217,18 +210,15 @@
                                     </div>
                                 </td>
 
-                                <td class="text-center">
+                                <td>
 
-                                    <div class="d-flex justify-content-center">
-                                        {{-- @if ($item->debt_type == 'PurchaseAdvance' || $item->status == 'Close')
-                                            - --}}
+                                    <div class="d-flex justify-content-end">
+
                                         @if (($item->debt_type == 'CashLoan' && $item->status == 'Open') || $item->status == 'Partial')
                                             <a href="{{ route('FarmerDebt#settlement', $item->id) }}"
                                                 class=" btn btn-primary me-2">အကြွေးဆပ်ရန်</a>
                                         @endif
 
-                                        {{-- @if ($item->debt_type == 'PurchaseAdvance')
-                                            - --}}
                                         @if ($item->debt_type == 'CashLoan')
                                             <a href="{{ route('FarmerDebt#settlementList', $item->id) }}"
                                                 class=" btn btn-primary">အကြွေးပြန်ဆပ်မှုစာရင်း</a>

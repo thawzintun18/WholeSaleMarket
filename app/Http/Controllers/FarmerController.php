@@ -10,7 +10,13 @@ class FarmerController extends Controller
 {
     public function index(Request $request)
     {
-        $farmers = Farmer::query();
+        $farmers = Farmer::query()
+            ->withExists([
+                'farmerDebts as has_outstanding_debt' => function ($query) {
+                    $query->whereIn('status', ['Open', 'Partial'])
+                        ->where('balance_amount', '>', 0);
+                },
+            ]);
 
         if ($request->search) {
             $farmers->where('name', 'like', '%' . $request->search . '%')
@@ -29,6 +35,8 @@ class FarmerController extends Controller
         }
 
         $farmers = $farmers->orderBy('id', 'desc')->paginate(10);
+
+        // dd($farmers->toArray());
 
         return view('farmers.index', compact('farmers'));
     }
@@ -365,5 +373,38 @@ class FarmerController extends Controller
                 'address' => 'နေရပ်လိပ်စာ',
                 'notes'   => 'မှတ်ချက်',
             ]);
+    }
+
+    //farmerSettlementList
+    public function farmerSettlementList($id)
+    {
+
+        $farmer = Farmer::where(
+            'id',
+            $id
+        )->first();
+
+        $settlementList = Farmer::leftJoin(
+            'farmer_debts',
+            'farmers.id',
+            'farmer_debts.farmer_id'
+        )->select(
+            'farmer_debts.debt_type',
+            'farmer_debts.debt_date',
+            'farmer_debts.amount',
+            'farmer_debts.settled_amount',
+            'farmer_debts.balance_amount',
+            'farmer_debts.status',
+        )->where(
+            'farmers.id',
+            $id
+        )->orderBy(
+            'farmer_debts.created_at',
+            'desc'
+        )->paginate(10);
+
+        // dd($settlementList->toArray());
+
+        return view('farmers.settlementList', compact('farmer', 'settlementList'));
     }
 }

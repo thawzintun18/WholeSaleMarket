@@ -13,9 +13,11 @@ class SaleItem extends Model
         'sale_id',
         'crop_id',
         'quantity',
+        'bag_count',
         'avg_price',
         'sale_price',
         'gross_amount',
+        'remainder_amount',
         'note',
     ];
 

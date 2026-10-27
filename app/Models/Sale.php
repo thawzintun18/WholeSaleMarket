@@ -18,6 +18,7 @@ class Sale extends Model
         'net_amount',
         'total_paid',
         'balance_amount',
+        'status',
         'note',
     ];
 

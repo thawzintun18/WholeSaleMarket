@@ -23,9 +23,11 @@ return new class extends Migration
                 ->restrictOnDelete();
 
             $table->decimal('quantity', 15, 3);
+            $table->integer('bag_count')->default(0);
             $table->decimal('avg_price', 15, 2);
             $table->decimal('sale_price', 15, 2);
             $table->decimal('gross_amount', 15, 2);
+            $table->decimal('remainder_amount', 15, 2)->default(0);
 
             $table->string('note', 255)->nullable();
 

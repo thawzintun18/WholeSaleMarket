@@ -149,6 +149,11 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('directPage', [SaleController::class, 'directPage'])->name('Sale#directPage');
         Route::post('create', [SaleController::class, 'create'])->name('Sale#create');
         Route::get('avgPrice/{crop_id}', [SaleController::class, 'avgPrice'])->name('Sale#avgPrice');
+        Route::post('calculateTodayAveragePrices', [SaleController::class, 'calculateTodayAveragePrices'])->name('Sale#calculateTodayAveragePrices');
+        Route::get('voucher/{id}', [SaleController::class, 'voucher'])->name('Sale#voucher');
+        Route::get('smallVoucher/{id}', [SaleController::class, 'smallVoucher'])->name('Sale#smallVoucher');
+        Route::get('list', [SaleController::class, 'list'])->name('Sale#list');
+        Route::post('payBalance/{sale_id}', [SaleController::class, 'payBalance'])->name('Sale#payBlance');
     });
 
 });

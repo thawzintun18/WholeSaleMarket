@@ -62,7 +62,7 @@
                         <input type="text" name="search" class="form-control" value="{{ $search }}"
                             placeholder="ကုဒ်၊ အမည်၊ ဖုန်း၊ ရွာအမည်ဖြင့် ရှာပါ">
 
-                        <button type="submit" class="btn btn-dark">
+                        <button type="submit" class="btn btn-primary">
                             <i class="bi bi-search me-1"></i> ရှာရန်
                         </button>
                     </div>
@@ -99,7 +99,7 @@
                                             'search' => $search,
                                             'farmer_id' => $item->id,
                                         ]) }}"
-                                            class="btn btn-sm {{ $farmer?->id === $item->id ? 'btn-dark' : 'btn-outline-dark' }}">
+                                            class="btn btn-sm {{ $farmer?->id === $item->id ? 'btn-primary' : 'btn-outline-primary' }}">
                                             <i class="bi bi-person-check me-1"></i>
                                             ရွေးချယ်မည်
                                         </a>

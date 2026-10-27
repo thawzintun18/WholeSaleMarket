@@ -26,7 +26,7 @@ return new class extends Migration
             $table->decimal('net_amount', 15, 2)->default(0);
             $table->decimal('total_paid', 15, 2)->default(0);
             $table->decimal('balance_amount', 15, 2)->default(0);
-
+            $table->string('status', 20)->default('Confirm'); // Confirm Temp Complete
             $table->text('note')->nullable();
 
             $table->timestamps();

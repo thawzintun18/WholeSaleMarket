@@ -2,7 +2,7 @@
 
 @section('page-title', 'ဝယ်ယူမှုအသစ်')
 
-@section('breadcrumb', 'ပင်မစာမျက်နှာ / ဝယ်ယူမှု / အသစ်ဖန်တီး')
+@section('breadcrumb', 'ပင်မစာမျက်နှာ / ဝယ်ယူမှု / အရောင်းဘောင်ချာအသစ်ဖန်တီး')
 
 @section('content')
 
@@ -158,218 +158,347 @@
             </div>
         </div>
 
-        {{-- Purchase Items: သီးနှံစာရင်းထည့်သွင်းခြင်း --}}
+        {{-- Average Price  --}}
         <div class="card border-1 shadow-lg mb-4">
 
-            {{-- Header --}}
-            <div class="card-header bg-white py-3">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-                    <div>
-                        <h5 class="mb-1 fw-bold">
-                            <i class="bi bi-basket2 me-2 text-primary"></i>
-                            သီးနှံအ၀ယ်စာရင်းထည့်သွင်းခြင်း
-                        </h5>
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
 
-                        <small class="text-muted mt-2">
-                            ၀ယ်သူဆီကိုရောင်းချမည့် သီးနှံများကို တစ်မျိုးချင်းထည့်သွင်းပါ။
+            <div class="card">
+                <div class="card-body">
+
+                    <h5 class="mb-3">
+                        ဒီနေ့ Average Price
+                        ({{ \Carbon\Carbon::parse($today)->format('d-m-Y') }})
+                    </h5>
+
+                    @if (!$isCalculated)
+
+                        <p>
+                            ဒီနေ့အတွက် Average Price မတွက်ရသေးပါ။
+                        </p>
+
+                        <form action="{{ route('Sale#calculateTodayAveragePrices') }}" method="POST"
+                            onsubmit="return confirm('ဒီနေ့ဝယ်ထားသော သီးနှံအားလုံး၏ Average Price ကို တွက်ချက်မလား?')">
+                            @csrf
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calculator me-1"></i>
+                                ဒီနေ့အတွက် သီးနှံအားလုံး၏ Average Price တွက်ရန်
+                            </button>
+                        </form>
+                    @else
+                        <p class="text-success">
+                            ဒီနေ့အတွက် Average Price တွက်ပြီးပါပြီ။
+                        </p>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>စဉ်</th>
+                                        <th>သီးနှံအမည်</th>
+                                        <th class="text-end">ဝယ်ယူငွေစုစုပေါင်း</th>
+                                        <th class="text-end">Stock လက်ကျန်</th>
+                                        <th class="text-end">တစ်ပိဿာဈေး</th>
+                                        <th class="text-end">တစ်တင်းဈေး</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @forelse ($averagePrices as $price)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+
+                                            <td>{{ $price->crop_name }}</td>
+
+                                            <td class="text-end">
+                                                {{ number_format($price->total_gross_amount, 0) }}
+                                                <small class="small text-secondary">ကျပ်</small>
+                                            </td>
+
+                                            <td class="text-end">
+                                                {{ number_format($price->quantity_on_hand, 0) }}
+                                                @if ($price->unit == 'viss')
+                                                    ပိဿာ
+                                                @else
+                                                    ပေါင်
+                                                @endif
+                                            </td>
+
+                                            <td class="text-end">
+                                                {{ number_format($price->average_cost, 0) }}
+                                                <small class="small text-secondary">ကျပ်</small>
+                                            </td>
+
+                                            <td class="text-end">
+                                                {{ number_format($price->average_basket_price, 0) }}
+                                                <small class="small text-secondary">ကျပ်</small>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="text-center">
+                                                ဒီနေ့ Average Price စာရင်းမရှိပါ။
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+
+                    @endif
+
+                </div>
+            </div>
+
+        </div>
+
+        <form id="sale_form" action="{{ route('Sale#create') }}" method="POST">
+            @csrf
+
+            {{-- Purchase Items: သီးနှံစာရင်းထည့်သွင်းခြင်း --}}
+            <div class="card border-1 shadow-lg mb-4">
+
+                {{-- Header --}}
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                        <div>
+                            <h5 class="mb-1 fw-bold">
+                                <i class="bi bi-basket2 me-2 text-primary"></i>
+                                သီးနှံအ၀ယ်စာရင်းထည့်သွင်းခြင်း
+                            </h5>
+
+                            <small class="text-muted mt-2">
+                                ၀ယ်သူဆီကိုရောင်းချမည့် သီးနှံများကို တစ်မျိုးချင်းထည့်သွင်းပါ။
+                            </small>
+                        </div>
+
+                        <span class="badge bg-primary fs-6" id="item_count">
+                            သီးနှံ ၀ မျိုး
+                        </span>
+
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+
+                    {{-- သီးနှံအချက်အလက်ထည့်ရန် --}}
+                    <div class="border rounded-3 p-3 p-md-4 mb-4">
+
+                        <h6 class="fw-bold mb-3">
+                            <i class="bi bi-plus-circle me-1 text-success"></i>
+                            သီးနှံအသစ်ထည့်ရန်
+                        </h6>
+
+                        <div class="row g-3">
+
+                            {{-- သီးနှံရွေးချယ်ရန် --}}
+                            <div class="col-lg-6">
+                                <label for="crop_id" class="form-label fw-semibold">
+                                    သီးနှံအမည် <span class="text-danger">*</span>
+                                </label>
+
+                                <select id="crop_id" class="form-select">
+                                    <option value="">သီးနှံရွေးချယ်ပါ</option>
+
+                                    @foreach ($crops as $crop)
+                                        <option value="{{ $crop->id }}" data-unit="{{ $crop->unit }}"
+                                            data-commission="{{ $crop->commission_amount ?? 0 }}"
+                                            data-quantity-per-basket="{{ $crop->quantity_per_basket ?? '' }}">
+                                            {{ $crop->crop_name }}
+                                        </option>
+                                    @endforeach
+
+                                </select>
+                            </div>
+
+                            <!-- quantity_per_basket ကို သိမ်းမယ့် Hidden Input -->
+                            <input type="hidden" id="quantity_per_basket" value="">
+
+                            {{-- အလေးချိန် / အရေအတွက် --}}
+                            <div class="col-md-6 col-lg-3">
+                                <label for="quantity" class="form-label fw-semibold">
+                                    သီးနှံ စုစုပေါင်းအရေအတွက်
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input type="text" id="quantity" class="form-control" min="0.001" step="0.001"
+                                    placeholder="ဥပမာ - 100">
+                            </div>
+
+                            {{-- ယူနစ် --}}
+                            <div class="col-md-6 col-lg-3">
+                                <label for="unit" class="form-label fw-semibold">
+                                    ယူနစ်
+                                </label>
+
+                                <input type="text" id="unit" class="form-control" readonly
+                                    placeholder="သီးနှံရွေးချယ်ပါ">
+                            </div>
+
+                            {{-- ယနေ့ရည်ညွှန်းဈေး --}}
+                            <div class="col-md-6 col-lg-3">
+                                <label for="reference_price" class="form-label fw-semibold">
+                                    ယနေ့ ပျမ်းမျှ(avg)ဈေး ( နောက်ဆုံးသတ်မှတ်ထားသော ပျမ်းမျှ ဈေးကိုပြထားခြင်းဖြစ်သည် )
+                                </label>
+
+                                <input type="text" id="reference_price" class="form-control" min="0"
+                                    step="0.01" placeholder="ယနေ့သတ်မှတ်ဈေး" readonly>
+                            </div>
+
+                            {{-- အမှန်တကယ်ဝယ်ဈေး --}}
+                            <div class="col-md-6 col-lg-3">
+                                <label for="actual_sale_price" class="form-label fw-semibold">
+                                    အမှန်တကယ်‌ရောင်းမည့်ဈေး
+                                    <span class="text-danger">*( ရောင်းနိုင့်မည့်ဈေးကို စိတ်ကြိုက် အတိုး အလျှော့
+                                        လုပ်နိုင်သည်
+                                        )</span>
+                                </label>
+
+                                <input type="text" id="actual_sale_price" class="form-control" min="0"
+                                    step="0.01" placeholder="ရောင်းမည့်ဈေး">
+                            </div>
+
+
+                            {{-- မှတ်ချက် --}}
+                            <div class="col-lg-6">
+                                <label for="item_note" class="form-label fw-semibold">
+                                    မှတ်ချက် ( မထည့်လဲရ )
+                                </label>
+
+                                <input type="text" id="item_note" class="form-control" maxlength="255"
+                                    placeholder="လိုအပ်ပါက မှတ်ချက်ရေးပါ">
+                            </div>
+
+                            {{-- အိတ်အရေအတွက် (မြေပဲအတွက်သာ) --}}
+                            <div class="col-md-6 col-lg-3 d-none" id="bag_count_wrapper">
+                                <label for="bag_count" class="form-label fw-semibold">
+                                    အိတ်အရေအတွက်
+                                    <span class="text-danger">*</span>
+                                </label>
+
+                                <input type="number" id="bag_count" class="form-control" min="1" step="1"
+                                    placeholder="အိတ်အရေအတွက် ထည့်ပါ">
+                            </div>
+
+                            {{-- သီးနှံထည့်ရန် --}}
+                            <div class="col-12 text-center">
+                                <button type="button" id="add_crop_item" class="btn btn-success">
+                                    <i class="bi bi-plus-lg me-1"></i>
+                                    သီးနှံစာရင်းထဲ ထည့်မည်
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <input type="hidden" name="customer_id" id="customer_id">
+                    <div id="purchase_items_inputs"></div>
+
+                    {{-- ထည့်ပြီးသော သီးနှံစာရင်း --}}
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-1">
+                            <i class="bi bi-list-ul me-2 text-primary"></i>
+                            ထည့်သွင်းထားသော သီးနှံစာရင်း
+                        </h6>
+
+                        <small class="text-muted">
+                            မသိမ်းရသေးသော သီးနှံစာရင်းများကို အောက်တွင် စစ်ဆေးနိုင်ပါသည်။
                         </small>
                     </div>
 
-                    <span class="badge bg-primary fs-6" id="item_count">
-                        သီးနှံ ၀ မျိုး
-                    </span>
-
-                </div>
-            </div>
-
-            <div class="card-body p-4">
-
-                {{-- သီးနှံအချက်အလက်ထည့်ရန် --}}
-                <div class="border rounded-3 p-3 p-md-4 mb-4">
-
-                    <h6 class="fw-bold mb-3">
-                        <i class="bi bi-plus-circle me-1 text-success"></i>
-                        သီးနှံအသစ်ထည့်ရန်
-                    </h6>
-
-                    <div class="row g-3">
-
-                        {{-- သီးနှံရွေးချယ်ရန် --}}
-                        <div class="col-lg-6">
-                            <label for="crop_id" class="form-label fw-semibold">
-                                သီးနှံအမည် <span class="text-danger">*</span>
-                            </label>
-
-                            <select id="crop_id" class="form-select">
-                                <option value="">သီးနှံရွေးချယ်ပါ</option>
-
-                                @foreach ($crops as $crop)
-                                    <option value="{{ $crop->id }}" data-unit="{{ $crop->unit }}"
-                                        data-commission="{{ $crop->commission_amount ?? 0 }}"
-                                        data-quantity-per-basket="{{ $crop->quantity_per_basket ?? '' }}">
-                                        {{ $crop->crop_name }}
-                                    </option>
-                                @endforeach
-
-                            </select>
-                        </div>
-
-                        <!-- quantity_per_basket ကို သိမ်းမယ့် Hidden Input -->
-                        <input type="hidden" id="quantity_per_basket" value="">
-
-                        {{-- အလေးချိန် / အရေအတွက် --}}
-                        <div class="col-md-6 col-lg-3">
-                            <label for="quantity" class="form-label fw-semibold">
-                                သီးနှံ စုစုပေါင်းအရေအတွက်
-                                <span class="text-danger">*</span>
-                            </label>
-
-                            <input type="text" id="quantity" class="form-control" min="0.001" step="0.001"
-                                placeholder="ဥပမာ - 100">
-                        </div>
-
-                        {{-- ယူနစ် --}}
-                        <div class="col-md-6 col-lg-3">
-                            <label for="unit" class="form-label fw-semibold">
-                                ယူနစ်
-                            </label>
-
-                            <input type="text" id="unit" class="form-control" readonly
-                                placeholder="သီးနှံရွေးချယ်ပါ">
-                        </div>
-
-                        {{-- ယနေ့ရည်ညွှန်းဈေး --}}
-                        <div class="col-md-6 col-lg-3">
-                            <label for="reference_price" class="form-label fw-semibold">
-                                ယနေ့ ပျမ်းမျှ(avg)ဈေး ( နောက်ဆုံးသတ်မှတ်ထားသော ပျမ်းမျှ ဈေးကိုပြထားခြင်းဖြစ်သည် )
-                            </label>
-
-                            <input type="text" id="reference_price" class="form-control" min="0"
-                                step="0.01" placeholder="ယနေ့သတ်မှတ်ဈေး" readonly>
-                        </div>
-
-                        {{-- အမှန်တကယ်ဝယ်ဈေး --}}
-                        <div class="col-md-6 col-lg-3">
-                            <label for="actual_sale_price" class="form-label fw-semibold">
-                                အမှန်တကယ်‌ရောင်းမည့်ဈေး
-                                <span class="text-danger">*( ရောင်းနိုင့်မည့်ဈေးကို စိတ်ကြိုက် အတိုး အလျှော့ လုပ်နိုင်သည်
-                                    )</span>
-                            </label>
-
-                            <input type="text" id="actual_sale_price" class="form-control" min="0"
-                                step="0.01" placeholder="ရောင်းမည့်ဈေး">
-                        </div>
-
-
-                        {{-- မှတ်ချက် --}}
-                        <div class="col-lg-6">
-                            <label for="item_note" class="form-label fw-semibold">
-                                မှတ်ချက် ( မထည့်လဲရ )
-                            </label>
-
-                            <input type="text" id="item_note" class="form-control" maxlength="255"
-                                placeholder="လိုအပ်ပါက မှတ်ချက်ရေးပါ">
-                        </div>
-
-                        {{-- သီးနှံထည့်ရန် --}}
-                        <div class="col-12 text-center">
-                            <button type="button" id="add_crop_item" class="btn btn-success">
-                                <i class="bi bi-plus-lg me-1"></i>
-                                သီးနှံစာရင်းထဲ ထည့်မည်
-                            </button>
-                        </div>
-
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center">စဉ်</th>
+                                    <th>သီးနှံ</th>
+                                    <th class="text-end">အရေအတွက်</th>
+                                    <th class="text-end">တင်း</th>
+                                    <th class="text-end">၁ တင်းရောင်းဈေး</th>
+                                    <th class="text-end">စုစုပေါင်း</th>
+                                    <th class="text-center">လုပ်ဆောင်ချက်</th>
+                                </tr>
+                            </thead>
+                            <tbody id="purchase_items_body">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-5">
+                                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                        သီးနှံစာရင်း မထည့်ရသေးပါ။
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
-                </div>
+                    {{-- စုစုပေါင်းအကျဉ်းချုပ် --}}
+                    <div class="row justify-content-end mt-4">
+                        <div class="col-md-6 col-lg-5">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
 
-                <input type="hidden" name="farmer_id" id="farmer_id">
-                <div id="purchase_items_inputs"></div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>သီးနှံစုစုပေါင်းဖိုး</span>
+                                        <strong id="items_gross_total">0.00</strong>
+                                    </div>
 
-                {{-- ထည့်ပြီးသော သီးနှံစာရင်း --}}
-                <div class="mb-3">
-                    <h6 class="fw-bold mb-1">
-                        <i class="bi bi-list-ul me-2 text-primary"></i>
-                        ထည့်သွင်းထားသော သီးနှံစာရင်း
-                    </h6>
+                                    <hr>
 
-                    <small class="text-muted">
-                        မသိမ်းရသေးသော သီးနှံစာရင်းများကို အောက်တွင် စစ်ဆေးနိုင်ပါသည်။
-                    </small>
-                </div>
+                                    <div class="mb-3 d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold">ပေးချေရမည့်ငွေ</span>
+                                        <strong class="fs-5" id="net_payable_total">0.00</strong>
+                                    </div>
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle">
+                                    <hr>
 
-                        <thead class="table-light">
-                            <tr>
-                                <th class="text-center">စဉ်</th>
-                                <th>သီးနှံ / အမျိုးအစား</th>
-                                <th class="text-end">အရေအတွက်</th>
-                                <th class="text-end">တင်း</th>
-                                <th class="text-end">
-                                    <div>1 တင်းဝယ်ဈေး</div>
-                                    <small class=" text-danger">ပွဲခ မနုတ်ရသေး</small>
-                                </th>
-                                <th class="text-end">ပွဲခ</th>
-                                <th class="text-end">ကားခ</th>
-                                <th class="text-end">
-                                    <div>စုစုပေါင်း</div>
-                                    <small class=" text-danger">ပွဲခ နုတ်ပြီး</small>
-                                </th>
-                                <th class="text-center">လုပ်ဆောင်ချက်</th>
-                            </tr>
-                        </thead>
+                                    <div class="mb-3">
+                                        <label for="paid_amount" class="form-label fw-semibold">
+                                            ပေးချေမည့်ငွေ
+                                        </label>
+                                        <input type="text" id="paid_amount" name="paid_amount"
+                                            class="form-control text-end" value="{{ old('paid_amount', '') }}"
+                                            inputmode="decimal" autocomplete="off" placeholder="ပေးချေမည့်ငွေ ဖြည့်ပါ">
+                                    </div>
 
-                        <tbody id="purchase_items_body">
-                            <tr id="empty_items_row">
-                                <td colspan="9" class="text-center text-muted py-5">
-                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                                    သီးနှံစာရင်း မထည့်ရသေးပါ။
-                                </td>
-                            </tr>
-                        </tbody>
+                                    <hr>
 
-                    </table>
-                </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fw-bold">နောက်ဆုံး ပေးရန်ကျန်ငွေ</span>
+                                        <strong class="fs-5 text-success" id="final_payable_total">
+                                            0.00
+                                        </strong>
+                                    </div>
 
-                {{-- စုစုပေါင်းအကျဉ်းချုပ် --}}
-                <div class="row justify-content-end mt-4">
-                    <div class="col-md-6 col-lg-5">
-
-                        <div class="card bg-light border-0">
-                            <div class="card-body">
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>သီးနှံစုစုပေါင်းဖိုး</span>
-                                    <strong id="items_gross_total">0.00</strong>
                                 </div>
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>ပွဲခ + ကားခ စုစုပေါင်း</span>
-                                    <strong id="items_deduction_total">0.00</strong>
-                                </div>
-
-                                <hr>
-
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold">အသားတင်ပေးရန်</span>
-
-                                    <strong class="fs-5 text-success" id="items_net_total">
-                                        0.00
-                                    </strong>
-                                </div>
-
                             </div>
                         </div>
-
                     </div>
-                </div>
 
+                    {{-- Purchase သိမ်းဆည်းပြီး Voucher ကြည့်ရန် --}}
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" id="save_purchase_btn" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>
+                            သိမ်းပြီး Voucher ထုတ်မည်
+                        </button>
+                    </div>
+
+                </div>
             </div>
-        </div>
-        {{-- သီးနှံစာရင်းအပိုင်း အဆုံး --}}
+            {{-- သီးနှံစာရင်းအပိုင်း အဆုံး --}}
+
+        </form>
 
     </div>
 
@@ -606,25 +735,25 @@
                         <div class="d-flex flex-wrap gap-3 text-secondary small">
 
                             ${customer.customer_code ? `
-                                                                                                                                                                                                                                                    <span class=' text-info'>
-                                                                                                                                                                                                                                                        <i class="bi bi-upc-scan me-1"></i>
-                                                                                                                                                                                                                                                        ${escapeHtml(customer.customer_code)}
-                                                                                                                                                                                                                                                    </span>
-                                                                                                                                                                                                                                                ` : ''}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class=' text-info'>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="bi bi-upc-scan me-1"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ${escapeHtml(customer.customer_code)}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ` : ''}
 
                             ${customer.phone ? `
-                                                                                                                                                                                                                                                    <span class=' fw-bold text-dark fs-6'>
-                                                                                                                                                                                                                                                        <i class="bi bi-telephone me-1"></i>
-                                                                                                                                                                                                                                                        ${escapeHtml(customer.phone)}
-                                                                                                                                                                                                                                                    </span>
-                                                                                                                                                                                                                                                ` : ''}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class=' fw-bold text-dark fs-6'>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="bi bi-telephone me-1"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ${escapeHtml(customer.phone)}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ` : ''}
 
                             ${customer.address ? `
-                                                                                                                                                                                                                                                    <span class=' fw-bold text-dark fs-6'>
-                                                                                                                                                                                                                                                        <i class="bi bi-geo-alt me-1"></i>
-                                                                                                                                                                                                                                                        ${escapeHtml(customer.address)}
-                                                                                                                                                                                                                                                    </span>
-                                                                                                                                                                                                                                                ` : ''}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class=' fw-bold text-dark fs-6'>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="bi bi-geo-alt me-1"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ${escapeHtml(customer.address)}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ` : ''}
 
                         </div>
                     </div>
@@ -866,51 +995,595 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
             const cropSelect = document.getElementById('crop_id');
             const qtyPerBasketInput = document.getElementById('quantity_per_basket');
             const unitInput = document.getElementById('unit');
             const referencePriceInput = document.getElementById('reference_price');
             const actualPriceInput = document.getElementById('actual_sale_price');
 
-            // သီးနှံရွေးလိုက်လျှင် Grade ရှာမည်
-            cropSelect.addEventListener('change', async function() {
+            const bagCountWrapper = document.getElementById('bag_count_wrapper');
+            const bagCountInput = document.getElementById('bag_count');
 
+            cropSelect.addEventListener('change', async function() {
                 const cropId = this.value;
                 const option = this.options[this.selectedIndex];
 
-                // unitInput.value = option.dataset.unit || '';
-                const rawUnit = option.dataset.unit || '';
-                let displayUnit = rawUnit;
-                if (rawUnit.toLowerCase() === 'viss') {
-                    displayUnit = 'ပိဿာ';
-                } else if (rawUnit.toLowerCase() === 'pound') {
-                    displayUnit = 'ပေါင်';
-                }
-                unitInput.value = displayUnit;
+                // အရင်တန်ဖိုးများ ရှင်းမည်
+                unitInput.value = '';
+                qtyPerBasketInput.value = '';
+                referencePriceInput.value = '';
+                actualPriceInput.value = '';
 
-                commissionInput.value = option.dataset.commission || 0;
-                const qtyPerBasket = option.getAttribute('data-quantity-per-basket') || 0;
-                qtyPerBasketInput.value = qtyPerBasket;
+                bagCountWrapper.classList.add('d-none');
+                bagCountInput.value = '';
+                bagCountInput.required = false;
 
                 if (!cropId) {
                     return;
                 }
 
-                const response = await fetch(
-                    `{{ url('/whole-sale-market/purchases/grades') }}/${cropId}`, {
-                        headers: {
-                            'Accept': 'application/json'
+                // သီးနှံယူနစ်
+                const rawUnit = (option.dataset.unit || '').trim().toLowerCase();
+
+                if (rawUnit === 'viss') {
+                    unitInput.value = 'ပိဿာ';
+                } else if (rawUnit === 'pound') {
+                    unitInput.value = 'ပေါင်';
+
+                    // ပေါင်ယူနစ်ဖြစ်မှ အိတ်အရေအတွက် ပြမည်
+                    bagCountWrapper.classList.remove('d-none');
+                    bagCountInput.required = true;
+                } else {
+                    unitInput.value = option.dataset.unit || '';
+                }
+
+                qtyPerBasketInput.value =
+                    option.dataset.quantityPerBasket || '';
+
+                try {
+                    const response = await fetch(
+                        `{{ url('/whole-sale-market/Sale/avgPrice') }}/${cropId}`, {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
                         }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        alert(data.message || 'ပျမ်းမျှဈေးနှုန်း ရယူ၍မရပါ။');
+                        return;
                     }
-                );
 
-                const grades = await response.json();
+                    // တစ်တင်း ပျမ်းမျှဈေး
+                    referencePriceInput.value = data.reference_price;
 
+                    // အမှန်တကယ်ရောင်းဈေးကို မူလဈေးအဖြစ် ဖြည့်ပေးမည်
+                    actualPriceInput.value = data.reference_price;
 
+                } catch (error) {
+                    console.error(error);
+                    alert('ဈေးနှုန်းရယူရာတွင် အမှားဖြစ်နေပါသည်။');
+                }
             });
-
         });
     </script>
 @endpush
 {{-- သီသီးနှံစာရင်းအတွက် သီးနှံဈေး အလိုအလျောက်ပြပေးတဲ့ JS အဆုံး --}}
+
+{{-- သီးနှံစျေးနှုန်း တွက်ချက် --}}
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('sale_form');
+
+            const cropSelect = document.getElementById('crop_id');
+            const quantityInput = document.getElementById('quantity');
+            const unitInput = document.getElementById('unit');
+            const qtyPerBasketInput = document.getElementById('quantity_per_basket');
+            const referencePriceInput = document.getElementById('reference_price');
+            const actualPriceInput = document.getElementById('actual_sale_price');
+            const noteInput = document.getElementById('item_note');
+
+            const bagCountWrapper = document.getElementById('bag_count_wrapper');
+            const bagCountInput = document.getElementById('bag_count');
+
+            const addButton = document.getElementById('add_crop_item');
+            const tbody = document.getElementById('purchase_items_body');
+            const itemsInputs = document.getElementById('purchase_items_inputs');
+
+            const grossTotalElement = document.getElementById('items_gross_total');
+            const payableElement = document.getElementById('net_payable_total');
+            const finalPayableElement = document.getElementById('final_payable_total');
+            const paidInput = document.getElementById('paid_amount');
+
+            const customerIdInput = document.getElementById('customer_id');
+
+            // သီးနှံများကို Browser ထဲတွင်သာ ယာယီသိမ်းမည်။
+            // Form Submit လုပ်မှသာ Controller ဆီပို့မည်။
+            let items = [];
+
+            // မြန်မာဂဏန်းနှင့် comma ပြောင်းဖတ်ခြင်း
+            function parseNumber(value) {
+                const myanmarDigits = '၀၁၂၃၄၅၆၇၈၉';
+
+                const englishValue = String(value ?? '')
+                    .replace(/[၀-၉]/g, digit => myanmarDigits.indexOf(digit))
+                    .replace(/,/g, '')
+                    .trim();
+
+                if (englishValue === '') {
+                    return NaN;
+                }
+
+                return Number(englishValue);
+            }
+
+            function money(value) {
+                return Number(value || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            function formatQuantity(value) {
+                return Number(value || 0).toLocaleString('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 3
+                });
+            }
+
+            function escapeHtml(value) {
+                return String(value ?? '').replace(/[&<>"']/g, char => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                })[char]);
+            }
+
+            // Hidden input များကို Form Submit မလုပ်မီ ပြင်ဆင်မည်။
+            // Hidden input များကို table ထဲတွင်လည်း renderItems() က ဖန်တီးထားသည်။
+            function buildSubmitInputs() {
+                itemsInputs.innerHTML = '';
+
+                items.forEach((item, index) => {
+                    const fields = {
+                        crop_id: item.cropId,
+                        quantity: item.quantity,
+                        bag_count: item.bagCount,
+                        avg_price: item.avgPrice,
+                        sale_price: item.salePrice,
+                        gross_amount: item.gross,
+                        remainder_amount: item.remainderAmount,
+                        note: item.note
+                    };
+
+                    Object.entries(fields).forEach(([field, value]) => {
+                        const input = document.createElement('input');
+
+                        input.type = 'hidden';
+                        input.name = `sale_items[${index}][${field}]`;
+                        input.value = value ?? '';
+
+                        itemsInputs.appendChild(input);
+                    });
+                });
+            }
+
+            // စုစုပေါင်းတွက်ခြင်း
+            function updateTotals() {
+                const grossTotal = items.reduce((sum, item) => {
+                    return sum + item.gross;
+                }, 0);
+
+                const paid = paidInput.value.trim() === '' ?
+                    0 :
+                    parseNumber(paidInput.value);
+
+                const validPaid = Number.isFinite(paid) && paid >= 0 ?
+                    paid :
+                    0;
+
+                const remaining = grossTotal - validPaid;
+
+                grossTotalElement.textContent = money(grossTotal);
+                payableElement.textContent = money(grossTotal);
+                finalPayableElement.textContent = money(remaining);
+            }
+
+            // Table ပြသခြင်း
+            function renderItems() {
+                tbody.innerHTML = '';
+
+                if (items.length === 0) {
+                    tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                        သီးနှံစာရင်း မထည့်ရသေးပါ။
+                    </td>
+                </tr>
+            `;
+
+                    updateTotals();
+                    return;
+                }
+
+                items.forEach((item, index) => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                <td class="text-center">${index + 1}</td>
+
+                <td>
+                    ${escapeHtml(item.cropName)}
+                </td>
+
+                <td class="text-end">
+                    ${formatQuantity(item.quantity)}
+                    ${escapeHtml(item.unit)}
+
+                    ${item.unitType === 'pound'
+                        ? `<div class="small text-muted">
+                                                           အိတ် ${item.bagCount} အိတ်နုတ်ပြီး
+                                                       </div>`
+                        : ''
+                    }
+                </td>
+
+                <td class="text-end">
+                    ${formatQuantity(item.baskets)}
+                </td>
+
+                <td class="text-end">
+                    ${money(item.salePrice)}
+                </td>
+
+                <td class="text-end">
+                    ${money(item.gross)}
+                </td>
+
+                <td class="text-center">
+                    <button type="button"
+                        class="btn btn-sm btn-outline-dark"
+                        data-remove-index="${index}">
+                        <i class="bi bi-trash"></i> ဖယ်မည်
+                    </button>
+                </td>
+            `;
+
+                    tbody.appendChild(row);
+                });
+
+                updateTotals();
+            }
+
+            // သီးနှံရွေးချယ်သည့်အခါ
+            cropSelect.addEventListener('change', async function() {
+                const cropId = this.value;
+                const option = this.options[this.selectedIndex];
+
+                unitInput.value = '';
+                qtyPerBasketInput.value = '';
+                referencePriceInput.value = '';
+                actualPriceInput.value = '';
+
+                bagCountInput.value = '';
+                bagCountInput.required = false;
+                bagCountWrapper.classList.add('d-none');
+
+                if (!cropId) {
+                    return;
+                }
+
+                const unitType = (option.dataset.unit || '')
+                    .trim()
+                    .toLowerCase();
+
+                if (unitType === 'viss') {
+                    unitInput.value = 'ပိဿာ';
+                } else if (unitType === 'pound') {
+                    unitInput.value = 'ပေါင်';
+                    bagCountWrapper.classList.remove('d-none');
+                    bagCountInput.required = true;
+                } else {
+                    unitInput.value = option.dataset.unit || '';
+                }
+
+                qtyPerBasketInput.value =
+                    option.dataset.quantityPerBasket || '';
+
+                try {
+                    const response = await fetch(
+                        `{{ url('/whole-sale-market/Sale/avgPrice') }}/${cropId}`, {
+                            headers: {
+                                'Accept': 'application/json'
+                            }
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        alert(data.message || 'ပျမ်းမျှဈေးနှုန်း ရယူ၍မရပါ။');
+                        return;
+                    }
+
+                    const averageBasketPrice =
+                        Math.floor(Number(data.reference_price || 0) / 1000) * 1000;
+
+                    referencePriceInput.value = averageBasketPrice;
+                    actualPriceInput.value = averageBasketPrice;
+
+                } catch (error) {
+                    console.error(error);
+                    alert('ဈေးနှုန်းရယူရာတွင် အမှားဖြစ်နေပါသည်။');
+                }
+            });
+
+            // သီးနှံစာရင်းထဲ ထည့်မည်
+            addButton.addEventListener('click', function() {
+                const option = cropSelect.options[cropSelect.selectedIndex];
+
+                const cropId = cropSelect.value;
+                const cropName = option?.textContent.trim() ?? '';
+                const unitType = (option?.dataset.unit || '')
+                    .trim()
+                    .toLowerCase();
+
+                const quantity = parseNumber(quantityInput.value);
+                const qtyPerBasket = parseNumber(qtyPerBasketInput.value);
+                const salePrice = parseNumber(actualPriceInput.value);
+                const referencePrice = parseNumber(referencePriceInput.value);
+                const note = noteInput.value.trim();
+
+                let bagCount = 0;
+
+                if (!cropId) {
+                    alert('သီးနှံအမည်ကို ရွေးချယ်ပါ။');
+                    cropSelect.focus();
+                    return;
+                }
+
+                if (!Number.isFinite(quantity) || quantity <= 0) {
+                    alert('သီးနှံအရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။');
+                    quantityInput.focus();
+                    return;
+                }
+
+                if (!Number.isFinite(qtyPerBasket) || qtyPerBasket <= 0) {
+                    alert('ဒီသီးနှံအတွက် တစ်တင်းရှိ ပမာဏကို သတ်မှတ်ထားခြင်း မရှိပါ။');
+                    return;
+                }
+
+                if (!Number.isFinite(salePrice) || salePrice <= 0) {
+                    alert('ရောင်းဈေးကို သုညထက်ကြီးသော တန်ဖိုးဖြင့် ဖြည့်ပါ။');
+                    actualPriceInput.focus();
+                    return;
+                }
+
+                if (!Number.isFinite(referencePrice) || referencePrice < 0) {
+                    alert('ပျမ်းမျှဈေးနှုန်းကို စစ်ဆေးပါ။');
+                    return;
+                }
+
+                if (unitType === 'pound') {
+                    bagCount = parseNumber(bagCountInput.value);
+
+                    if (!Number.isInteger(bagCount) || bagCount < 1) {
+                        alert('အိတ်အရေအတွက်ကို အနည်းဆုံး ၁ အိတ် ဖြည့်ပါ။');
+                        bagCountInput.focus();
+                        return;
+                    }
+
+                    if (quantity <= bagCount) {
+                        alert('သီးနှံအရေအတွက်သည် အိတ်အရေအတွက်ထက် ကြီးရပါမည်။');
+                        quantityInput.focus();
+                        return;
+                    }
+                }
+
+                // ပျမ်းမျှ တစ်တင်းဈေးကို ၁,၀၀၀ အောက်ချမည်
+                const averageBasketPrice =
+                    Math.floor(referencePrice / 1000) * 1000;
+
+                // လက်ရှိတွက်ချက်မှုအတိုင်း pound ဖြစ်လျှင်
+                // quantity ထဲမှ bag_count ကို နုတ်ပြီး တင်းတွက်မည်။
+                const netQuantity = unitType === 'pound' ?
+                    quantity - bagCount :
+                    quantity;
+
+                const baskets = netQuantity / qtyPerBasket;
+                const rawGross = baskets * salePrice;
+
+                // စုစုပေါင်းဖိုးကို ၁,၀၀၀ အောက်ချမည်
+                const gross = Math.floor(rawGross / 1000) * 1000;
+
+                const remainderAmount =
+                    Math.round((rawGross - gross) * 100) / 100;
+
+                // Controller ရှိ avg_price field နှင့် ကိုက်ညီစေရန်
+                const avgPrice = averageBasketPrice;
+
+                // သီးနှံတစ်မျိုးကို တစ်ကြိမ်သာထည့်မည်
+                if (items.some(item => String(item.cropId) === String(cropId))) {
+                    alert('ဒီသီးနှံကို စာရင်းထဲ ထည့်ထားပြီးဖြစ်ပါသည်။ ဖယ်ပြီးမှ ပြန်ထည့်ပါ။');
+                    return;
+                }
+
+                items.push({
+                    cropId,
+                    cropName,
+                    quantity,
+                    netQuantity,
+                    unit: unitInput.value,
+                    unitType,
+                    bagCount,
+                    baskets,
+                    avgPrice,
+                    salePrice,
+                    gross,
+                    remainderAmount,
+                    note
+                });
+
+                renderItems();
+
+                // နောက်ထပ် သီးနှံထည့်ရန် Form ကို ရှင်းမည်
+                cropSelect.value = '';
+                quantityInput.value = '';
+                unitInput.value = '';
+                qtyPerBasketInput.value = '';
+                referencePriceInput.value = '';
+                actualPriceInput.value = '';
+                noteInput.value = '';
+                bagCountInput.value = '';
+                bagCountInput.required = false;
+                bagCountWrapper.classList.add('d-none');
+
+                cropSelect.focus();
+            });
+
+            // Table ထဲက သီးနှံကို ဖယ်မည်
+            tbody.addEventListener('click', function(event) {
+                const button = event.target.closest('[data-remove-index]');
+
+                if (!button) {
+                    return;
+                }
+
+                const index = Number(button.dataset.removeIndex);
+
+                if (!Number.isInteger(index) || index < 0 || index >= items.length) {
+                    return;
+                }
+
+                items.splice(index, 1);
+                renderItems();
+            });
+
+            // ပေးချေငွေပြောင်းလဲလျှင် လက်ကျန်ငွေ ပြန်တွက်မည်
+            paidInput.addEventListener('input', updateTotals);
+
+            // သိမ်းပြီး Voucher ထုတ်မည်
+            form.addEventListener('submit', function(event) {
+                if (!customerIdInput.value) {
+                    event.preventDefault();
+                    alert('ဝယ်သူကို အရင်ရွေးချယ်ပါ။');
+
+                    const customerSearch = document.getElementById('customer_search');
+
+                    if (customerSearch) {
+                        customerSearch.focus();
+                    }
+
+                    return;
+                }
+
+                if (items.length === 0) {
+                    event.preventDefault();
+                    alert('သိမ်းဆည်းရန် သီးနှံစာရင်း အနည်းဆုံးတစ်မျိုး ထည့်ပါ။');
+                    cropSelect.focus();
+                    return;
+                }
+
+                const netPayable = items.reduce((sum, item) => sum + item.gross, 0);
+
+                const paidText = paidInput.value.trim();
+                const paidAmount = paidText === '' ? 0 : parseNumber(paidText);
+
+                if (!Number.isFinite(paidAmount) || paidAmount < 0) {
+                    event.preventDefault();
+                    alert('ပေးချေမည့်ငွေကို မှန်ကန်စွာ ဖြည့်ပါ။');
+                    paidInput.focus();
+                    paidInput.select();
+                    return;
+                }
+
+                if (paidAmount > netPayable) {
+                    event.preventDefault();
+                    alert('ပေးချေမည့်ငွေသည် ပေးချေရမည့်ငွေထက် မများရပါ။');
+                    paidInput.focus();
+                    paidInput.select();
+                    return;
+                }
+
+                // Submit လုပ်ချိန်မှ hidden inputs များဖန်တီးမည်။
+                // အဲဒီအချိန်မှသာ sale_items[] ကို Server ဆီပို့မည်။
+                buildSubmitInputs();
+            });
+
+            updateTotals();
+        });
+    </script>
+@endpush
+
+
+{{-- Phone number Input (Only) တွေမှာ number တွေကို myn to eng ပြောင်းပေးတဲ့ JS  --}}
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const phoneInputs = ['phone', 'new_customer_phone', 'customer_search', 'paid_amount'];
+
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+
+            phoneInputs.forEach(function(id) {
+                const input = document.getElementById(id);
+
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
+                });
+            });
+
+        });
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, function(char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                } [char];
+            });
+        }
+    </script>
+@endpush
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInputs = ['quantity', 'reference_price', 'actual_sale_price'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+
+            priceInputs.forEach(function(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    let val = this.value;
+
+                    // ၁။ မြန်မာနံပါတ်များကို အင်္ဂလိပ်နံပါတ်သို့ ပြောင်းခြင်း
+                    val = val.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
+
+                    // ၂။ နံပါတ် (0-9) နှင့် ဒဿသမ (.) မှလွဲ၍ ကျန်စာလုံးများနှင့် ကော်မာများအားလုံးကို ဖြတ်ထုတ်ခြင်း
+                    val = val.replace(/[^0-9.]/g, '');
+
+                    this.value = val;
+                });
+            });
+        });
+    </script>
+@endpush

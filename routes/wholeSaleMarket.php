@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CropController;
+use App\Http\Controllers\CropDepositController;
 use App\Http\Controllers\CropQualityController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
@@ -75,46 +76,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
         Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
     });
-
-    // Route::resource('crops', CropController::class)
-    //     ->except(['show']);
-    // Route::resource('grades', GradeController::class)
-    //     ->except(['show']);
-
-    // Route::get('/daily-prices', [DailyPriceController::class, 'index'])
-    //     ->name('daily-prices.index');
-
-    // Route::get('/daily-prices/create', [DailyPriceController::class, 'create'])
-    //     ->name('daily-prices.create');
-
-    // Route::get('/daily-prices/{id}/edit', [DailyPriceController::class, 'edit'])
-    //     ->name('daily-prices.edit');
-
-    // Route::get('/farmers', [FarmerController::class, 'index'])
-    //     ->name('farmers.index');
-
-    // Route::get('/farmers/create', [FarmerController::class, 'create'])
-    //     ->name('farmers.create');
-
-    Route::get('/farmers/{id}/edit', [FarmerController::class, 'edit'])
-        ->name('farmers.edit');
-
-    Route::get('/purchases', [PurchaseController::class, 'index'])
-        ->name('purchases.index');
-
-    // Route::get('/purchases/create', [PurchaseController::class, 'create'])
-    //     ->name('purchases.create');
-
-    Route::get('/purchases/{id}/edit', [PurchaseController::class, 'edit'])
-        ->name('purchases.edit');
-
-    Route::get('/purchases/show', [PurchaseController::class, 'show'])
-        ->name('purchases.show');
-
-    Route::get('/purchases/{id}/voucher', [PurchaseController::class, 'voucher'])
-        ->name('purchases.voucher');
-
-    Route::group(['prefix' => 'DailyPrice'], function () {
+        Route::group(['prefix' => 'DailyPrice'], function () {
         Route::get('directPage', [DailyPriceController::class, 'directPage'])->name('DailyPrice#directPage');
         Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
         Route::get('list', [DailyPriceController::class, 'list'])->name('DailyPrice#list');
@@ -137,5 +99,53 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('directPageSettlement', [FarmerDebtController::class, 'directPageSettlement'])->name('FarmerDebt#directPageSettlement');
         Route::post('createSettlement', [FarmerDebtController::class, 'createSettlement'])->name('FarmerDebt#createSettlement');
     });
+
+    Route::group(['prefix' => 'crop-diposit'], function () {
+        Route::get('list', [CropDepositController::class, 'index'])->name('crop#deposits#index');
+        Route::get('createPage', [CropDepositController::class, 'createPage'])->name('crop#deposits#createPage');
+        Route::post('create', [CropDepositController::class, 'storeDeposit'])->name('crop#deposits#create');
+        Route::get('convert-form/{purchaseId}', [CropDepositController::class, 'showConvertForm'])->name('crop#deposits#convert#form');
+        Route::post('convert-to-purchase/{purchaseId}', [CropDepositController::class, 'convertToPurchase'])->name('crop#deposits#convert#purchase');
+    });
+
+    // Route::resource('crops', CropController::class)
+    //     ->except(['show']);
+    // Route::resource('grades', GradeController::class)
+    //     ->except(['show']);
+
+    // Route::get('/daily-prices', [DailyPriceController::class, 'index'])
+    //     ->name('daily-prices.index');
+
+    // Route::get('/daily-prices/create', [DailyPriceController::class, 'create'])
+    //     ->name('daily-prices.create');
+
+    // Route::get('/daily-prices/{id}/edit', [DailyPriceController::class, 'edit'])
+    //     ->name('daily-prices.edit');
+
+    // Route::get('/farmers', [FarmerController::class, 'index'])
+    //     ->name('farmers.index');
+
+    // Route::get('/farmers/create', [FarmerController::class, 'create'])
+    //     ->name('farmers.create');
+
+    // Route::get('/farmers/{id}/edit', [FarmerController::class, 'edit'])
+    //     ->name('farmers.edit');
+
+    // Route::get('/purchases', [PurchaseController::class, 'index'])
+    //     ->name('purchases.index');
+
+    // Route::get('/purchases/create', [PurchaseController::class, 'create'])
+    //     ->name('purchases.create');
+
+    // Route::get('/purchases/{id}/edit', [PurchaseController::class, 'edit'])
+    //     ->name('purchases.edit');
+
+    // Route::get('/purchases/show', [PurchaseController::class, 'show'])
+    //     ->name('purchases.show');
+
+    // Route::get('/purchases/{id}/voucher', [PurchaseController::class, 'voucher'])
+    //     ->name('purchases.voucher');
+
+
 
 });

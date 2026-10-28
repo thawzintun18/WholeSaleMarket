@@ -28,13 +28,12 @@ class PurchaseController extends Controller
             $fromDate = now()->toDateString();
             $toDate   = now()->toDateString();
         } elseif ($quickFilter === 'this_week') {
-            $fromDate = now()->startOfWeek()->toDateString();
-            $toDate   = now()->endOfWeek()->toDateString();
+            $fromDate = now()->subDays(6)->toDateString();
+            $toDate   = now()->toDateString();
         } elseif ($quickFilter === 'this_month') {
             $fromDate = now()->startOfMonth()->toDateString();
             $toDate   = now()->endOfMonth()->toDateString();
         } else {
-            // Default အနေဖြင့် မပါလာပါက ယနေ့ (သို့မဟုတ် လိုသလိုသတ်မှတ်နိုင်သည်)
             $fromDate = $fromDate ?: now()->toDateString();
             $toDate   = $toDate ?: now()->toDateString();
         }

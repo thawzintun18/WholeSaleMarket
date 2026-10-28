@@ -156,7 +156,33 @@
     </div>
 
 @endsection
+{{-- @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInputs = ['quantity_per_basket', 'commission_amount'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
+            priceInputs.forEach(function(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    let val = this.value;
+
+                    // ၁။ မြန်မာနံပါတ်များကို အင်္ဂလိပ်နံပါတ်သို့ ပြောင်းခြင်း
+                    val = val.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
+
+                    // ၂။ နံပါတ် (0-9) နှင့် ဒဿသမ (.) မှလွဲ၍ ကျန်စာလုံးများနှင့် ကော်မာများအားလုံးကို ဖြတ်ထုတ်ခြင်း
+                    val = val.replace(/[^0-9.]/g, '');
+
+                    this.value = val;
+                });
+            });
+        });
+    </script>
+@endpush --}}
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {

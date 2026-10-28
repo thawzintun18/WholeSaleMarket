@@ -1,0 +1,207 @@
+@extends('layouts.app')
+
+@section('page-title', 'CropDeposit')
+@section('breadcrumb')
+    အခြေခံစာရင်းများ / သီးနှံအပ်နှံ စာရင်း
+@endsection
+
+@section('content')
+<div class="container-fluid px-4 py-4">
+    <!-- Header & Action Button -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-box-seam me-2 text-primary"></i>သီးနှံအပ်နှံမှု စာရင်းများ (Crop Deposits)
+            </h3>
+            <p class="text-muted small mb-0">တောင်သူများ အပ်နှံထားသော သီးနှံများနှင့် အရေအတွက်များကို စစ်ဆေးစီမံရန်</p>
+        </div>
+        <div>
+            <a href="{{ route('crop#deposits#create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-plus-circle me-1"></i> အပ်နှံမှုအသစ် လက်ခံရန်
+            </a>
+        </div>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <!-- Search & Filter Card (အဆင့်မြှင့်တင်ထားသော Filter များ) -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form action="{{ route('crop#deposits#index') }}" method="GET" class="row g-3">
+                <!-- ရှာဖွေရန် -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">ရှာဖွေရန်</label>
+                    <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="ဘောင်ချာ၊ တောင်သူ၊ ဖုန်း၊ ကားနံပါတ်">
+                </div>
+
+                <!-- သီးနှံအလိုက် Filter -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">သီးနှံအမျိုးအစား</label>
+                    <select name="crop_id" class="form-select">
+                        <option value="">သီးနှံ အားလုံး</option>
+                        @foreach($crops as $crop)
+                            <option value="{{ $crop->id }}" {{ request('crop_id') == $crop->id ? 'selected' : '' }}>
+                                {{ $crop->crop_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- အခြေအနေ Status -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">အခြေအနေ</label>
+                    <select name="status" class="form-select">
+                        <option value="">အားလုံး (All)</option>
+                        <option value="Stored" {{ request('status') === 'Stored' ? 'selected' : '' }}>သိမ်းဆည်းထားဆဲ (Stored)</option>
+                        <option value="Converted" {{ request('status') === 'Converted' ? 'selected' : '' }}>ဝယ်ယူပြီး (Converted)</option>
+                    </select>
+                </div>
+
+                <!-- အချိန်ကာလ Filter (တစ်ရက်, တစ်ပတ်, တစ်လ) -->
+                <div class="col-md-2">
+                    <label class="form-label small fw-semibold">အချိန်ကာလ</label>
+                    <select name="date_filter" class="form-select">
+                        <option value="this_month" {{ request('date_filter', 'this_month') === 'this_month' ? 'selected' : '' }}>ယခုလ</option>
+                        <option value="this_week" {{ request('date_filter') === 'this_week' ? 'selected' : '' }}>ဒီတစ်ပတ်</option>
+                        <option value="today" {{ request('date_filter') === 'today' ? 'selected' : '' }}>ယနေ့</option>
+                    </select>
+                </div>
+
+                <!-- တိကျသော ရက်စွဲအလိုက် (Start & End Date - နာရီမပါ) -->
+                <div class="col-md-3">
+                    <label class="form-label small fw-semibold">ရက်စွဲအလိုက် (မှ - ထိ)</label>
+                    <div class="input-group">
+                        <input type="date" name="start_date" class="form-control form-control-sm" value="{{ request('start_date') }}">
+                        <input type="date" name="end_date" class="form-control form-control-sm" value="{{ request('end_date') }}">
+                    </div>
+                </div>
+
+                <!-- ခလုတ်များ -->
+                <div class="col-12 text-end mt-3">
+                    <button type="submit" class="btn btn-dark px-4 rounded-3 shadow-sm">
+                        <i class="bi bi-filter me-1"></i> စစ်ထုတ်ရှာဖွေမည်
+                    </button>
+                    <a href="{{ route('crop#deposits#index') }}" class="btn btn-outline-secondary px-3 rounded-3">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> အစမူလအတိုင်း
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Deposits Table Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary small text-uppercase">
+                        <tr>
+                            <th class="py-3 px-4" style="width: 70px;">စဉ်</th>
+                            <th class="py-3">ရက်စွဲ</th>
+                            <th class="py-3">တောင်သူအမည်</th>
+                            <th>သီးနှံ / အမျိုးအစား</th>
+                            <th>အရေအတွက် / ယူနစ်</th>
+                            <th class="py-3">ကားနံပါတ်</th>
+                            <th class="py-3">အခြေအနေ</th>
+                            <th class="py-3 text-end px-4">လုပ်ဆောင်ချက်</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($deposits as $index => $deposit)
+                            <tr>
+                                <!-- စဉ် (Pagination တွက်ချက်ပြီး အစဉ်လိုက်ပြရန်) -->
+                                <td class="px-4 fw-bold text-secondary">
+                                    {{ $deposits->firstItem() + $index }}
+                                </td>
+                                <td>{{ date('d-m-Y', strtotime($deposit->deposit_date)) }}</td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ $deposit->farmer_name }}</div>
+                                    <div class="small text-muted">{{ $deposit->farmer_phone ?? 'ဖုန်းမရှိ' }} ({{ $deposit->farmer_village ?? 'ရွာမရှိ' }})</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1 py-1">
+                                        @foreach($deposit->items as $item)
+                                            <div class="small">
+                                                <span class="fw-bold text-dark">
+                                                    {{ $item->crop_name }}
+                                                </span>
+                                                <span class="badge bg-light text-dark border">
+                                                    {{ $item->grade_name }}
+                                                </span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1 py-1">
+                                        @foreach($deposit->items as $item)
+                                            @php
+                                                $rawUnit = strtolower($item->unit ?? '');
+                                                $displayUnit = $rawUnit === 'viss'
+                                                    ? 'ပိဿာ'
+                                                    : ($rawUnit === 'pound' ? 'ပေါင်' : $item->unit);
+                                            @endphp
+
+                                            <div class="small">
+                                                <strong class="text-success">
+                                                    {{ number_format($item->quantity, 2) }}
+                                                </strong>
+                                                <span class="text-muted">{{ $displayUnit }}</span>
+
+                                                @if($rawUnit === 'pound' && $item->bag_count > 0)
+                                                    <span class="text-primary">
+                                                        ({{ $item->bag_count }} အိတ်)
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </td>
+                                <td>{{ $deposit->car_no ?? '-' }}</td>
+                                <td>
+                                    @if($deposit->status === 'Stored')
+                                        <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill fw-semibold">သိမ်းဆည်းထားဆဲ</span>
+                                    @else
+                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold">ဝယ်ယူပြီး (Converted)</span>
+                                    @endif
+                                </td>
+                                <td class="text-end px-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        @if($deposit->status === 'Stored')
+                                            <!-- Convert လုပ်ရန် ခလုတ် -->
+                                            <a href="{{ route('crop#deposits#convert#form', $deposit->id) }}" class="btn btn-success btn-sm rounded-3 px-3 shadow-sm" title="ဝယ်ယူမှုဘောင်ချာသို့ ပြောင်းရန်">
+                                                <i class="bi bi-arrow-repeat me-1"></i> ဘောင်ချာပြောင်းမည်
+                                            </a>
+                                        @else
+                                            <span class="text-muted small">ပြီးစီးပါပြီ<i class="bi bi-correct me-1"></i></span>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                    သီးနှံအပ်နှံမှု စာရင်း မရှိသေးပါ။
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if($deposits->hasPages())
+            <div class="card-footer bg-white py-3 px-4">
+                {{ $deposits->withQueryString()->links() }}
+            </div>
+        @endif
+    </>
+</div>
+@endsection

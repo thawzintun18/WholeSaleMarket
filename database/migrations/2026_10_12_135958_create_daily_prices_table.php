@@ -13,25 +13,16 @@ return new class extends Migration
     {
         Schema::create('daily_prices', function (Blueprint $table) {
             $table->id();
-
             $table->date('price_date');
-
             $table->foreignId('crop_id')
                 ->constrained('crops')
                 ->restrictOnDelete();
-
             $table->foreignId('grade_id')
                 ->constrained('grades')
                 ->restrictOnDelete();
-
             $table->decimal('reference_buy_price', 15, 2)
                 ->nullable();
-
-            // $table->decimal('reference_sell_price', 15, 2)->nullable();
-
             $table->timestamps();
-
-            // Soft Delete
             $table->softDeletes();
 
             // တစ်နေ့တည်းမှာ သီးနှံနှင့် Grade တူညီသော ဈေးနှုန်း မထပ်စေရန်

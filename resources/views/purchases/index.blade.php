@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid p-0">
 
-        <!-- 🌟 Top Header & Action -->
+        <!-- Top Header & Action -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h4 class="fw-bold text-dark mb-1">သီးနှံဝယ်ယူမှု ဘောင်ချာများ</h4>
@@ -66,7 +66,7 @@
         <!-- ၂။ Advanced Filter, Quick Presets & Search Section -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-4">
-                <form method="GET" action="{{ route('purchases.index') }}" id="filterForm">
+                <form method="GET" action="{{ route('purchases#index') }}" id="filterForm">
 
                     <!-- Quick Date Presets (တစ်ရက်၊ တစ်ပတ်၊ တစ်လ အလွယ်ရွေးရန်) -->
                     <div class="d-flex flex-wrap gap-2 mb-3 align-items-center">
@@ -82,7 +82,7 @@
                             class="btn btn-outline-secondary btn-sm rounded-pill px-3 {{ request('quick_filter') === 'this_month' ? 'active bg-dark text-white' : '' }}">ဒီလ
                             (This Month)</button>
                         <span>
-                            <a href="{{ route('purchases.index') }}" class="btn btn-primary btn-sm rounded-pill px-3"
+                            <a href="{{ route('purchases#index') }}" class="btn btn-primary btn-sm rounded-pill px-3"
                                 title="Reset လုပ်ရန်">
                                 <i class="bi bi-arrow-counterclockwise pe-1"></i>Reset
                             </a>
@@ -149,7 +149,7 @@
                             <button type="submit" class="btn btn-primary btn-sm w-100 py-3 shadow-sm" title="ရှာဖွေမည်">
                                 <i class="bi bi-search"></i>
                             </button>
-                            {{-- <a href="{{ route('purchases.index') }}" class="btn btn-outline-secondary btn-sm w-100"
+                            {{-- <a href="{{ route('purchases#index') }}" class="btn btn-outline-secondary btn-sm w-100"
                                 title="Reset လုပ်ရန်">
                                 <i class="bi bi-arrow-counterclockwise"></i>
                             </a> --}}

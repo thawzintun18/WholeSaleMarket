@@ -6,7 +6,10 @@
 @endsection
 
 @section('content')
-<div class="container-fluid px-4 py-4">
+<div class="container-fluid p-0">
+
+    @include('partials.voucher-list-tabs')
+
     <!-- Header & Action Button -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
@@ -16,7 +19,7 @@
             <p class="text-muted small mb-0">တောင်သူများ အပ်နှံထားသော သီးနှံများနှင့် အရေအတွက်များကို စစ်ဆေးစီမံရန်</p>
         </div>
         <div>
-            <a href="{{ route('crop#deposits#create') }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+            <a href="{{ route('crop#deposits#createPage') }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
                 <i class="bi bi-plus-circle me-1"></i> အပ်နှံမှုအသစ် လက်ခံရန်
             </a>
         </div>

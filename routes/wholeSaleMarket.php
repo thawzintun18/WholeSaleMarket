@@ -3,10 +3,14 @@
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropDepositController;
 use App\Http\Controllers\CropQualityController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FarmerDebtController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
@@ -14,10 +18,10 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
-
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('dashboard.index');
+    // })->name('dashboard');
+    Route::get('/dashboard', [ProfileController::class, 'index'])->name('dashboard');
 
     Route::group(['prefix' => '/farmers'], function () {
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
@@ -108,44 +112,24 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('convert-to-purchase/{purchaseId}', [CropDepositController::class, 'convertToPurchase'])->name('crop#deposits#convert#purchase');
     });
 
-    // Route::resource('crops', CropController::class)
-    //     ->except(['show']);
-    // Route::resource('grades', GradeController::class)
-    //     ->except(['show']);
+    Route::group(['prefix' => 'Customer'], function () {
+        Route::post('create', [CustomerController::class, 'create'])->name('Customer#create');
+        Route::get('search', [CustomerController::class, 'search'])->name('Customer#search');
+    });
 
-    // Route::get('/daily-prices', [DailyPriceController::class, 'index'])
-    //     ->name('daily-prices.index');
+    Route::group(['prefix' => 'Sale'], function () {
+        Route::get('directPage', [SaleController::class, 'directPage'])->name('Sale#directPage');
+        Route::post('create', [SaleController::class, 'create'])->name('Sale#create');
+        Route::get('avgPrice/{crop_id}', [SaleController::class, 'avgPrice'])->name('Sale#avgPrice');
+        Route::post('calculateTodayAveragePrices', [SaleController::class, 'calculateTodayAveragePrices'])->name('Sale#calculateTodayAveragePrices');
+        Route::get('voucher/{id}', [SaleController::class, 'voucher'])->name('Sale#voucher');
+        Route::get('smallVoucher/{id}', [SaleController::class, 'smallVoucher'])->name('Sale#smallVoucher');
+        Route::get('list', [SaleController::class, 'list'])->name('Sale#list');
+        Route::post('payBalance/{sale_id}', [SaleController::class, 'payBalance'])->name('Sale#payBlance');
+    });
 
-    // Route::get('/daily-prices/create', [DailyPriceController::class, 'create'])
-    //     ->name('daily-prices.create');
-
-    // Route::get('/daily-prices/{id}/edit', [DailyPriceController::class, 'edit'])
-    //     ->name('daily-prices.edit');
-
-    // Route::get('/farmers', [FarmerController::class, 'index'])
-    //     ->name('farmers.index');
-
-    // Route::get('/farmers/create', [FarmerController::class, 'create'])
-    //     ->name('farmers.create');
-
-    // Route::get('/farmers/{id}/edit', [FarmerController::class, 'edit'])
-    //     ->name('farmers.edit');
-
-    // Route::get('/purchases', [PurchaseController::class, 'index'])
-    //     ->name('purchases.index');
-
-    // Route::get('/purchases/create', [PurchaseController::class, 'create'])
-    //     ->name('purchases.create');
-
-    // Route::get('/purchases/{id}/edit', [PurchaseController::class, 'edit'])
-    //     ->name('purchases.edit');
-
-    // Route::get('/purchases/show', [PurchaseController::class, 'show'])
-    //     ->name('purchases.show');
-
-    // Route::get('/purchases/{id}/voucher', [PurchaseController::class, 'voucher'])
-    //     ->name('purchases.voucher');
-
-
+    Route::group(['prefix' => 'reports'], function() {
+        Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
+    });
 
 });

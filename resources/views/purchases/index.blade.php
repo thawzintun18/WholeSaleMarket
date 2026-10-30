@@ -7,6 +7,8 @@
 @section('content')
     <div class="container-fluid p-0">
 
+        @include('partials.voucher-list-tabs')
+
         <!-- Top Header & Action -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>

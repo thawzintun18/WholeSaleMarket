@@ -259,7 +259,7 @@
                                 <input type="text" id="quantity" class="form-control" min="0.001" step="0.001"
                                     placeholder="အရေအတွက်">
                                 <div class="d-none mt-1" id="bag_count_wrapper">
-                                    <input type="number" id="bag_count" class="form-control" min="1"
+                                    <input type="text" id="bag_count" class="form-control" min="1"
                                         placeholder="အိတ်အရေအတွက် ထည့်ပါ">
                                 </div>
                             </div>
@@ -447,13 +447,9 @@
                                             ပေးချေမည့်ငွေ
                                         </label>
                                         <div class="input-group">
-                                            <input type="text"
-                                                id="paid_amount"
-                                                name="paid_amount"
-                                                class="form-control text-end"
-                                                value="{{ old('paid_amount', '') }}"
-                                                inputmode="decimal"
-                                                autocomplete="off"
+                                            <input type="text" id="paid_amount" name="paid_amount"
+                                                class="form-control text-end" value="{{ old('paid_amount', '') }}"
+                                                inputmode="decimal" autocomplete="off"
                                                 placeholder="ပေးချေမည့်ငွေ ဖြည့်ပါ">
                                         </div>
                                     </div>
@@ -605,7 +601,8 @@
 
             // အကြွေး ငွေတွက်ချက်သည့် function
             function CalDebt() {
-                const grossTotal = Number(document.getElementById('items_gross_total').textContent.replace(/,/g, '')) || 0;
+                const grossTotal = Number(document.getElementById('items_gross_total').textContent.replace(/,/g,
+                    '')) || 0;
                 // နှုတ်မည့်အကြွေး စုစုပေါင်းကို တွက်မည်
                 let totalDebtDed = 0;
                 document.querySelectorAll('.debt-settle-input').forEach(input => {
@@ -618,9 +615,12 @@
             function selectFarmer(farmer) {
                 farmerIdInput.value = farmer.id;
                 document.getElementById('selected_farmer_name').textContent = farmer.name || '';
-                document.getElementById('selected_farmer_code').textContent = farmer.farmer_code ? 'ကုဒ်: ' + farmer.farmer_code : '';
-                document.getElementById('selected_farmer_phone').textContent = farmer.phone ? 'ဖုန်း: ' + farmer.phone : '';
-                document.getElementById('selected_farmer_village').textContent = farmer.village ? 'ကျေးရွာ: ' + farmer.village : '';
+                document.getElementById('selected_farmer_code').textContent = farmer.farmer_code ? 'ကုဒ်: ' + farmer
+                    .farmer_code : '';
+                document.getElementById('selected_farmer_phone').textContent = farmer.phone ? 'ဖုန်း: ' + farmer
+                    .phone : '';
+                document.getElementById('selected_farmer_village').textContent = farmer.village ? 'ကျေးရွာ: ' +
+                    farmer.village : '';
 
                 // ၁။ ပုံမှန်ပြမည့် အကြွေးစာရင်း (အပေါ်က Card အတွက်)
                 const debtsListEl = document.getElementById('selected_farmer_debts_list');
@@ -633,11 +633,13 @@
                 if (farmer.debts && farmer.debts.length > 0) {
                     farmer.debts.forEach(debt => {
                         const balance = Number(debt.balance_amount) || 0;
-                        let typeText = debt.debt_type === 'PurchaseAdvance' ? 'မနက်ပိုင်း Advance' : 'ရိုးရိုး အကြွေး (Cash Loan)';
+                        let typeText = debt.debt_type === 'PurchaseAdvance' ? 'မနက်ပိုင်း Advance' :
+                            'ရိုးရိုး အကြွေး (Cash Loan)';
 
                         // UI 1: အပေါ်ဘက် Profile Card ထဲမှ အကြွေးပြရန်
                         const debtItem = document.createElement('div');
-                        debtItem.className = 'p-2 border rounded bg-light d-flex justify-content-between align-items-center';
+                        debtItem.className =
+                            'p-2 border rounded bg-light d-flex justify-content-between align-items-center';
                         debtItem.innerHTML = `
                             <div>
                                 <div class="fw-semibold small">${typeText}</div>
@@ -651,7 +653,8 @@
 
                         // UI 2: ကားခအပေါ်တွင် နှုတ်ရန် Input ပါသော အကြွေးစာရင်း
                         const voucherDebtItem = document.createElement('div');
-                        voucherDebtItem.className = 'p-2 border rounded bg-white d-flex justify-content-between align-items-center';
+                        voucherDebtItem.className =
+                            'p-2 border rounded bg-white d-flex justify-content-between align-items-center';
 
                         let inputFieldHtml = '';
                         if (debt.debt_type === 'PurchaseAdvance') {
@@ -680,7 +683,8 @@
                     });
 
                 } else {
-                    debtsListEl.innerHTML = '<div class="text-success small fw-semibold">အကြွေးမရှိပါ (ရှင်းလင်းသည်)</div>';
+                    debtsListEl.innerHTML =
+                        '<div class="text-success small fw-semibold">အကြွေးမရှိပါ (ရှင်းလင်းသည်)</div>';
                     voucherDebtsContainer.innerHTML = '<div class="text-muted small">နုတ်ယူရန် အကြွေးမရှိပါ။</div>';
                 }
 
@@ -702,7 +706,8 @@
 
                     const textSpan = document.createElement('span');
                     textSpan.className = 'text-danger fw-bold fs-6';
-                    textSpan.textContent = 'ရှာဖွေသောအချက်အလက်နှင့် ကိုက်ညီသောတောင်သူမတွေ့ပါ တောင်သူအသစ်ထည့်ရန် ကိုနှိပ်၍ထည့်နိုင်သည်';
+                    textSpan.textContent =
+                        'ရှာဖွေသောအချက်အလက်နှင့် ကိုက်ညီသောတောင်သူမတွေ့ပါ တောင်သူအသစ်ထည့်ရန် ကိုနှိပ်၍ထည့်နိုင်သည်';
 
                     const button = document.createElement('button');
                     button.type = 'button';
@@ -771,9 +776,12 @@
 
                 searchTimer = setTimeout(async function() {
                     try {
-                        const response = await fetch(searchUrl + '?search=' + encodeURIComponent(query), {
-                            headers: { 'Accept': 'application/json' }
-                        });
+                        const response = await fetch(searchUrl + '?search=' +
+                            encodeURIComponent(query), {
+                                headers: {
+                                    'Accept': 'application/json'
+                                }
+                            });
 
                         if (!response.ok) {
                             throw new Error('တောင်သူရှာဖွေမှု မအောင်မြင်ပါ။');
@@ -804,7 +812,7 @@
             document.getElementById('change_farmer').onclick = function() {
                 farmerIdInput.value = '';
                 searchInput.value = '',
-                selectedBox.style.display = 'none';
+                    selectedBox.style.display = 'none';
                 searchInput.focus();
             };
 
@@ -868,7 +876,8 @@
                 }
 
                 saveButton.disabled = true;
-                saveButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> သိမ်းဆည်းနေသည်...';
+                saveButton.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-1"></span> သိမ်းဆည်းနေသည်...';
 
                 try {
                     const response = await fetch(storeUrl, {
@@ -1081,7 +1090,8 @@
 
             // သီးနှံ JS ထဲတွင် အသစ်ထည့်ရန် (ငွေတွက်ချက်သည့် function)
             function calculateFinalTotal() {
-                const grossTotal = Number(document.getElementById('items_gross_total').textContent.replace(/,/g, '')) || 0;
+                const grossTotal = Number(document.getElementById('items_gross_total').textContent.replace(/,/g,
+                    '')) || 0;
 
                 // နှုတ်မည့်အကြွေး စုစုပေါင်းကို တွက်မည်
                 let totalDebtDed = 0;
@@ -1095,10 +1105,20 @@
                 }
 
                 // ကားခ နုတ်ငွေ
+                // const carFeeInput = document.getElementById('car_fee_amount');
+                // const carFee = carFeeInput ? (Number(carFeeInput.value) || 0) : 0;
+                // ကားခ နုတ်ငွေ
                 const carFeeInput = document.getElementById('car_fee_amount');
-                const carFee = carFeeInput ? (Number(carFeeInput.value) || 0) : 0;
+                const carFee = carFeeInput ?
+                    Number(
+                        carFeeInput.value
+                        .replace(/[၀-၉]/g, d => '၀၁၂၃၄၅၆၇၈၉'.indexOf(d))
+                        .replace(/,/g, '')
+                        .trim()
+                    ) || 0 :
+                    0;
 
-                 // ၁။ ပေးချေရမည့်ငွေ
+                // ၁။ ပေးချေရမည့်ငွေ
                 let netPayable = grossTotal - totalDebtDed - carFee;
                 if (netPayable < 0) netPayable = 0;
 
@@ -1328,7 +1348,7 @@
                 // ပေးချေရမည့်ငွေ
                 const netPayable = Number(
                     document.getElementById('net_payable_total')
-                        .textContent.replace(/,/g, '')
+                    .textContent.replace(/,/g, '')
                 ) || 0;
                 // ပေးချေမည့်ငွေ
                 const paidAmountInput = document.getElementById('paid_amount');
@@ -1437,7 +1457,6 @@
                 resetFields();
             });
 
-            // ကားခ ထည့်သည့် Input မှာ ပါ လိုက်တွက်ရန် Event Listener ထည့်ပါ
             const carFeeInput = document.getElementById('car_fee_amount');
             if (carFeeInput) {
                 carFeeInput.addEventListener('input', calculateFinalTotal);
@@ -1533,7 +1552,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const priceInputs = ['quantity', 'reference_price', 'actual_buy_price', 'commission_amount',
                 'bag_count',
-                'car_fee_amount'
+                'car_fee_amount', 'paid_amount'
             ];
             const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 

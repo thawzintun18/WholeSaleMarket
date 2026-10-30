@@ -168,10 +168,10 @@
                                 <div class="col-md-6 col-lg-4 col-xl-3">
                                     <label class="form-label fw-semibold">အရေအတွက် <span
                                             class="text-danger">*</span></label>
-                                    <input type="number" name="deposit_items[0][quantity]" class="form-control quantity"
+                                    <input type="text" name="deposit_items[0][quantity]" class="form-control quantity"
                                         min="0.01" step="0.01" placeholder="အရေအတွက်" id="quantity" required>
                                     <div class="d-none mt-2 bag_count_wrapper">
-                                        <input type="number" name="deposit_items[0][bag_count]"
+                                        <input type="text" name="deposit_items[0][bag_count]"
                                             class="form-control bag_count"
                                             placeholder="အိတ်အရေအတွက် ထည့်ပါ" id="bag_count" value="0">
                                     </div>
@@ -196,7 +196,7 @@
                                 <div class="col-md-6 col-lg-4 col-xl-3">
                                     <label class="form-label fw-semibold">တကယ်ပေးမည့်ဈေး <span
                                             class="text-danger">*</span></label>
-                                    <input type="number" name="deposit_items[0][actual_buy_price]"
+                                    <input type="text" name="deposit_items[0][actual_buy_price]"
                                         class="form-control actual_buy_price" min="0" step="0.01"
                                         placeholder="ဝယ်ယူမည့်ဈေး" id="actual_buy_price" required>
                                 </div>

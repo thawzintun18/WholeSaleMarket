@@ -5,6 +5,9 @@
 @section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံ အရည်အသွေးစာရင်း')
 
 @section('content')
+<div class="container-fluid p-0">
+
+    @include('partials.crop-grade-dailyPrice-tabs')
 
     <div class="d-md-flex justify-content-between align-items-center mb-4">
 
@@ -256,7 +259,7 @@
 
         </div>
     </div>
-
+</div>
 @endsection
 
 @section('DeleteData')

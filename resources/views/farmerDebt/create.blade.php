@@ -119,7 +119,7 @@
 
                             <input type="text" id="amount" name="amount" value="{{ old('amount') }}"
                                 class="form-control @error('amount') is-invalid @enderror" placeholder="ငွေပမာဏပမာဏထည့်ပါ"
-                                maxlength="150">
+                                maxlength="150" inputmode="decimal">
 
                             @error('amount')
                                 <div class="invalid-feedback">
@@ -197,25 +197,59 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const phoneInput = document.getElementById('phone');
-            const amountInput = document.getElementById('amount');
 
-            if (!phoneInput) return;
-            if (!amountInput) return;
+            const phoneInputs = ['phone'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
-            phoneInput.addEventListener('input', function() {
-                const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+            phoneInputs.forEach(function(id) {
+                const input = document.getElementById(id);
 
-                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
-                    return myanmarNumbers.indexOf(digit);
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
                 });
             });
 
-            amountInput.addEventListener('input', function() {
-                const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+        });
 
-                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
-                    return myanmarNumbers.indexOf(digit);
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, function(char) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                } [char];
+            });
+        }
+    </script>
+@endpush
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const priceInputs = ['amount'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+
+            priceInputs.forEach(function(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
+
+                input.addEventListener('input', function() {
+                    let val = this.value;
+
+                    // ၁။ မြန်မာနံပါတ်များကို အင်္ဂလိပ်နံပါတ်သို့ ပြောင်းခြင်း
+                    val = val.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
+
+                    // ၂။ နံပါတ် (0-9) နှင့် ဒဿသမ (.) မှလွဲ၍ ကျန်စာလုံးများနှင့် ကော်မာများအားလုံးကို ဖြတ်ထုတ်ခြင်း
+                    val = val.replace(/[^0-9.]/g, '');
+
+                    this.value = val;
                 });
             });
         });

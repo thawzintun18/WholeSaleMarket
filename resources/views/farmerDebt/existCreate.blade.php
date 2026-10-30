@@ -62,7 +62,7 @@
                         <input type="text" name="search" class="form-control" value="{{ $search }}"
                             placeholder="ကုဒ်၊ အမည်၊ ဖုန်း၊ ရွာအမည်ဖြင့် ရှာပါ">
 
-                        <button type="submit" class="btn btn-dark">
+                        <button type="submit" class="btn btn-primary">
                             <i class="bi bi-search me-1"></i> ရှာရန်
                         </button>
                     </div>
@@ -99,7 +99,7 @@
                                             'search' => $search,
                                             'farmer_id' => $item->id,
                                         ]) }}"
-                                            class="btn btn-sm {{ $farmer?->id === $item->id ? 'btn-dark' : 'btn-outline-dark' }}">
+                                            class="btn btn-sm {{ $farmer?->id === $item->id ? 'btn-primary' : 'btn-outline-primary' }}">
                                             <i class="bi bi-person-check me-1"></i>
                                             ရွေးချယ်မည်
                                         </a>
@@ -235,25 +235,25 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const phoneInput = document.getElementById('phone');
-            const amountInput = document.getElementById('amount');
+            const priceInputs = ['amount'];
+            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
-            if (!phoneInput) return;
-            if (!amountInput) return;
+            priceInputs.forEach(function(id) {
+                const input = document.getElementById(id);
+                if (!input) return;
 
-            phoneInput.addEventListener('input', function() {
-                const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+                input.addEventListener('input', function() {
+                    let val = this.value;
 
-                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
-                    return myanmarNumbers.indexOf(digit);
-                });
-            });
+                    // ၁။ မြန်မာနံပါတ်များကို အင်္ဂလိပ်နံပါတ်သို့ ပြောင်းခြင်း
+                    val = val.replace(/[၀-၉]/g, function(digit) {
+                        return myanmarNumbers.indexOf(digit);
+                    });
 
-            amountInput.addEventListener('input', function() {
-                const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
+                    // ၂။ နံပါတ် (0-9) နှင့် ဒဿသမ (.) မှလွဲ၍ ကျန်စာလုံးများနှင့် ကော်မာများအားလုံးကို ဖြတ်ထုတ်ခြင်း
+                    val = val.replace(/[^0-9.]/g, '');
 
-                this.value = this.value.replace(/[၀-၉]/g, function(digit) {
-                    return myanmarNumbers.indexOf(digit);
+                    this.value = val;
                 });
             });
         });

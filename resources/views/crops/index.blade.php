@@ -7,8 +7,13 @@
 
 
 @section('content')
+<div class="container-fluid p-0">
 
-    <div class=" d-md-flex justify-content-between align-items-center mb-4">
+
+    @include('partials.crop-grade-dailyPrice-tabs')
+
+
+   <div class=" d-md-flex justify-content-between align-items-center mb-4">
 
         <div>
             <h1 class="page-title mb-1">သီးနှံစာရင်း</h1>
@@ -233,6 +238,7 @@
         </div>
     </div>
 
+</div>
 @endsection
 
 

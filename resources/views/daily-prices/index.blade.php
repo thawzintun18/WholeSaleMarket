@@ -37,16 +37,16 @@
                 <div class="col-md-3">
                     <label class="form-label">ပထမရက်စွဲ</label>
 
-                    <input type="date" name="first_date" class="form-control"
-                        value="{{ request('first_date') }}" required>
+                    <input type="date" name="first_date" class="form-control" value="{{ request('first_date') }}"
+                        required>
                 </div>
 
                 {{-- ဒုတိယရက်စွဲ --}}
                 <div class="col-md-3">
                     <label class="form-label">ဒုတိယရက်စွဲ</label>
 
-                    <input type="date" name="second_date" class="form-control"
-                        value="{{ request('second_date') }}" required>
+                    <input type="date" name="second_date" class="form-control" value="{{ request('second_date') }}"
+                        required>
                 </div>
 
                 {{-- သီးနှံ --}}
@@ -207,14 +207,14 @@
                                 </td>
 
                                 <td>
-                                    {{ $item->reference_buy_price }}
+                                    {{ number_format((float) $item->reference_buy_price, 0) }}
                                 </td>
 
 
                                 {{-- မနေ့ကဈေး --}}
                                 <td>
                                     @if ($item->yesterday_price !== null)
-                                        {{ number_format((float) $item->yesterday_price, 2) }}
+                                        {{ number_format((float) $item->yesterday_price, 0) }}
                                     @else
                                         -
                                     @endif
@@ -223,7 +223,7 @@
                                 {{-- ဒီနေ့ဈေး --}}
                                 <td>
                                     @if ($item->today_price !== null)
-                                        {{ number_format((float) $item->today_price, 2) }}
+                                        {{ number_format((float) $item->today_price, 0) }}
                                     @else
                                         -
                                     @endif
@@ -234,12 +234,12 @@
                                     @if ($item->price_status === 'တက်')
                                         <span class="text-success fw-bold">
                                             ▲ ဈေးတက်
-                                            (+{{ number_format($item->price_difference, 2) }} ကျပ်)
+                                            (+{{ number_format($item->price_difference, 0) }} ကျပ်)
                                         </span>
                                     @elseif ($item->price_status === 'ကျ')
                                         <span class="text-danger fw-bold">
                                             ▼ ဈေးကျ
-                                            ({{ number_format($item->price_difference, 2) }} ကျပ်)
+                                            ({{ number_format($item->price_difference, 0) }} ကျပ်)
                                         </span>
                                     @elseif ($item->price_status === 'မပြောင်း')
                                         <span class="text-dark">

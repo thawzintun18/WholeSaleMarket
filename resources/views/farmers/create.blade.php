@@ -4,7 +4,7 @@ blade
 @section('page-title', 'Add Farmer')
 
 @section('breadcrumb')
-    မူလစာမျက်နှာ / တောင်သူများ / တောင်သူအသစ်ထည့်
+    အခြေခံစာရင်းများ / တောင်သူစာရင်း / တောင်သူအသစ်ထည့်
 @endsection
 
 @section('content')

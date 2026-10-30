@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\CarFeeController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropQualityController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FarmerDebtController;
+use App\Http\Controllers\LeaveCountController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
@@ -154,6 +156,30 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('smallVoucher/{id}', [SaleController::class, 'smallVoucher'])->name('Sale#smallVoucher');
         Route::get('list', [SaleController::class, 'list'])->name('Sale#list');
         Route::post('payBalance/{sale_id}', [SaleController::class, 'payBalance'])->name('Sale#payBlance');
+    });
+
+    Route::group(['prefix' => 'Leave'], function () {
+        Route::post('create', [LeaveCountController::class, 'create'])->name('Leave#create');
+        Route::get('list', [LeaveCountController::class, 'list'])->name('Leave#list');
+    });
+
+    Route::group(['prefix' => 'CarFee'], function () {
+        Route::get('directPage', [CarFeeController::class, 'directPage'])->name('CarFee#directPage');
+        Route::post('create', [CarFeeController::class, 'create'])->name('CarFee#create');
+        Route::get('list', [CarFeeController::class, 'list'])->name('CarFee#list');
+        Route::get('search', [CarFeeController::class, 'search'])->name('CarFee#search');
+        Route::get('voucher/{id}', [CarFeeController::class, 'voucher'])->name('CarFee#voucher');
+        Route::get('detail/{id}', [CarFeeController::class, 'detail'])->name('CarFee#detail');
+    });
+
+    Route::group(['prefix' => 'Customer'], function () {
+        Route::get('list', [CustomerController::class, 'list'])->name('Customer#list');
+        Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('Customer#edit');
+        Route::post('update/{id}', [CustomerController::class, 'update'])->name('Customer#update');
+        Route::get('delete/{id}', [CustomerController::class, 'delete'])->name('Customer#delete');
+        Route::get('history', [CustomerController::class, 'history'])->name('Customer#history');
+        Route::get('trashList', [CustomerController::class, 'trashList'])->name('Customer#trashList');
+        Route::get('restore/{id}', [CustomerController::class, 'restore'])->name('Customer#restore');
     });
 
 });

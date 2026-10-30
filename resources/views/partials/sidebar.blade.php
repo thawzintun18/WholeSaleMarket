@@ -23,14 +23,14 @@
             အခြေခံစာရင်းများ
         </div>
 
-        <a href="{{ route('Crop#list') }}" class="{{ request()->routeIs('Crop#list') ? 'active' : '' }}">
+        <a href="{{ route('Crop#list') }}" class="{{ request()->routeIs('Crop#*') ? 'active' : '' }}">
 
             <i class="bi bi-box-seam"></i>
             <span>သီနှံများ</span>
 
         </a>
 
-        <a href="{{ route('Quality#list') }}" class="{{ request()->routeIs('Quality#list') ? 'active' : '' }}">
+        <a href="{{ route('Quality#list') }}" class="{{ request()->routeIs('Quality#*') ? 'active' : '' }}">
 
             <i class="bi bi-award"></i>
             <span>အရည်အသွေး</span>
@@ -44,20 +44,27 @@
 
         </a>
 
+        <a href="{{ route('Customer#list') }}" class="{{ request()->routeIs('Customer#*') ? 'active' : '' }}">
+
+            <i class="bi bi-people"></i>
+            <span>၀ယ်သူစာရင်း</span>
+
+        </a>
+
 
         {{-- Pricing --}}
         <div class="menu-title">
             ဈေးနှုန်းများ
         </div>
 
-        <a href="{{ route('DailyPrice#list') }}" class="{{ request()->routeIs('DailyPrice#list') ? 'active' : '' }}">
+        <a href="{{ route('DailyPrice#list') }}" class="{{ request()->routeIs('DailyPrice#*') ? 'active' : '' }}">
 
             <i class="bi bi-tags"></i>
             <span>တစ်နေ့ချင်းဈေး</span>
 
         </a>
 
-        <a href="{{ route('FarmerDebt#list') }}" class="{{ request()->routeIs('FarmerDebt#list') ? 'active' : '' }}">
+        <a href="{{ route('FarmerDebt#list') }}" class="{{ request()->routeIs('FarmerDebt#*') ? 'active' : '' }}">
 
             <i class="bi bi-cash-stack"></i>
             <span>ကြိုသုံးငွေစာရင်း</span>
@@ -67,7 +74,7 @@
 
         {{-- Purchase --}}
         <div class="menu-title">
-            Purchase
+            အရောင်းအ၀ယ်
         </div>
 
 
@@ -103,13 +110,20 @@
 
         {{-- Farmer Account --}}
         <div class="menu-title">
-            Farmer Account
+            Stock
         </div>
 
-        <a href="#" class="{{ request()->routeIs('advances.*') ? 'active' : '' }}">
+        <a href="{{ route('Leave#list') }}" class="{{ request()->routeIs('Leave#list') ? 'active' : '' }}">
 
             <i class="bi bi-wallet2"></i>
-            <span>Advances</span>
+            <span>နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</span>
+
+        </a>
+
+        <a href="{{ route('CarFee#list') }}" class="{{ request()->routeIs('CarFee#*') ? 'active' : '' }}">
+
+            <i class="bi bi-receipt-cutoff"></i>
+            <span>ကားဘောင်ချာစာရင်း</span>
 
         </a>
 

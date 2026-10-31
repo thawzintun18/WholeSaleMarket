@@ -27,6 +27,17 @@
             </div>
         </div>
 
+        @if ($errors->has('sale_items'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>သတိပေးချက်!</strong>
+                {{ $errors->first('sale_items') }}
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                        aria-label="Close"></button>
+            </div>
+        @endif
+
         {{-- Farmer Selection --}}
         <div class="card border-1 shadow-lg mb-4">
             <div class="card-header bg-white py-3">

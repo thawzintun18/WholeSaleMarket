@@ -100,6 +100,7 @@
             @endif
         </div>
 
+        {{-- Success / Error --}}
         @if (session('success'))
             <div class="alert alert-light border text-dark">
                 {{ session('success') }}
@@ -112,6 +113,7 @@
             </div>
         @endif
 
+        {{-- Calculation Status --}}
         @if (!$todayRun)
             <div class="alert alert-light border text-dark">
                 ဒီနေ့အတွက် လက်ကျန်မတွက်ချက်ရသေးပါ။
@@ -120,7 +122,7 @@
         @else
             <div class="alert alert-light border text-dark">
                 <i class="bi bi-check-circle me-1"></i>
-                ဒီနေ့အတွက် လက်ကျန်တွက်ချက်ပြီးပါပြီ။
+                ဒီနေ့အတွက် လက်ကျန်နှင့် ပျမ်းမျှဈေးနှုန်း တွက်ချက်ပြီးပါပြီ။
 
                 <span class="ms-2">
                     တွက်ချက်ချိန် -
@@ -129,36 +131,57 @@
             </div>
         @endif
 
+        {{-- Stock Table --}}
         <div class="card border rounded-0">
+
             <div class="card-header bg-white">
                 <strong>သီးနှံလက်ကျန်စာရင်း</strong>
             </div>
 
             <div class="card-body p-0">
+
                 <div class="table-responsive">
+
                     <table class="table table-bordered table-hover mb-0 align-middle">
+
                         <thead class="table-light">
                             <tr>
                                 <th class="text-center" style="width: 60px;">စဉ်</th>
+                                <th>နေ့စွဲ</th>
                                 <th>သီးနှံအမည်</th>
                                 <th class="text-end">ဒီနေ့လက်ကျန်</th>
+                                <th class="text-end">ဒီနေ့လက်ကျန် (တင်း)</th>
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း</th>
+                                <th class="text-end">လက်ကျန်စုစုပေါင်း (တင်း)</th>
+                                <th class="text-end">ပျမ်းမျှဈေးနှုန်း</th>
                             </tr>
                         </thead>
 
                         <tbody>
+
                             @forelse ($balances as $balance)
+                                @php
+                                    $qpb = (float) ($balance->quantity_per_basket ?? 0);
+
+                                    // ပိဿာမှ တင်းသို့ ပြောင်းတွက်ခြင်း
+                                    $dailyBasket = $qpb > 0 ? $balance->daily_balance / $qpb : 0;
+
+                                    $totalBasket = $qpb > 0 ? $balance->total_balance / $qpb : 0;
+                                @endphp
+
                                 <tr>
+
                                     <td class="text-center">
                                         {{ $loop->iteration }}
                                     </td>
 
+                                    <td class=" fw-bold">{{ \Carbon\Carbon::parse($balance->balance_date)->format('m-d') }}</td>
                                     <td>
                                         {{ $balance->crop_name ?? '-' }}
                                     </td>
 
                                     <td class="text-end">
-                                        {{ number_format($balance->daily_balance, 2) }}
+                                        {{ number_format($balance->daily_balance, 0) }}
                                         @if ($balance->unit == 'viss')
                                             ပိဿာ
                                         @else
@@ -166,26 +189,50 @@
                                         @endif
                                     </td>
 
+                                    {{-- ဒီနေ့လက်ကျန် --}}
                                     <td class="text-end">
-                                        {{ number_format($balance->total_balance, 2) }}
+                                        {{ number_format($dailyBasket, 0) }}
+                                        တင်း
+                                    </td>
+
+                                    <td class="text-end fw-semibold">
+                                        {{ number_format($balance->total_balance, 0) }}
                                         @if ($balance->unit == 'viss')
                                             ပိဿာ
                                         @else
                                             ပေါင်
                                         @endif
                                     </td>
+
+                                    {{-- လက်ကျန်စုစုပေါင်း --}}
+                                    <td class="text-end fw-semibold">
+                                        {{ number_format($totalBasket, 0) }}
+                                        တင်း
+                                    </td>
+
+                                    {{-- ပျမ်းမျှဈေးနှုန်း --}}
+                                    <td class="text-end">
+                                        {{ number_format($balance->average_cost, 0) }}
+                                        <small class="text-muted">ကျပ်</small>
+                                    </td>
+
                                 </tr>
+
                             @empty
+
                                 <tr>
-                                    <td colspan="5" class="text-center py-4">
+                                    <td colspan="7" class="text-center py-4">
+
                                         @if ($todayRun)
                                             ဒီနေ့အတွက် သီးနှံစာရင်း မရှိပါ။
                                         @else
                                             လက်ကျန်တွက်ချက်ပြီးမှ စာရင်းပေါ်လာပါမည်။
                                         @endif
+
                                     </td>
                                 </tr>
                             @endforelse
+
                         </tbody>
 
                         {{-- @if ($balances->isNotEmpty())
@@ -206,7 +253,9 @@
                             </tfoot>
                         @endif --}}
                     </table>
+
                 </div>
+
             </div>
         </div>
 

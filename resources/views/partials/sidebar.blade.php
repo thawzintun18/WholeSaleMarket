@@ -51,6 +51,10 @@
             <i class="bi bi-cash-stack"></i>
             <span>ကြိုသုံးငွေစာရင်း</span>
         </a>
+        <a href="{{ route('CarFee#list') }}" class="{{ request()->routeIs('CarFee#*') ? 'active' : '' }}">
+            <i class="bi-truck"></i>
+            <span>ကားဘောင်ချာစာရင်း</span>
+        </a>
 
 
         {{-- Farmer Account --}}
@@ -60,11 +64,6 @@
         <a href="{{ route('Leave#list') }}" class="{{ request()->routeIs('Leave#list') ? 'active' : '' }}">
             <i class="bi bi-wallet2"></i>
             <span>နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</span>
-        </a>
-
-        <a href="{{ route('CarFee#list') }}" class="{{ request()->routeIs('CarFee#*') ? 'active' : '' }}">
-            <i class="bi bi-receipt-cutoff"></i>
-            <span>ကားဘောင်ချာစာရင်း</span>
         </a>
 
         {{-- Reports --}}

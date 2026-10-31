@@ -1,4 +1,4 @@
-<div class="mb-3">
+<div class="mb-3 d-print-none">
     <ul class="nav gap-4" role="tablist">
 
         <li class="nav-item" role="presentation">

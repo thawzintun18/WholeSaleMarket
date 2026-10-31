@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class SaleController extends Controller
 {
@@ -402,10 +403,12 @@ class SaleController extends Controller
             $totalAmount = round($totalAmount, 2);
 
             if ($paidAmount > $totalAmount) {
-                throw ValidationException::withMessages([
-                    'paid_amount' =>
-                    'ပေးချေမည့်ငွေသည် စုစုပေါင်းပေးချေရမည့်ငွေထက် မများရပါ။',
-                ]);
+                Alert::error(
+                    'ငွေပေးချေမှု မအောင်မြင်ပါ',
+                    'ပေးချေမည့်ငွေသည် စုစုပေါင်းပေးချေရမည့်ငွေထက် မများရပါ။'
+                );
+
+                return back()->withInput();
             }
 
             $balanceAmount = round($totalAmount - $paidAmount, 2);

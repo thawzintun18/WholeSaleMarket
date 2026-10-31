@@ -13,5 +13,6 @@ class DailyStockBalance extends Model
         'balance_date',
         'daily_balance',
         'total_balance',
+        'average_cost',
     ];
 }

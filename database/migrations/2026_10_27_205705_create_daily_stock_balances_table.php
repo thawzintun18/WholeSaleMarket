@@ -22,6 +22,8 @@ return new class extends Migration
 
             $table->decimal('daily_balance', 15, 2)->default(0);
             $table->decimal('total_balance', 15, 2)->default(0);
+            $table->decimal('average_cost', 15, 2)
+                ->default(0);
 
             $table->timestamps();
 

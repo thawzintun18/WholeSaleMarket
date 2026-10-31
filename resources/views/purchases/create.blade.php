@@ -9,33 +9,35 @@
     <div class="container-fluid px-0">
 
         {{-- Page Header --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-md-flex justify-content-between align-items-center mb-4">
             <div>
-                <h1 class="h3 fw-bold mb-1">သီးနှံဝယ်ယူမှုဘောင်ချာအသစ် ဖန်တီးမည်</h1>
-                <p class="text-muted mb-0">
+                <h1 class="h3 fw-bold mb-1" style="line-height: 35px">သီးနှံဝယ်ယူမှုဘောင်ချာအသစ် ဖန်တီးမည်</h1>
+                <p class="text-muted mb-0 mt-2" style="line-height: 30px">
                     ဝယ်ယူမှုစာရင်းများကို သေချာစွာဖြည့်စွက်ပါ ( ဝယ်ယူမှုစာရင်းကို ဆက်မလုပ်တော့ပဲ အစကနေပြန်စမည်ဆိုလျှင်
                     အသစ်ပြန်စမည်ကိုနှိပ်ပြီး ပြန်စတင်နိုင်ပါသည် )
                 </p>
             </div>
 
-            <a href="{{ route('purchases#create#page') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-clockwise"></i> အသစ်ပြန်စမည်
-            </a>
+            <div class="d-flex justify-content-end">
+                <a href="{{ route('purchases#create#page') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i> အသစ်ပြန်စမည်
+                </a>
+            </div>
         </div>
 
         {{-- Farmer Selection --}}
         <div class="card border-1 shadow-lg mb-4">
             <div class="card-header bg-white py-3">
-                <div class="row ">
-                    <div class="col-lg-8">
+                <div class="d-md-flex justify-content-between align-items-center">
+                    <div class="">
                         <h5 class="mb-0 fw-bold my-1">
                             <i class="bi bi-person-check me-2 text-primary"></i>
                             တောင်သူရွေးချယ်ခြင်း
                         </h5>
                     </div>
 
-                    <div class="col-lg-4">
-                        <button type="button" class="btn btn-success w-100 my-1" style="height: 40px;"
+                    <div class="d-flex justify-content-end mt-md-0 mt-2">
+                        <button type="button" class="btn btn-sm btn-success my-1" style="height: 40px;"
                             data-bs-toggle="modal" data-bs-target="#newFarmerModal">
                             <i class="bi bi-person-plus me-1"></i>
                             တောင်သူအသစ်ထည့်မည်

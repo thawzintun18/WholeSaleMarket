@@ -13,15 +13,11 @@ class LeaveCountController extends Controller
     //create
     public function create(Request $request)
     {
-
         $today = now()->toDateString();
 
         // ဒီနေ့တွက်ပြီးသားဖြစ်ပါက ထပ်မတွက်ရန်
         if (
-            DailyStockBalanceRun::where(
-                'balance_date',
-                $today
-            )->exists()
+            DailyStockBalanceRun::where('balance_date', $today)->exists()
         ) {
             return redirect()
                 ->route('Leave#list')
@@ -30,34 +26,28 @@ class LeaveCountController extends Controller
 
         DB::transaction(function () use ($today) {
 
-            // တွက်ချက်မှုမှတ်တမ်း အရင်သိမ်းမယ်
-            DailyStockBalanceRun::create([
-                'balance_date'  => $today,
-                'calculated_at' => now(),
-            ]);
-
             // ဒီနေ့ Purchase / Sale အဝင်အထွက်ကို စုမယ်
             $movements = DB::table('stock_movements')
                 ->select(
                     'crop_id',
                     DB::raw("
-                        SUM(
-                            CASE
-                                WHEN reference_type = 'Purchase'
-                                THEN quantity_in
-                                ELSE 0
-                            END
-                        ) AS total_in
-                    "),
+                    SUM(
+                        CASE
+                            WHEN reference_type = 'Purchase'
+                            THEN quantity_in
+                            ELSE 0
+                        END
+                    ) AS total_in
+                "),
                     DB::raw("
-                        SUM(
-                            CASE
-                                WHEN reference_type = 'Sale'
-                                THEN quantity_out
-                                ELSE 0
-                            END
-                        ) AS total_out
-                    ")
+                    SUM(
+                        CASE
+                            WHEN reference_type = 'Sale'
+                            THEN quantity_out
+                            ELSE 0
+                        END
+                    ) AS total_out
+                ")
                 )
                 ->whereDate('movement_date', $today)
                 ->whereNull('deleted_at')
@@ -66,42 +56,54 @@ class LeaveCountController extends Controller
                 ->get()
                 ->keyBy('crop_id');
 
-            // လက်ကျန်စုစုပေါင်းကို ယူမယ်
+            // လက်ရှိ Stock Balance အားလုံးကို ယူမယ်
             $stockBalances = DB::table('stock_balances')
                 ->get()
                 ->keyBy('crop_id');
 
-            // သီးနှံအားလုံးကို တွက်မယ်
+            // သီးနှံအားလုံးကို ယူမယ်
             $crops = Crop::all();
+
+            // တွက်ချက်မှုမှတ်တမ်း သိမ်းမယ်
+            DailyStockBalanceRun::create([
+                'balance_date'  => $today,
+                'calculated_at' => now(),
+            ]);
 
             foreach ($crops as $crop) {
 
+                // ဒီနေ့ အဝင်အထွက်
                 $movement = $movements->get($crop->id);
 
                 $totalIn  = $movement->total_in ?? 0;
                 $totalOut = $movement->total_out ?? 0;
 
-                // ဒီနေ့ အဝင် - အထွက်
+                // ဒီနေ့ အသားတင်လက်ကျန်
                 $dailyBalance = $totalIn - $totalOut;
 
-                // Stock Balance မှ လက်ကျန်စုစုပေါင်း
+                // Stock Balance မှ လက်ကျန်နှင့် ပျမ်းမျှဈေး ယူမယ်
                 $stock = $stockBalances->get($crop->id);
 
                 $totalBalance = $stock->quantity_on_hand ?? 0;
+                $averageCost  = $stock->average_cost ?? 0;
 
+                // နေ့စဉ်လက်ကျန်စာရင်း သိမ်းမယ်
                 DailyStockBalance::create([
                     'crop_id'       => $crop->id,
                     'balance_date'  => $today,
                     'daily_balance' => $dailyBalance,
                     'total_balance' => $totalBalance,
+                    'average_cost'  => $averageCost,
                 ]);
             }
         });
 
-        Alert::success('အောင်မြင်ပါသည်', 'ဒီနေ့အတွက် သီးနှံလက်ကျန်အားလုံးတွက်ချက်ပြီးပါပြီ။');
+        Alert::success(
+            'အောင်မြင်ပါသည်',
+            'ဒီနေ့အတွက် သီးနှံလက်ကျန်နှင့် ပျမ်းမျှဈေးနှုန်းများ တွက်ချက်ပြီးပါပြီ။'
+        );
 
         return back();
-
     }
 
     //list
@@ -122,17 +124,21 @@ class LeaveCountController extends Controller
             $today
         )->first();
 
-        // Stock Balance Search
-        $query = DailyStockBalance::join(
-            'crops',
-            'daily_stock_balances.crop_id',
-            '=',
-            'crops.id'
-        )->select(
-            'daily_stock_balances.*',
-            'crops.crop_name',
-            'crops.unit'
-        );
+        // Daily Stock Balance Search
+        $query = DB::table('daily_stock_balances')
+            ->join(
+                'crops',
+                'daily_stock_balances.crop_id',
+                '=',
+                'crops.id'
+            )
+            ->whereNull('crops.deleted_at')
+            ->select(
+                'daily_stock_balances.*',
+                'crops.crop_name',
+                'crops.unit',
+                'crops.quantity_per_basket'
+            );
 
         // သီးနှံအမျိုးအစား
         if ($request->filled('crop_id')) {

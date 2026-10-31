@@ -10,15 +10,17 @@
         @include('partials.voucher-list-tabs')
 
         <!-- Top Header & Action -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-md-flex justify-content-between align-items-center mb-4">
             <div>
-                <h4 class="fw-bold text-dark mb-1">သီးနှံဝယ်ယူမှု ဘောင်ချာများ</h4>
-                <p class="text-muted small mb-0">တောင်သူများထံမှ ဝယ်ယူထားသော စာရင်းများနှင့် ငွေကြေးရှင်းတမ်းများကို
+                <h4 class="fw-bold text-dark mb-1" style="line-height: 35px">သီးနှံဝယ်ယူမှု ဘောင်ချာများ</h4>
+                <p class="text-muted small mb-0 mt-2" style="line-height: 30px">တောင်သူများထံမှ ဝယ်ယူထားသော စာရင်းများနှင့် ငွေကြေးရှင်းတမ်းများကို
                     စီမံခန့်ခွဲရန်။</p>
             </div>
-            <a href="{{ route('purchases#create#page') }}" class="btn btn-primary shadow-sm">
+            <div class=" d-flex justify-content-end mt-md-0 mt-3">
+                <a href="{{ route('purchases#create#page') }}" class="btn btn-primary shadow-sm">
                 <i class="bi bi-plus-circle me-1"></i> ဝယ်ယူမှုအသစ် ပြုလုပ်ရန်
             </a>
+            </div>
         </div>
 
         <!-- ၁။ Summary KPI Cards (Dynamic based on Date Filter) -->

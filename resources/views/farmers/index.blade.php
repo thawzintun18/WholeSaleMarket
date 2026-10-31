@@ -7,6 +7,9 @@
 @endsection
 
 @section('content')
+<div class="container-fluid p-0">
+
+    @include('partials.farmer-customer-tabs')
 
     {{-- ခေါင်းစဉ်နှင့် အသစ်ထည့်ရန် --}}
     <div class="d-md-flex justify-content-between align-items-center mb-4">
@@ -223,7 +226,7 @@
         @endif
 
     </div>
-
+</div>
 @endsection
 @push('scripts')
     <script>

@@ -274,6 +274,7 @@
 
                                 </tr>
                             @endforeach
+                            
                         @else
                             <tr>
                                 <td colspan="9" class="empty-state-cell">
@@ -286,9 +287,7 @@
                                             လက်ရှိတွင် နေ့စဉ်သီးနှံဈေးနှုန်းများ ထည့်သွင်းထားခြင်းမရှိသေးပါ။
                                         </p>
 
-                                    </div>
-
-                                </td>
+                                <td>
                             </tr>
                         @endif
 

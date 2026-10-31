@@ -307,6 +307,8 @@ class DailyPriceController extends Controller
             ->orderBy('grades.grade_name')
             ->get();
 
+        // dd($dailyPrice->toArray());
+
         return view(
             'daily-prices.index',
             compact(

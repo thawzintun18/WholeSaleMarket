@@ -52,6 +52,7 @@ class ProfileController extends Controller
 
         // ၆။ လတ်တလော မြို့ဘောင်ချာများ (နောက်ဆုံး ၅ စောင်)
         $recentSales = DB::table('sales')
+            ->leftJoin('customers', 'customers.id', 'sales.customer_id')
             ->orderBy('sale_date', 'desc')
             ->limit(5)
             ->get();

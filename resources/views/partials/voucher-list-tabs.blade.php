@@ -19,7 +19,7 @@
         <li class="nav-item" role="presentation">
             <a href="{{ route('crop#deposits#index') }}"
                class="text-decoration-none pb-2 fw-semibold d-inline-block {{ request()->routeIs('crop#deposits#*') ? 'text-dark border-bottom border-dark border-2' : 'text-secondary opacity-75' }}">
-                <i class="bi bi-cart-plus me-1"></i> အပ်နှံစာရင်း
+                <i class="bi-bag-fill me-1"></i> အပ်နှံစာရင်း
             </a>
         </li>
 

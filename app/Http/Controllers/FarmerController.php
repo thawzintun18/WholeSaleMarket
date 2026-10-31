@@ -46,28 +46,6 @@ class FarmerController extends Controller
         return view('farmers.create');
     }
 
-    // public function create(Request $request)
-    // {
-    //     $data              = $this->validateFarmer($request);
-    //     $data['is_active'] = $request->boolean('is_active', true);
-    //     if ($this->checkDuplicateFarmer($data)) {
-    //         return back()
-    //             ->withInput()
-    //             ->with('warning', 'ဒီအမည် သို့မဟုတ် ဖုန်းနံပါတ်နဲ့ တောင်သူစာရင်း ရှိပြီးသား ဖြစ်နိုင်ပါတယ်။');
-    //     }
-    //     $farmer              = Farmer::create($data);
-    //     $farmer->farmer_code = 'F-' . str_pad(
-    //         (string) $farmer->id,
-    //         6,
-    //         '0',
-    //         STR_PAD_LEFT
-    //     );
-    //     $farmer->save();
-    //     Alert::success('အောင်မြင်ပါသည်', 'ောင်သူစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
-    //     return redirect()
-    //         ->route('farmers#index');
-    // }
-
     public function search(Request $request)
     {
         $search = trim($request->input('search', ''));

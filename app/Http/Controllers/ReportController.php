@@ -77,4 +77,61 @@ class ReportController extends Controller
             'items', 'crops', 'grades', 'startDate', 'endDate', 'cropId', 'gradeId', 'totalQuantity', 'totalAmount', 'totalPurchases', 'totalBagCount'
         ));
     }
+
+    public function dailySaleReport(Request $request)
+    {
+        // 1. ရက်စွဲ (Default: ယနေ့ရက်စွဲ)
+        $startDate = $request->input('start_date', now()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        $cropId = $request->input('crop_id');
+        if (!$cropId) {
+            $firstCrop = DB::table('crops')->orderBy('crop_name')->first();
+            $cropId = $firstCrop ? $firstCrop->id : null;
+        }
+
+        // 2. သီးနှံအမျိုးအစားများ (Filter တွင် ရွေးချယ်ရန်)
+        $crops = DB::table('crops')->orderBy('crop_name')->get();
+
+        // 3. Sale Items များကို ရက်စွဲနှင့် Filter များအလိုက် ဆွဲထုတ်ခြင်း
+        $query = DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('customers', 'sales.customer_id', '=', 'customers.id')
+            ->join('crops', 'sale_items.crop_id', '=', 'crops.id')
+            ->select(
+                'sale_items.sale_id',
+                'sales.invoice_no',
+                'sales.sale_date',
+                'customers.name as customer_name',
+                'customers.address as customer_address',
+                'crops.crop_name',
+                'crops.unit',
+                'sale_items.quantity',
+                'sale_items.bag_count',
+                'sale_items.sale_price',
+                'sale_items.gross_amount',
+                'sale_items.note'
+            );
+
+        if ($cropId) {
+            $query->where('sale_items.crop_id', $cropId);
+        }
+
+        $query->whereDate('sales.sale_date', '>=', $startDate)
+            ->whereDate('sales.sale_date', '<=', $endDate);
+
+        $items = $query->orderBy('sales.id', 'desc')->get();
+
+        // 4. စုစုပေါင်းများ တွက်ချက်ခြင်း (Total Quantity, Amount, Bag Count & Sales Count)
+        $totalQuantity = $items->sum('quantity');
+        $totalAmount = $items->sum('gross_amount');
+        $totalBagCount = $items->where('unit', 'pound')->sum('bag_count'); // သင့် Unit အပေါ်မူတည်၍ ချိန်ညှိနိုင်ပါသည်
+        $totalSales = $items->pluck('sale_id')->unique()->count(); // စုစုပေါင်း ဘောင်ချာအရေအတွက်
+
+        return view('reports.daily_sale', compact(
+            'items', 'crops', 'startDate', 'endDate', 
+            'cropId', 'totalQuantity', 'totalAmount', 
+            'totalSales', 'totalBagCount'
+        ));
+    }
 }

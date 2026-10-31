@@ -5,19 +5,26 @@
     အခြေခံစာရင်းများ / သီးနှံအပ်နှံ စာရင်း / သီးနှံအပ်နှံခြင်း အသစ်
 @endsection
 @section('content')
-    <div class="container py-4">
+    <div class="container-fluid p-0">
+
+        @include('partials.purchase-sale-deposit-tabs')
+
         <!-- Header Section -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-md-flex justify-content-between align-items-center mb-4">
             <div>
                 <h3 class="fw-bold text-dark mb-1">
-                    <i class="bi bi-box-arrow-in-down me-2 text-primary"></i>သီးနှံအပ်နှံမှု အသစ်လက်ခံခြင်း
+                    <i class="bi bi-box-arrow-in-down me-2 text-primary" style="line-height: 35px"></i>သီးနှံအပ်နှံမှု
+                    အသစ်လက်ခံခြင်း
                 </h3>
-                <p class="text-muted small mb-0">တောင်သူထံမှ သီးနှံများကို အပ်နှံသိမ်းဆည်းရန်အတွက် အချက်အလက်များကို
+                <p class="text-muted small mb-0 mt-2" style="line-height: 30px">တောင်သူထံမှ သီးနှံများကို
+                    အပ်နှံသိမ်းဆည်းရန်အတွက် အချက်အလက်များကို
                     အောက်ပါအတိုင်း ဖြည့်သွင်းပါ</p>
             </div>
-            <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded-pill px-4">
-                <i class="bi bi-arrow-left me-1"></i> နောက်သို့
-            </a>
+            <div class=" d-flex justify-content-end mt-md-0 mt-3">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-secondary rounded-pill px-4">
+                    <i class="bi bi-arrow-left me-1"></i> နောက်သို့
+                </a>
+            </div>
         </div>
 
         <form action="{{ route('crop#deposits#create') }}" method="POST">
@@ -26,14 +33,14 @@
             <!-- ၁။ တောင်သူရွေးချယ်ခြင်း -->
             <div class="card border-0 shadow-lg rounded-4 mb-4">
                 <div class="card-header bg-white py-3 px-4 border-bottom">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
+                    <div class=" d-md-flex justify-content-between align-items-center">
+                        <div class="">
                             <h5 class="mb-0 fw-bold text-dark">
                                 <i class="bi bi-person-check me-2 text-primary"></i>တောင်သူရွေးချယ်ခြင်း
                             </h5>
                         </div>
-                        <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                            <button type="button" class="btn btn-success btn-sm px-3 rounded-pill" data-bs-toggle="modal"
+                        <div class=" d-flex justify-content-end mt-2 mt-md-0">
+                            <button type="button" class="btn btn-success px-3" data-bs-toggle="modal"
                                 data-bs-target="#newFarmerModal">
                                 <i class="bi bi-person-plus me-1"></i> တောင်သူအသစ်ထည့်မည်
                             </button>
@@ -124,7 +131,7 @@
                     <h5 class="mb-0 fw-bold text-dark">
                         <i class="bi bi-box-seam me-2 text-primary"></i>သီးနှံအသေးစိတ် စာရင်းများ
                     </h5>
-                    <button type="button" class="btn btn-success btn-sm px-3 rounded-pill" id="addRowBtn">
+                    <button type="button" class="btn btn-success btn-sm px-3" id="addRowBtn">
                         <i class="bi bi-plus-lg me-1"></i> သီးနှံ ထပ်ထည့်ရန်
                     </button>
                 </div>
@@ -172,8 +179,8 @@
                                         min="0.01" step="0.01" placeholder="အရေအတွက်" id="quantity" required>
                                     <div class="d-none mt-2 bag_count_wrapper">
                                         <input type="text" name="deposit_items[0][bag_count]"
-                                            class="form-control bag_count"
-                                            placeholder="အိတ်အရေအတွက် ထည့်ပါ" id="bag_count" value="0">
+                                            class="form-control bag_count" placeholder="အိတ်အရေအတွက် ထည့်ပါ"
+                                            id="bag_count" value="0">
                                     </div>
                                 </div>
 
@@ -208,18 +215,22 @@
                                     <input type="text" name="deposit_items[0][note]" class="form-control item_note"
                                         maxlength="255" placeholder="လိုအပ်ပါက မှတ်ချက်ရေးပါ">
                                 </div>
+
+
                             </div>
+                            
                         </div>
+                        <!-- Submit Button Section -->
+                            <div class="text-end mb-5">
+                                <button type="submit" class="btn btn-success shadow">
+                                    <i class="bi bi-check-circle-fill me-2"></i> သီးနှံအပ်နှံမှု အားလုံး သိမ်းဆည်းမည်
+                                </button>
+                            </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Submit Button Section -->
-            <div class="text-end mb-5">
-                <button type="submit" class="btn btn-primary btn-sm px-5 py-3 rounded-pill shadow">
-                    <i class="bi bi-check-circle-fill me-2"></i> သီးနှံအပ်နှံမှု အားလုံး သိမ်းဆည်းမည်
-                </button>
-            </div>
+
         </form>
     </div>
 

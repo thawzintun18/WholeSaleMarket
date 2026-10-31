@@ -11,15 +11,15 @@
     @include('partials.voucher-list-tabs')
 
     <!-- Header & Action Button -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div class="d-md-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
             <h3 class="fw-bold text-dark mb-1">
-                <i class="bi bi-box-seam me-2 text-primary"></i>သီးနှံအပ်နှံမှု စာရင်းများ (Crop Deposits)
+                <i class="bi bi-box-seam me-2 text-primary" style="line-height: 35px"></i>သီးနှံအပ်နှံမှု စာရင်းများ (Crop Deposits)
             </h3>
-            <p class="text-muted small mb-0">တောင်သူများ အပ်နှံထားသော သီးနှံများနှင့် အရေအတွက်များကို စစ်ဆေးစီမံရန်</p>
+            <p class="text-muted small mb-0 mt-2" style="line-height: 30px">တောင်သူများ အပ်နှံထားသော သီးနှံများနှင့် အရေအတွက်များကို စစ်ဆေးစီမံရန်</p>
         </div>
-        <div>
-            <a href="{{ route('crop#deposits#createPage') }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+        <div class=" d-flex justify-content-end mt-md-0 mt-3">
+            <a href="{{ route('crop#deposits#createPage') }}" class="btn btn-primary px-4 shadow-sm">
                 <i class="bi bi-plus-circle me-1"></i> အပ်နှံမှုအသစ် လက်ခံရန်
             </a>
         </div>
@@ -86,7 +86,7 @@
 
                 <!-- ခလုတ်များ -->
                 <div class="col-12 text-end mt-3">
-                    <button type="submit" class="btn btn-dark px-4 rounded-3 shadow-sm">
+                    <button type="submit" class="btn btn-primary px-4 rounded-3 shadow-sm">
                         <i class="bi bi-filter me-1"></i> စစ်ထုတ်ရှာဖွေမည်
                     </button>
                     <a href="{{ route('crop#deposits#index') }}" class="btn btn-outline-secondary px-3 rounded-3">

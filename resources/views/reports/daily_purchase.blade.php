@@ -5,17 +5,20 @@
 @section('breadcrumb', 'ပင်မစာမျက်နှာ / တစ်နေ့တာအဝယ်စာရင်းချုုပ်')
 
 @section('content')
-<div class="container-fluid px-4 py-4">
+<div class="container-fluid p-0">
+    
+    @include('partials.report-purchase-sale-tabs')
+
     <!-- Header (Print လုပ်သည့်အခါ မပေါ်စေရန် d-print-none သုံးထားသည်) -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 d-print-none">
+    <div class="d-md-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 d-print-none">
         <div>
-            <h3 class="fw-bold text-dark mb-1">
+            <h3 class="fw-bold text-dark mb-1" style="line-height: 35px">
                 <i class="bi bi-journal-text me-2 text-primary"></i>နေ့စဉ်သီးနှံစာရင်းချုပ် (Daily Purchase Report)
             </h3>
-            <p class="text-muted small mb-0">သီးနှံအမျိုးအစားနှင့် Grade အလိုက် တစ်နေ့တာ ဝယ်ယူခဲ့သော စာရင်းများ</p>
+            <p class="text-muted small mb-0 mt-2" style="line-height: 30px">သီးနှံအမျိုးအစားနှင့် Grade အလိုက် တစ်နေ့တာ ဝယ်ယူခဲ့သော စာရင်းများ</p>
         </div>
-        <div>
-            <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 shadow-sm">
+        <div class=" d-flex justify-content-end mt-md-0 mt-3">
+            <button onclick="window.print()" class="btn btn-primary rounded-pill px-4 shadow-sm">
                 <i class="bi bi-printer me-1"></i> စာရင်းချုပ် Print ထုတ်မည်
             </button>
         </div>
@@ -119,7 +122,7 @@
                             <th class="py-3 text-center" style="width: 60px;">စဉ်</th>
                             <th class="py-3">တောင်သူအမည်</th>
                             <th class="py-3">ကျေးရွာ</th>
-                            <th class="py-3">အမျိုးအစား (Grade)</th>
+                            <th class="py-3">အမျိုးအစား</th>
                             <th class="py-3 text-end">အရေအတွက်</th>
                             <th class="py-3 text-end">ဝယ်ယူသည့်ဈေး</th>
                             <th class="py-3 text-end">သင့်ငွေ (ကျပ်)</th>

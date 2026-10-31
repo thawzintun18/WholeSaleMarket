@@ -121,7 +121,7 @@
                                             @if($purchase->balance_amount <= 0)
                                                 <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill">ရှင်းပြီး</span>
                                             @else
-                                                <span class="badge bg-warning-subtle text-warning-emphasis px-3 py-1 rounded-pill">ငွေကျန်</span>
+                                                <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill">ငွေကျန်</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -158,11 +158,16 @@
                                     <tr>
                                         <td class="ps-4 small text-muted">{{ \Carbon\Carbon::parse($sale->sale_date ?? $sale->created_at)->format('m-d') }}</td>
                                         <td>
-                                            <span class="fw-semibold text-dark">{{ $sale->buyer_name ?? 'အထွေထွေဖောက်သည်' }}</span>
+                                            <span class="fw-semibold text-dark">{{ $sale->name ?? 'အထွေထွေဖောက်သည်' }}</span>
                                         </td>
                                         <td class="text-end fw-bold">{{ number_format($sale->net_amount ?? 0, 2) }}</td>
                                         <td class="text-end pe-4">
-                                            <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill">ပြီးမြောက်</span>
+                                            {{-- <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill">ပြီးမြောက်</span> --}}
+                                            @if($sale->balance_amount <= 0)
+                                                <span class="badge bg-success-subtle text-success px-3 py-1 rounded-pill">ရှင်းပြီး</span>
+                                            @else
+                                                <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill">ငွေကျန်</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

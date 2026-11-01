@@ -6,21 +6,21 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class StaffMiddleware
+class RoleMiddleware
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!auth()->check()) {
             return redirect()->route('login');
         }
 
-        if (auth()->user()->role != 'staff') {
-            // abort(403, 'Unauthorized Access');
+        if (!in_array(auth()->user()->role, $roles)) {
+            // abort(403, 'သင့်မှာ ဝင်ရောက်ခွင့်မရှိပါ။');
             return back();
         }
 

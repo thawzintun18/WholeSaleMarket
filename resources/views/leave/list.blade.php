@@ -175,7 +175,7 @@
                                         {{ $loop->iteration }}
                                     </td>
 
-                                    <td class=" fw-bold">{{ \Carbon\Carbon::parse($balance->balance_date)->format('m-d') }}</td>
+                                    <td class=" fw-bold">{{ \Carbon\Carbon::parse($balance->balance_date)->format('M-d') }}</td>
                                     <td>
                                         {{ $balance->crop_name ?? '-' }}
                                     </td>

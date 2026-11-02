@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    
+
     @include('partials.report-purchase-sale-tabs')
 
     <!-- Header (Print လုပ်သည့်အခါ မပေါ်စေရန် d-print-none သုံးထားသည်) -->
@@ -202,7 +202,7 @@
         }
 
         /* Navbar, Sidebar, Filter များနှင့် မလိုအပ်သည်များ ဖျောက်ရန် */
-        nav, .sidebar, .navbar, footer, header, .d-print-none {
+        nav, .sidebar, .top-navbar, footer, header, .d-print-none {
             display: none !important;
         }
 

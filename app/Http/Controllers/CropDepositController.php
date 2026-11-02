@@ -165,7 +165,7 @@ class CropDepositController extends Controller
     {
         $deposit = DB::table('crop_deposits')
             ->join('farmers', 'crop_deposits.farmer_id', '=', 'farmers.id')
-            ->select('crop_deposits.*', 'farmers.name as farmer_name', 'farmers.phone as farmer_phone')
+            ->select('crop_deposits.*', 'farmers.name as farmer_name', 'farmers.phone as farmer_phone', 'farmers.village as farmer_village')
             ->where('crop_deposits.id', $id)
             ->where('crop_deposits.status', 'Stored')
             ->first();
@@ -177,11 +177,23 @@ class CropDepositController extends Controller
         $items = DB::table('crop_deposit_items')
             ->join('crops', 'crop_deposit_items.crop_id', '=', 'crops.id')
             ->join('grades', 'crop_deposit_items.grade_id', '=', 'grades.id')
-            ->select('crop_deposit_items.*', 'crops.crop_name', 'crops.unit', 'grades.grade_name')
+            ->select(
+                'crop_deposit_items.*',
+                'crops.crop_name',
+                'crops.unit',
+                'crops.commission_amount',
+                'crops.quantity_per_basket',
+                'grades.grade_name'
+            )
             ->where('crop_deposit_items.crop_deposit_id', $id)
             ->get();
 
-        return view('cropDeposits.convert', compact('deposit', 'items'));
+        $farmerDebts = DB::table('farmer_debts')
+            ->where('farmer_id', $deposit->farmer_id)
+            ->whereIn('status', ['Open', 'Partial'])
+            ->get();
+
+        return view('cropDeposits.convert', compact('deposit', 'items', 'farmerDebts'));
     }
 
     public function convertToPurchase(Request $request, $depositId)
@@ -191,6 +203,8 @@ class CropDepositController extends Controller
             'items.*.id'               => ['required', 'integer', 'exists:crop_deposit_items,id'],
             'items.*.actual_buy_price' => ['required', 'numeric', 'min:0'],
             'car_fee_amount'           => ['nullable', 'numeric', 'min:0'],
+            'paid_amount'              => ['nullable', 'numeric', 'min:0'],
+            'debts'                    => ['nullable', 'array'],
         ]);
 
         DB::transaction(function () use ($request, $depositId) {
@@ -210,11 +224,29 @@ class CropDepositController extends Controller
 
                 $quantity = (float) $item->quantity;
                 $commission = (float) ($crop->commission_amount ?? 0);
-                $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
-                $basketCount = $quantityPerBasket > 0 ? $quantity / $quantityPerBasket : $quantity;
 
-                // ဈေးနှုန်းအသစ်ဖြင့် Gross Amount တွက်ချက်ခြင်း
-                $rawAmount = round($basketCount * ($actualPrice - $commission), 2);
+                // ယူနစ်အလိုက် အရေအတွက် တွက်ချက်ခြင်း
+                $calculationQty = $quantity;
+                if ($unit === 'pound') {
+                    $bagCount = (int) ($item->bag_count ?? 0);
+                    $deductionPerBag = 1; // လိုအပ်ပါက တစ်အိတ်လျှင် လျှော့မည့် ပေါင်ပမာဏကို ချိန်ညှိပါ
+                    $calculationQty = $quantity - ($bagCount * $deductionPerBag);
+                    if ($calculationQty < 0) {
+                        $calculationQty = 0;
+                    }
+                }
+
+                $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
+                $basketCount = $quantityPerBasket > 0 ? $calculationQty / $quantityPerBasket : $calculationQty;
+
+                // Commission (ပွဲခ) နှုတ်ပြီးသား ဈေးနှုန်း
+                $netPricePerUnit = $actualPrice - $commission;
+                if ($netPricePerUnit < 0) {
+                    $netPricePerUnit = 0;
+                }
+
+                // Gross Amount တွက်ချက်ခြင်း
+                $rawAmount = round($basketCount * $netPricePerUnit, 2);
                 $grossAmt = floor($rawAmount / 1000) * 1000;
                 $remainderAmt = round($rawAmount - $grossAmt, 2);
 
@@ -224,9 +256,9 @@ class CropDepositController extends Controller
                     'crop_id'           => $item->crop_id,
                     'grade_id'          => $item->grade_id,
                     'quantity'          => $quantity,
-                    'bag_count'         => ($unit === 'pound') ? $item->bag_count : 0,
-                    'reference_price'   => $item->reference_price, // မူလ အပ်တုန်းက ဈေးကို Reference အဖြစ် သိမ်းထားနိုင်သည်
-                    'actual_buy_price'  => $actualPrice,           // ယနေ့ ရောင်းချသည့် ဈေးနှုန်းအသစ်
+                    'bag_count'         => ($unit === 'pound') ? (int) $item->bag_count : 0,
+                    'reference_price'   => $item->actual_buy_price,
+                    'actual_buy_price'  => $actualPrice,
                     'commission_amount' => $commission,
                     'gross_amount'      => $grossAmt,
                     'remainder_amount'  => $remainderAmt,
@@ -236,29 +268,95 @@ class CropDepositController extends Controller
                 ];
             }
 
+            // အကြွေးနှုတ်ငွေများ တွက်ချက်ခြင်းနှင့် ဇယားများ Update လုပ်ရန်
+            $totalDebtSettled = 0;
+            $debtSettlementsData = [];
+
+            if ($request->has('debts') && is_array($request->debts)) {
+                foreach ($request->debts as $debtId => $settleAmount) {
+                    $settleAmount = (float) $settleAmount;
+                    if ($settleAmount > 0) {
+                        $debtRecord = DB::table('farmer_debts')->where('id', $debtId)->first();
+                        if ($debtRecord) {
+                            $currentBalance = $debtRecord->balance_amount ?? ($debtRecord->amount - ($debtRecord->settled_amount ?? 0));
+                            if ($settleAmount > $currentBalance) {
+                                $settleAmount = $currentBalance; // လက်ကျန်ငွေထက် ပိုမနှုတ်မိစေရန်
+                            }
+
+                            $totalDebtSettled += $settleAmount;
+
+                            $debtSettlementsData[] = [
+                                'farmer_debt_id'  => $debtId,
+                                'amount'          => $settleAmount,
+                                'settlement_date' => now(),
+                                'created_at'      => now(),
+                                'updated_at'      => now(),
+                            ];
+
+                            // တောင်သူအကြွေးစာရင်း (farmer_debts) ကို update လုပ်ခြင်း
+                            $newSettled = (float) ($debtRecord->settled_amount ?? 0) + $settleAmount;
+                            $newBalance = (float) $debtRecord->amount - $newSettled;
+                            $newStatus = ($newBalance <= 0) ? 'Close' : 'Partial';
+
+                            DB::table('farmer_debts')->where('id', $debtId)->update([
+                                'settled_amount' => $newSettled,
+                                'balance_amount' => $newBalance,
+                                'status'         => $newStatus,
+                                'updated_at'     => now(),
+                            ]);
+                        }
+                    }
+                }
+            }
+
             $carFeeAmount = (float) ($request->car_fee_amount ?? $deposit->car_fee_amount ?? 0);
-            $netAmount = round($totalGrossAmount - $carFeeAmount, 2);
+
+            // ပေးချေရမည့်ငွေ (သီးနှံတန်ဖိုး - အကြွေး - ကားခ)
+            $netAmount = round($totalGrossAmount - $totalDebtSettled - $carFeeAmount, 2);
+            if ($netAmount < 0) $netAmount = 0;
+
+            $paidAmount = (float) ($request->paid_amount ?? 0);
+            $balanceAmount = round($netAmount - $paidAmount, 2);
+            if ($balanceAmount < 0) $balanceAmount = 0;
 
             $invoiceNo = $this->generateInvoiceNo();
 
-            // 1. purchases ဇယားသို့ ဝင်မည်
+            // purchases ဇယားသို့ အချက်အလက်ထည့်သွင်းခြင်း
             $purchaseId = DB::table('purchases')->insertGetId([
                 'invoice_no'         => $invoiceNo,
                 'farmer_id'          => $deposit->farmer_id,
                 'purchase_date'      => now(),
-                'status'             => 'Complete',
+                'status'             => 'Confirm',
                 'total_gross_amount' => $totalGrossAmount,
-                'advance_sub_amount' => 0,
-                'car_no'             => $deposit->car_no ?? '',
+                'advance_sub_amount' => $totalDebtSettled,
+                'car_no'             => $deposit->car_no ?? $request->car_no ?? '',
                 'car_fee_amount'     => $carFeeAmount,
                 'net_amount'         => $netAmount,
-                'total_paid'         => $netAmount, // ငွေရှင်းပြီးသားအဖြစ် သတ်မှတ်
-                'balance_amount'     => 0,
+                'total_paid'         => $paidAmount,
+                'balance_amount'     => $balanceAmount,
                 'created_at'         => now(),
                 'updated_at'         => now(),
             ]);
 
-            // 2. purchase_items နှင့် Stock ဝင်မည်
+            // purchase_payments ထဲသို့ ဘောင်ချာထုတ်ချိန် ပေးချေငွေ (initial) ထည့်သွင်းခြင်း
+            if ($paidAmount > 0) {
+                DB::table('purchase_payments')->insert([
+                    'purchase_id'  => $purchaseId,
+                    'payment_date' => now(),
+                    'amount'       => $paidAmount,
+                    'payment_type' => 'initial',
+                    'created_at'   => now(),
+                    'updated_at'   => now(),
+                ]);
+            }
+
+            // purchase_debt_settlements ထဲသို့ အကြွေးရှင်းလင်းမှု မှတ်တမ်းထည့်ခြင်း
+            foreach ($debtSettlementsData as $settlement) {
+                $settlement['purchase_id'] = $purchaseId;
+                DB::table('purchase_debt_settlements')->insert($settlement);
+            }
+
+            // purchase_items နှင့် Stock ဝင်ခြင်း
             foreach ($purchaseItemsData as $pItem) {
                 $pItem['purchase_id'] = $purchaseId;
                 DB::table('purchase_items')->insert($pItem);
@@ -299,7 +397,7 @@ class CropDepositController extends Controller
                 }
             }
 
-            // 3. Deposit status ကို Converted ပြောင်းမည်
+            // Deposit status ကို Converted သို့ပြောင်းမည်
             DB::table('crop_deposits')
                 ->where('id', $depositId)
                 ->update(['status' => 'Converted', 'updated_at' => now()]);
@@ -307,153 +405,6 @@ class CropDepositController extends Controller
 
         return redirect()->route('crop#deposits#index')->with('success', 'သီးနှံအပ်နှံမှုကို ဝယ်ယူမှုဘောင်ချာသို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။');
     }
-
-    // public function convertToPurchase($depositId)
-    // {
-    //     DB::transaction(function () use ($depositId) {
-    //         // 1. Deposit အချက်အလက်ကို ယူခြင်း (Stored အနေအထား ဖြစ်မှသာ)
-    //         $deposit = DB::table('crop_deposits')
-    //             ->where('id', $depositId)
-    //             ->where('status', 'Stored')
-    //             ->first();
-
-    //         if (! $deposit) {
-    //             throw ValidationException::withMessages([
-    //                 'deposit' => 'ဤအပ်နှံမှု စာရင်း မရှိတော့ပါ သို့မဟုတ် ပြောင်းပြီးသား ဖြစ်ပါသည်။',
-    //             ]);
-    //         }
-
-    //         // 2. Deposit Items များကို ယူခြင်း
-    //         $depositItems = DB::table('crop_deposit_items')
-    //             ->where('crop_deposit_id', $depositId)
-    //             ->get();
-
-    //         if ($depositItems->isEmpty()) {
-    //             throw ValidationException::withMessages([
-    //                 'deposit' => 'အပ်နှံထားသော သီးနှံစာရင်း မတွေ့ရှိပါ။',
-    //             ]);
-    //         }
-
-    //         $totalGrossAmount = 0;
-    //         $purchaseItemsData = [];
-
-    //         // 3. ဝယ်ယူမှု တန်ဖိုးများနှင့် ကျသင့်ငွေများ တွက်ချက်ခြင်း
-    //         foreach ($depositItems as $item) {
-    //             $crop = DB::table('crops')->where('id', $item->crop_id)->first();
-    //             $unit = strtolower($crop->unit ?? '');
-
-    //             $quantity = (float) $item->quantity;
-    //             $actualPrice = (float) $item->actual_buy_price;
-    //             $commission = (float) ($crop->commission_amount ?? 0);
-
-    //             $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
-    //             $basketCount = $quantityPerBasket > 0 ? $quantity / $quantityPerBasket : $quantity;
-
-    //             // Gross Amount တွက်ချက်ခြင်း (ပွဲရုံ အလေ့အထအတိုင်း တွက်ချက်ရန်)
-    //             $rawAmount = round($basketCount * ($actualPrice - $commission), 2);
-    //             $grossAmt = floor($rawAmount / 1000) * 1000;
-    //             $remainderAmt = round($rawAmount - $grossAmt, 2);
-
-    //             $totalGrossAmount += $grossAmt;
-
-    //             $purchaseItemsData[] = [
-    //                 'crop_id'           => $item->crop_id,
-    //                 'grade_id'          => $item->grade_id,
-    //                 'quantity'          => $quantity,
-    //                 'bag_count'         => ($unit === 'pound') ? $item->bag_count : 0,
-    //                 'reference_price'   => $item->reference_price,
-    //                 'actual_buy_price'  => $actualPrice,
-    //                 'commission_amount' => $commission,
-    //                 'gross_amount'      => $grossAmt,
-    //                 'remainder_amount'  => $remainderAmt,
-    //                 'note'              => $item->note,
-    //                 'created_at'        => now(),
-    //                 'updated_at'        => now(),
-    //             ];
-    //         }
-
-    //         $carFeeAmount = (float) ($deposit->car_fee_amount ?? 0);
-    //         $netAmount = round($totalGrossAmount - $carFeeAmount, 2);
-
-    //         // Deposit မှ convert လုပ်ခြင်းဖြစ်၍ ငွေမရှင်းရသေးအဖြစ် သတ်မှတ်ပါသည်
-    //         $totalPaid = 0;
-    //         $balanceAmount = $netAmount;
-
-    //         // 4. Invoice No ထုတ်ယူခြင်း (သင်ပေးထားသော ပုံစံအတိုင်း)
-    //         $invoiceNo = $this->generateInvoiceNo();
-
-    //         // 5. `purchases` ပင်မဇယားတွင် အသစ်ထည့်သွင်းခြင်း
-    //         $purchaseId = DB::table('purchases')->insertGetId([
-    //             'invoice_no'         => $invoiceNo,
-    //             'farmer_id'          => $deposit->farmer_id,
-    //             'purchase_date'      => now(),
-    //             'status'             => 'Complete', // Confirm / Temp / Complete
-    //             'total_gross_amount' => $totalGrossAmount,
-    //             'advance_sub_amount' => 0,
-    //             'car_no'             => $deposit->car_no ?? '',
-    //             'car_fee_amount'     => $carFeeAmount,
-    //             'net_amount'         => $netAmount,
-    //             'total_paid'         => $totalPaid,
-    //             'balance_amount'     => $balanceAmount,
-    //             'created_at'         => now(),
-    //             'updated_at'         => now(),
-    //         ]);
-
-    //         // 6. `purchase_items` နှင့် Stock (`stock_movements`, `stock_balances`) ထဲသို့ ထည့်သွင်းခြင်း
-    //         foreach ($purchaseItemsData as $pItem) {
-    //             $pItem['purchase_id'] = $purchaseId;
-    //             DB::table('purchase_items')->insert($pItem);
-
-    //             // Stock Movement & Balance Update
-    //             $cropId = $pItem['crop_id'];
-    //             $qtyIn = (float) $pItem['quantity'];
-    //             $cropInfo = DB::table('crops')->where('id', $cropId)->first();
-    //             $unitName = $cropInfo->unit ?? 'unit';
-    //             $unitCost = (float) $pItem['actual_buy_price'];
-
-    //             DB::table('stock_movements')->insert([
-    //                 'crop_id'        => $cropId,
-    //                 'movement_date'  => now(),
-    //                 'quantity_in'    => $qtyIn,
-    //                 'quantity_out'   => 0,
-    //                 'unit'           => $unitName,
-    //                 'unit_cost'      => $unitCost,
-    //                 'reference_type' => 'Purchase',
-    //                 'reference_id'   => $purchaseId,
-    //                 'created_at'     => now(),
-    //                 'updated_at'     => now(),
-    //             ]);
-
-    //             $existingStock = DB::table('stock_balances')->where('crop_id', $cropId)->first();
-    //             if ($existingStock) {
-    //                 DB::table('stock_balances')
-    //                     ->where('crop_id', $cropId)
-    //                     ->update([
-    //                         'quantity_on_hand' => (float) $existingStock->quantity_on_hand + $qtyIn,
-    //                         'updated_at'       => now(),
-    //                     ]);
-    //             } else {
-    //                 DB::table('stock_balances')->insert([
-    //                     'crop_id'          => $cropId,
-    //                     'quantity_on_hand' => $qtyIn,
-    //                     'average_cost'     => $unitCost,
-    //                     'created_at'       => now(),
-    //                     'updated_at'       => now(),
-    //                 ]);
-    //             }
-    //         }
-
-    //         // 7. Deposit ၏ Status ကို 'Converted' သို့ ပြောင်းလဲခြင်း
-    //         DB::table('crop_deposits')
-    //             ->where('id', $depositId)
-    //             ->update([
-    //                 'status'     => 'Converted',
-    //                 'updated_at' => now(),
-    //             ]);
-    //     });
-
-    //     return redirect()->route('crop#deposits#index')->with('success', 'သီးနှံအပ်နှံမှုကို ဝယ်ယူမှုဘောင်ချာသို့ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ။');
-    // }
 
     public function createPage()
     {

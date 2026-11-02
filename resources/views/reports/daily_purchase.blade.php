@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container-fluid p-0">
-    
+
     @include('partials.report-purchase-sale-tabs')
 
     <!-- Header (Print လုပ်သည့်အခါ မပေါ်စေရန် d-print-none သုံးထားသည်) -->
@@ -35,7 +35,7 @@
         <div class="col-md-4">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">စုစုပေါင်း ဝယ်ယူမှုပမာဏ</div>
-                <h4 class="fw-bold text-danger mb-0">{{ number_format($totalQuantity, 2) }}</h4>
+                <h4 class="fw-bold text-danger mb-0">{{ number_format($totalBasketCount, 2) }} တင်း</h4>
             </div>
         </div>
         <div class="col-md-4">
@@ -124,6 +124,7 @@
                             <th class="py-3">ကျေးရွာ</th>
                             <th class="py-3">အမျိုးအစား</th>
                             <th class="py-3 text-end">အရေအတွက်</th>
+                            <th class="py-3 text-end">တင်း</th>
                             <th class="py-3 text-end">ဝယ်ယူသည့်ဈေး</th>
                             <th class="py-3 text-end">သင့်ငွေ (ကျပ်)</th>
                             <th class="py-3">မှတ်ချက်</th>
@@ -134,6 +135,19 @@
                             @php
                                 $rawUnit = strtolower($item->unit ?? '');
                                 $displayUnit = $rawUnit === 'viss' ? 'ပိဿာ' : ($rawUnit === 'pound' ? 'ပေါင်' : $item->unit);
+
+                                $qty = (float) $item->quantity;
+                                $bagCount = (int) ($item->bag_count ?? 0);
+                                $qtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+                                // တင်းအရေအတွက် တွက်ချက်ခြင်း (Pound ဆိုရင် အိတ်ရေနှုတ်ပြီးမှ စားမည်)
+                                $calculationQty = $qty;
+                                if ($rawUnit === 'pound') {
+                                    $deductionPerBag = 1; // တစ်အိတ်လျှင် ၁ ပေါင် နှုတ်သည်
+                                    $calculationQty = $qty - ($bagCount * $deductionPerBag);
+                                    if ($calculationQty < 0) $calculationQty = 0;
+                                }
+                                $basketCount = $qtyPerBasket > 0 ? ($calculationQty / $qtyPerBasket) : 0;
                             @endphp
                             <tr>
                                 <td class="text-center fw-bold">{{ $index + 1 }}</td>
@@ -141,29 +155,32 @@
                                 <td>{{ $item->farmer_village ?? '-' }}</td>
                                 <td>
                                     <span class="badge bg-secondary bg-opacity-10 text-dark border">
-                                        {{ $item->crop_name }} - {{ $item->grade_name }}
+                                        {{ $item->crop_name }} {{ $item->grade_name }}
                                     </span>
                                 </td>
-                                @php
-                                    $rawUnit = strtolower($item->unit ?? '');
-                                    $displayUnit = $rawUnit === 'viss' ? 'ပိဿာ' : ($rawUnit === 'pound' ? 'ပေါင်' : $item->unit);
-                                @endphp
 
+                                {{-- အရေအတွက် Column (ယူနစ်အမည်နှင့် အိတ်ရေပါ ဖော်ပြမည်) --}}
                                 <td class="text-end fw-semibold">
-                                    {{ number_format($item->quantity, 2) }} <span class="small text-muted">{{ $displayUnit }}</span>
+                                    {{ number_format($qty, 2) }} <span class="small text-muted">{{ $displayUnit }}</span>
 
-                                    {{-- ယူနစ်က pound ဖြစ်ပြီး အိတ်ရေရှိမှသာ ပေါ်မည် (Viss ဆိုလျှင် လုံးဝမပေါ်ပါ) --}}
-                                    @if($rawUnit === 'pound' && $item->bag_count > 0)
-                                        <div class="small text-primary">({{ $item->bag_count }} အိတ်)</div>
+                                    {{-- ယူနစ်က pound ဖြစ်ပြီး အိတ်ရေရှိမှသာ ပေါင်နောက်တွင် အိတ်ရေပြမည် --}}
+                                    @if($rawUnit === 'pound' && $bagCount > 0)
+                                        <div class="small text-muted">({{ $bagCount }} အိတ်)</div>
                                     @endif
                                 </td>
+
+                                {{-- တင်း Column (ဘယ်ယူနစ်မဆို တင်းအရေအတွက် တွက်ချက်ပြသမည်) --}}
+                                <td class="text-end fw-semibold text-dark">
+                                    {{ $basketCount > 0 ? number_format($basketCount, 2) : '-' }}
+                                </td>
+
                                 <td class="text-end">{{ number_format($item->actual_buy_price, 2) }}</td>
                                 <td class="text-end fw-bold text-dark">{{ number_format($item->gross_amount, 2) }}</td>
                                 <td class="small text-muted">{{ $item->note ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="text-center py-5 text-muted">
+                                <td colspan="9" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
                                     ဤရက်စွဲအတွက် ဝယ်ယူထားသော စာရင်း မရှိသေးပါ။
                                 </td>
@@ -173,15 +190,9 @@
                     @if($items->isNotEmpty())
                         <tfoot class="table-light fw-bold">
                             <tr>
-                                <td colspan="4" class="text-end py-3">စုစုပေါင်း (Total):</td>
-                                <td class="text-end text-danger">
-                                    {{ number_format($totalQuantity, 2) }}
-                                    @if($items->contains('unit', 'pound'))
-                                        <div class="small text-secondary mt-1">
-                                            အိတ်စုစုပေါင်း:
-                                            {{ number_format($totalBagCount) }} အိတ်
-                                        </div>
-                                    @endif
+                                <td colspan="5" class="text-end py-3">စုစုပေါင်း (Total):</td>
+                                <td class="text-end text-success fs-5">
+                                    {{ number_format($totalBasketCount, 2) }} တင်း
                                 </td>
                                 <td class="text-end">-</td>
                                 <td class="text-end text-success fs-5">{{ number_format($totalAmount, 2) }} ကျပ်</td>
@@ -201,7 +212,7 @@
         /* A4 စာရွက်အတိုင်း ချိန်ညှိရန်နှင့် ဘေးအနားသတ်များ သတ်မှတ်ရန် */
         @page {
             size: A4 portrait;
-            margin: 10mm;
+            margin: 0mm;
         }
 
         body {
@@ -211,7 +222,7 @@
         }
 
         /* Navbar, Sidebar, Filter များနှင့် မလိုအပ်သည်များ ဖျောက်ရန် */
-        nav, .sidebar, .navbar, footer, header, .d-print-none {
+        nav, .sidebar, .top-navbar, footer, header, .d-print-none {
             display: none !important;
         }
 

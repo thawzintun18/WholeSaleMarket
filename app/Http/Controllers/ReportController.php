@@ -24,7 +24,7 @@ class ReportController extends Controller
         // 2. သီးနှံအမျိုးအစားများ (Filter တွင် ရွေးချယ်ရန်)
         $crops = DB::table('crops')->orderBy('crop_name')->get();
 
-        // ရွေးချယ်ထားသော သီးနှံအလိုက် Grade များကို ဆွဲထုတ်ရန် (Ajax သို့မဟုတ် Select အတွက်)
+        // ရွေးချယ်ထားသော သီးနှံအလိုက် Grade များကို ဆွဲထုတ်ရန်
         $grades = collect();
         if ($cropId) {
             $grades = DB::table('grades')->where('crop_id', $cropId)->get();
@@ -32,7 +32,7 @@ class ReportController extends Controller
             $grades = DB::table('grades')->get();
         }
 
-        // 3. Purchase Items များကို ရက်စွဲနှင့် Filter များအလိုက် ဆွဲထုတ်ခြင်း
+        // 3. Purchase Items များကို ရက်စွဲနှင့် Filter များအလိုက် ဆွဲထုတ်ခြင်း (quantity_per_basket ပါ ထည့်ရန်)
         $query = DB::table('purchase_items')
             ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
             ->join('farmers', 'purchases.farmer_id', '=', 'farmers.id')
@@ -45,6 +45,7 @@ class ReportController extends Controller
                 'farmers.village as farmer_village',
                 'crops.crop_name',
                 'crops.unit',
+                'crops.quantity_per_basket',
                 'grades.grade_name',
                 'purchase_items.quantity',
                 'purchase_items.bag_count',
@@ -66,15 +67,35 @@ class ReportController extends Controller
 
         $items = $query->orderBy('purchases.id', 'desc')->get();
 
-        // 4. စုစုပေါင်းများ တွက်ချက်ခြင်း (Total Quantity & Total Amount)
-        $totalQuantity = $items->sum('quantity');
+        // 4. စုစုပေါင်းများ တွက်ချက်ခြင်း
+        // $totalQuantity = $items->sum('quantity');
         $totalAmount = $items->sum('gross_amount');
-        $totalBagCount = $items->where('unit', 'pound')->sum('bag_count');
-        // စုစုပေါင်း ဘောင်ချာအရေအတွက် (Total Purchases Count)
+        // $totalBagCount = $items->where('unit', 'pound')->sum('bag_count');
+
+        // စုစုပေါင်း တင်းအရေအတွက် တွက်ချက်ခြင်း
+        $totalBasketCount = 0;
+        foreach ($items as $item) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $qtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            if ($qtyPerBasket > 0) {
+                $calcQty = $qty;
+                if ($rawUnit === 'pound') {
+                    $deductionPerBag = 1; // တစ်အိတ်လျှင် ၁ ပေါင် နှုတ်သည်
+                    $calcQty = $qty - ($bagCount * $deductionPerBag);
+                    if ($calcQty < 0) $calcQty = 0;
+                }
+                $totalBasketCount += ($calcQty / $qtyPerBasket);
+            }
+        }
+
         $totalPurchases = $items->pluck('purchase_id')->unique()->count();
 
         return view('reports.daily_purchase', compact(
-            'items', 'crops', 'grades', 'startDate', 'endDate', 'cropId', 'gradeId', 'totalQuantity', 'totalAmount', 'totalPurchases', 'totalBagCount'
+            'items', 'crops', 'grades', 'startDate', 'endDate', 'cropId', 'gradeId',
+             'totalAmount', 'totalPurchases', 'totalBasketCount'
         ));
     }
 
@@ -129,8 +150,8 @@ class ReportController extends Controller
         $totalSales = $items->pluck('sale_id')->unique()->count(); // စုစုပေါင်း ဘောင်ချာအရေအတွက်
 
         return view('reports.daily_sale', compact(
-            'items', 'crops', 'startDate', 'endDate', 
-            'cropId', 'totalQuantity', 'totalAmount', 
+            'items', 'crops', 'startDate', 'endDate',
+            'cropId', 'totalQuantity', 'totalAmount',
             'totalSales', 'totalBagCount'
         ));
     }

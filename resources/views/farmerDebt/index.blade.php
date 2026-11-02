@@ -133,14 +133,14 @@
 
                     <tr>
                         <th style="width: 60px;">စဉ်</th>
-                        <th>အကြွေးယူသည့်နေ့ရက်</th>
-                        <th>တောင်သူကုဒ်</th>
+                        <th>နေ့စွဲ</th>
+                        {{-- <th>တောင်သူကုဒ်</th> --}}
                         <th>တောင်သူအမည်</th>
                         <th>မူလအကြွေးငွေ</th>
-                        <th>ပြန်လည်ရှင်းလင်းပြီးငွေ</th>
-                        <th>ကျန်ရှိအကြွေးငွေ</th>
-                        <th>အကြွေးအမျိုးအစား</th>
-                        <th>အကြွေးအခြေအနေ</th>
+                        <th>ပြန်ရှင်းပြီးငွေ</th>
+                        <th>ကျန်ငွေ</th>
+                        <th>အမျိုးအစား</th>
+                        <th>အခြေအနေ</th>
                         <th class="text-center" style="width: 130px;">လုပ်ဆောင်ချက်</th>
                     </tr>
 
@@ -157,16 +157,15 @@
                                 <td>{{ $loop->iteration }}</td>
 
                                 <td>
-                                    <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-m-Y') }}</div>
+                                    <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-M-Y') }}</div>
                                     <small class="text-muted">
                                         {{ \Carbon\Carbon::parse($item->debt_date)->format('h:i A') }}
                                     </small>
                                 </td>
 
-                                <td>
+                                {{-- <td>
                                     {{ $item->farmer_code }}
-
-                                </td>
+                                </td> --}}
 
                                 <td>
                                     {{ $item->name }}

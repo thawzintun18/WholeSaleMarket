@@ -193,6 +193,8 @@
                                             ကြိုယူငွေ
                                         @elseif($item->debt_type == 'CashLoan')
                                             တောကြွေး
+                                        @elseif($item->debt_type == 'BeanPayment')
+                                            ပဲဆံဖိုး
                                         @endif
                                     </small>
                                 </td>
@@ -214,12 +216,15 @@
 
                                     <div class="d-flex justify-content-end">
 
-                                        @if (($item->debt_type == 'CashLoan' && $item->status == 'Open') || $item->status == 'Partial')
+                                        @if (
+                                            ($item->debt_type == 'CashLoan' && $item->status == 'Open') ||
+                                                $item->status == 'Partial' ||
+                                                $item->debt_type == 'BeanPayment')
                                             <a href="{{ route('FarmerDebt#settlement', $item->id) }}"
                                                 class=" btn btn-primary me-2">အကြွေးဆပ်ရန်</a>
                                         @endif
 
-                                        @if ($item->debt_type == 'CashLoan')
+                                        @if ($item->debt_type == 'CashLoan' || $item->debt_type == 'BeanPayment')
                                             <a href="{{ route('FarmerDebt#settlementList', $item->id) }}"
                                                 class=" btn btn-primary">အကြွေးပြန်ဆပ်မှုစာရင်း</a>
                                         @endif

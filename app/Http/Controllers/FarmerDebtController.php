@@ -31,7 +31,7 @@ class FarmerDebtController extends Controller
             'phone'     => 'required|string|max:30|regex:/^[0-9၀-၉+\-\s()]+$/u',
             'village'   => 'required|string|max:150|regex:/\A[\p{Myanmar}\p{M}\s]+\z/u',
             'amount'    => 'required|numeric|min:0.01',
-            'debt_type' => 'required|in:PurchaseAdvance,CashLoan',
+            'debt_type' => 'required|in:PurchaseAdvance,CashLoan,BeanPayment',
             'notes'     => 'nullable|string',
         ], [
             'name.required'      => 'တောင်သူအမည်ကို ထည့်သွင်းပေးပါ။',
@@ -58,7 +58,7 @@ class FarmerDebtController extends Controller
             'notes.string'       => 'မှတ်ချက်ကို မှန်ကန်စွာ ထည့်သွင်းပေးပါ။',
         ]);
 
-// Farmer နှင့် FarmerDebt ကို တစ်ပြိုင်နက် သိမ်းဆည်းရန်
+        // Farmer နှင့် FarmerDebt ကို တစ်ပြိုင်နက် သိမ်းဆည်းရန်
         DB::transaction(function () use ($validated) {
 
             // 1. farmers table ထဲသို့ သိမ်းမည်
@@ -149,7 +149,7 @@ class FarmerDebtController extends Controller
             'farmer_id' => ['required', 'integer', 'exists:farmers,id'],
             'debt_type' => [
                 'required',
-                Rule::in(['PurchaseAdvance', 'CashLoan']),
+                Rule::in(['PurchaseAdvance', 'CashLoan', 'BeanPayment']),
             ],
             'amount'    => ['required', 'numeric', 'min:0.01', 'max:9999999999999.99'],
         ]);

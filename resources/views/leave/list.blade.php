@@ -175,7 +175,9 @@
                                         {{ $loop->iteration }}
                                     </td>
 
-                                    <td class=" fw-bold">{{ \Carbon\Carbon::parse($balance->balance_date)->format('m-d') }}</td>
+                                    <td class=" fw-bold">
+                                        {{ \Carbon\Carbon::parse($balance->balance_date)->format('Y-m-d') }}
+                                    </td>
                                     <td>
                                         {{ $balance->crop_name ?? '-' }}
                                     </td>
@@ -221,7 +223,7 @@
                             @empty
 
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">
+                                    <td colspan="8" class="text-center py-4">
 
                                         @if ($todayRun)
                                             ဒီနေ့အတွက် သီးနှံစာရင်း မရှိပါ။

@@ -8,8 +8,8 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DailyPriceController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\FarmerDebtController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\LeaveCountController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
@@ -49,13 +49,23 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('directPage', [CropController::class, 'directPage'])->name('Crop#directPage');
         Route::post('create', [CropController::class, 'create'])->name('Crop#create');
         Route::get('list', [CropController::class, 'list'])->name('Crop#list');
-        Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
         Route::get('edit/{id}', [CropController::class, 'edit'])->name('Crop#edit');
         Route::post('update/{id}', [CropController::class, 'update'])->name('Crop#update');
         Route::get('history', [CropController::class, 'history'])->name('Crop#history');
+        Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
         Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
         Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
     });
+
+    // Route::group(['middleware' => 'AdminMiddleware'], function () {
+
+    //     Route::group(['prefix' => 'Crop'], function () {
+    // Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
+    // Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
+    // Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
+    //     });
+
+    // });
 
     Route::group(['prefix' => 'Quality'], function () {
         Route::get('directPage', [CropQualityController::class, 'directPage'])->name('Quality#directPage');
@@ -82,7 +92,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
         Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
     });
-        Route::group(['prefix' => 'DailyPrice'], function () {
+    Route::group(['prefix' => 'DailyPrice'], function () {
         Route::get('directPage', [DailyPriceController::class, 'directPage'])->name('DailyPrice#directPage');
         Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
         Route::get('list', [DailyPriceController::class, 'list'])->name('DailyPrice#list');
@@ -130,7 +140,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('payBalance/{sale_id}', [SaleController::class, 'payBalance'])->name('Sale#payBlance');
     });
 
-    Route::group(['prefix' => 'reports'], function() {
+    Route::group(['prefix' => 'reports'], function () {
         Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
         Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
     });

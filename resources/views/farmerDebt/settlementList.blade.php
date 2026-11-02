@@ -92,6 +92,8 @@
                             ကြိုယူငွေ
                         @elseif($farmerDebt->debt_type == 'CashLoan')
                             တောကြွေး
+                        @elseif($farmerDebt->debt_type == 'BeanPayment')
+                            ပဲဆံဖိုး
                         @endif
                     </div>
                 </div>
@@ -118,7 +120,7 @@
 
             <div class="row g-3">
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100 text-dark bg-info fw-bold text-dark ">
+                    <div class="dashboard-card shadow-sm p-3 h-100 text-white bg-info fw-bold text-dark ">
                         <div class="small mb-2">
                             မူလအကြွေးငွေ
                         </div>
@@ -130,7 +132,7 @@
                 </div>
 
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100 bg-success fw-bold text-dark ">
+                    <div class="dashboard-card shadow-sm p-3 h-100 bg-success fw-bold text-white ">
                         <div class="small mb-2">
                             ပြန်ဆပ်ပြီးငွေ
                         </div>
@@ -142,7 +144,7 @@
                 </div>
 
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100 bg-danger fw-bold text-dark ">
+                    <div class="dashboard-card shadow-sm p-3 h-100 bg-danger fw-bold text-white ">
                         <div class=" small mb-2">
                             လက်ကျန်အကြွေး
                         </div>
@@ -158,7 +160,7 @@
     </div>
 
 
-    @if ($farmerDebt->debt_type == 'CashLoan')
+    @if ($farmerDebt->debt_type == 'CashLoan' || $farmerDebt->debt_type == 'BeanPayment')
 
         {{-- Grade Table --}}
         <div class="dashboard-card shadow-sm">

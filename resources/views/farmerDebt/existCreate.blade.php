@@ -188,6 +188,9 @@
                                     <option value="CashLoan" @selected(old('debt_type') === 'CashLoan')>
                                         တောကြွေး
                                     </option>
+                                    <option value="BeanPayment" @selected(old('debt_type') === 'BeanPayment')>
+                                        ပဲဆံဖိုး
+                                    </option>
                                 </select>
                             </div>
 

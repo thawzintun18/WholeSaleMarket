@@ -68,7 +68,12 @@
                                 @foreach($farmerDebts as $debt)
                                     @php
                                         $balance = $debt->balance_amount ?? ($debt->amount - ($debt->settled_amount ?? 0));
-                                        $typeText = $debt->debt_type == 'PurchaseAdvance' ? 'ကြိုသုံး' : 'တောကြွေး';
+                                        $typeText = match($debt->debt_type) {
+                                            'PurchaseAdvance' => 'ကြိုသုံး',
+                                            'CashLoan' => 'တောကြွေး',
+                                            'BeanPayment' => 'ပဲဆံဖိုး',
+                                            default => 'အခြား',
+                                        };
                                     @endphp
                                     <div class="p-2 border rounded bg-light d-flex justify-content-between align-items-center">
                                         <div>
@@ -177,7 +182,12 @@
                                                 @foreach($farmerDebts as $debt)
                                                     @php
                                                         $balance = $debt->balance_amount ?? ($debt->amount - ($debt->settled_amount ?? 0));
-                                                        $typeText = $debt->debt_type == 'PurchaseAdvance' ? 'ကြိုသုံး' : 'တောကြွေး';
+                                                        $typeText = match($debt->debt_type) {
+                                                            'PurchaseAdvance' => 'ကြိုသုံး',
+                                                            'CashLoan' => 'တောကြွေး',
+                                                            'BeanPayment' => 'ပဲဆံဖိုး',
+                                                            default => 'အခြား',
+                                                        };
                                                     @endphp
                                                     <div class="p-2 border rounded bg-white d-flex justify-content-between align-items-center">
                                                         <div>

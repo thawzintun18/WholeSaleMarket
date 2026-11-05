@@ -73,7 +73,7 @@
 
                             <div class="small">
                                 နေရပ်/ဖုန်း -
-                                {{ $customer->address ?: '—' }} / {{ $customer->phone ?: '—' }}
+                                <span class=" fw-bold">{{ $customer->address ?: '—' }} / {{ $customer->phone ?: '—' }}</span>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                             <div class="small mb-1">
                                 နေ့စွဲ -
                                 <span class="fw-semibold">
-                                    {{ \Carbon\Carbon::parse($sale->sale_date)->format('d-m-Y') }}
+                                    {{ \Carbon\Carbon::parse($sale->sale_date)->format('d-M-Y') }}
                                     {{ \Carbon\Carbon::parse($sale->sale_date)->format('h:i A') }}
                                 </span>
                             </div>

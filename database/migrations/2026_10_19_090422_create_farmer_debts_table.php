@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('farmer_debts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('farmer_id')->constrained('farmers')->restrictOnDelete();
-            $table->string('debt_type', 30)->nullable(); // PurchaseAdvance(သီးနံပါလာပြီး ဘောင်ချာမထုတ်ခင်ယူသုံး) CashLoan(သီးနှံမပါပဲအကြွေးယူသွားပြီး သီးနှံလာရောင်းရင်နှုတ်မှာ) နောက်တစ်မျိုးကျန် မထည့်ရသေးတာ
+            $table->string('debt_type', 30)->nullable(); // PurchaseAdvance(သီးနံပါလာပြီး ဘောင်ချာမထုတ်ခင်ယူသုံး) CashLoan(သီးနှံမပါပဲအကြွေးယူသွားပြီး သီးနှံလာရောင်းရင်နှုတ်မှာ) BeanPayment (ပဲဆံဖိုး)
             $table->dateTime('debt_date')->useCurrent();
             $table->decimal('amount', 15, 2);
             $table->decimal('settled_amount', 15, 2)->nullable();
@@ -28,9 +28,9 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+/**
+ * Reverse the migrations.
+ */
     public function down(): void
     {
         Schema::dropIfExists('farmer_debts');

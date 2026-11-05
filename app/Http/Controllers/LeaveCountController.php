@@ -107,7 +107,6 @@ class LeaveCountController extends Controller
     }
 
     //list
-
     public function list(Request $request)
     {
         $request->validate([
@@ -184,6 +183,7 @@ class LeaveCountController extends Controller
         // dd($balances->toArray());
 
         $crops = Crop::get();
+
 
         return view('Leave.list', compact(
             'today',

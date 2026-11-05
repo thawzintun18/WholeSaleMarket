@@ -26,28 +26,39 @@
 
     <!-- Summary Cards -->
     <div class="row g-3 mb-4 d-print-none">
+        <!-- ၁။ အရင်နေ့က လက်ကျန် -->
         <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">စုစုပေါင်း ဘောင်ချာအရေအတွက်</div>
-                <h4 class="fw-bold text-dark mb-0">{{ number_format($totalSales) }} ခု</h4>
+                <div class="text-muted small">အရင်နေ့က လက်ကျန် (Opening)</div>
+                <h4 class="fw-bold text-secondary mb-0">{{ number_format($openingBalance, 2) }} တင်း</h4>
+                <div class="small text-muted">ပျမ်းမျှဈေး: {{ number_format($openingAverageCost, 2) }} ကျပ်</div>
             </div>
         </div>
+
+        <!-- ၂။ ယနေ့ ဝယ်ယူမှု (ဝင်ငွေစတော့) -->
         <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">စုစုပေါင်း အရောင်းပမာဏ</div>
-                <h4 class="fw-bold text-danger mb-0">{{ number_format($totalQuantity, 2) }}</h4>
+                <div class="text-muted small">ယနေ့ ဝယ်ယူမှု (Purchase)</div>
+                <h4 class="fw-bold text-success mb-0">{{ number_format($totalPurchaseBasket, 2) }} တင်း</h4>
             </div>
         </div>
+
+        <!-- ၃။ ယနေ့ ရောင်းချမှု (ထွက်ငွေစတော့) -->
         <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">စုစုပေါင်း အိတ်ရေ</div>
-                <h4 class="fw-bold text-info mb-0">{{ number_format($totalBagCount) }} အိတ်</h4>
+                <div class="text-muted small">ယနေ့ ရောင်းချမှု (Sales)</div>
+                <h4 class="fw-bold text-danger mb-0">{{ number_format($totalSaleBasket, 2) }} တင်း</h4>
+                {{-- <div class="small text-muted">ဘောင်ချာ {{ $totalSales }} ခု</div> --}}
             </div>
         </div>
+
+        <!-- ၄။ ယနေ့ ကျန်ရှိလက်ကျန် (Closing Balance) -->
         <div class="col-md-3">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">စုစုပေါင်း သင့်ငွေ (ကျပ်)</div>
-                <h4 class="fw-bold text-success mb-0">{{ number_format($totalAmount, 2) }} ကျပ်</h4>
+            <div class="p-3 border rounded-3 bg-white shadow-sm bg-light">
+                <div class="text-muted small">ယနေ့ လက်ကျန် (Closing)</div>
+                <h4 class="fw-bold text-primary mb-0">
+                    {{ number_format($closingBalance, 2) }} တင်း
+                </h4>
             </div>
         </div>
     </div>
@@ -118,6 +129,7 @@
                             <th class="py-3">လိပ်စာ</th>
                             <th class="py-3">သီးနှံအမျိုးအစား</th>
                             <th class="py-3 text-end">အရေအတွက်</th>
+                            <th class="py-3 text-end">တင်း</th>
                             <th class="py-3 text-end">ရောင်းဈေး</th>
                             <th class="py-3 text-end">သင့်ငွေ (ကျပ်)</th>
                             <th class="py-3">မှတ်ချက်</th>
@@ -125,56 +137,45 @@
                     </thead>
                     <tbody>
                         @forelse($items as $index => $item)
-                            @php
-                                $rawUnit = strtolower($item->unit ?? '');
-                                $displayUnit = $rawUnit === 'viss' ? 'ပိဿာ' : ($rawUnit === 'pound' ? 'ပေါင်' : $item->unit);
-                            @endphp
                             <tr>
-                                <td class="text-center fw-bold">{{ $index + 1 }}</td>
-                                {{-- <td class="text-center fw-bold text-primary">{{ $item->invoice_no }}</td> --}}
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                {{-- <td class="fw-bold text-primary">{{ $item->invoice_no }}</td> --}}
                                 <td class="fw-bold text-dark">{{ $item->customer_name }}</td>
                                 <td>{{ $item->customer_address ?? '-' }}</td>
-                                <td>
-                                    <span class="badge bg-secondary bg-opacity-10 text-dark border">
-                                        {{ $item->crop_name }}
-                                    </span>
-                                </td>
+                                <td>{{ $item->crop_name }}</td>
                                 <td class="text-end fw-semibold">
-                                    {{ number_format($item->quantity, 2) }} <span class="small text-muted">{{ $displayUnit }}</span>
-
-                                    {{-- ယူနစ်က pound ဖြစ်ပြီး အိတ်ရေရှိမှသာ ပေါ်မည် --}}
-                                    @if($rawUnit === 'pound' && $item->bag_count > 0)
-                                        <div class="small text-primary">({{ $item->bag_count }} အိတ်)</div>
+                                    {{ number_format($item->quantity, 2) }} <span class="small text-muted">{{ $item->display_unit }}</span>
+                                    @if(strtolower($item->unit) === 'pound' && $item->bag_count > 0)
+                                        <div class="small text-muted">({{ $item->bag_count }} အိတ်)</div>
                                     @endif
                                 </td>
+
+                                {{-- တွက်ပြီးသား တင်းအရေအတွက် --}}
+                                <td class="text-end fw-semibold text-dark">
+                                    {{ $item->basket_count > 0 ? number_format($item->basket_count, 2) : '-' }}
+                                </td>
+
                                 <td class="text-end">{{ number_format($item->sale_price, 2) }}</td>
                                 <td class="text-end fw-bold text-dark">{{ number_format($item->gross_amount, 2) }}</td>
                                 <td class="small text-muted">{{ $item->note ?? '-' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
-                                    ဤရက်စွဲအတွက် ရောင်းချထားသော စာရင်း မရှိသေးပါ။
-                                </td>
+                                <td colspan="10" class="text-center py-4 text-muted">ဤရက်စွဲအတွက် အရောင်းစာရင်း မရှိသေးပါ။</td>
                             </tr>
                         @endforelse
                     </tbody>
                     @if($items->isNotEmpty())
                         <tfoot class="table-light fw-bold">
                             <tr>
-                                <td colspan="4" class="text-end py-3">စုစုပေါင်း (Total):</td>
-                                <td class="text-end text-danger">
-                                    {{ number_format($totalQuantity, 2) }}
-                                    @if($items->contains('unit', 'pound'))
-                                        <div class="small text-secondary mt-1">
-                                            အိတ်စုစုပေါင်း:
-                                            {{ number_format($totalBagCount) }} အိတ်
-                                        </div>
-                                    @endif
+                                <td colspan="5" class="text-end py-3">စုစုပေါင်း (Total):</td>
+                                <td class="text-end text-primary fs-5">
+                                    {{ number_format($totalSaleBasket, 2) }} တင်း
                                 </td>
                                 <td class="text-end">-</td>
-                                <td class="text-end text-success fs-5">{{ number_format($totalAmount, 2) }} ကျပ်</td>
+                                <td class="text-end text-success fs-5">
+                                    {{ number_format($totalAmount, 2) }} ကျပ်
+                                </td>
                                 <td></td>
                             </tr>
                         </tfoot>

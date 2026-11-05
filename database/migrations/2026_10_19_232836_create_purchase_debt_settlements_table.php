@@ -20,7 +20,6 @@ return new class extends Migration
             $table->dateTime('settlement_date')->useCurrent();
             $table->timestamps();
             $table->softDeletes();
-
             $table->index('settlement_date');
         });
     }

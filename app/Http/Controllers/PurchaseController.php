@@ -106,7 +106,7 @@ class PurchaseController extends Controller
         $filteredVoucherCount = (clone $summaryQuery)->count();
 
         // ရွေးချယ်ထားသော ရက်အတွင်း အကြွေးပြန်နှုတ်ရရှိငွေ
-        $filteredDebtSettled = DB::table('purchase_debt_settlements');
+        $filteredDebtSettled = DB::table('purchase_debt_settlements')->whereNotNull('purchase_id');
         if ($fromDate && $toDate) {
             $filteredDebtSettled->whereBetween('settlement_date', [$fromDate . ' 00:00:00', $toDate . ' 23:59:59']);
         }
@@ -202,15 +202,9 @@ class PurchaseController extends Controller
         ]);
     }
 
-    /**
-     * Save the complete purchase and its item rows, then open its printable voucher.
-     * Deductions are not payment transactions; this version does not write
-     * farmer_payments because the current form has no "paid now" amount.
-     */
     public function store(Request $request)
     {
         // dd($request->toArray());
-
         $data = $request->validate([
             'farmer_id'                            => ['required', 'integer', 'exists:farmers,id'],
             'car_no'                               => ['nullable', 'string', 'max:255'],

@@ -146,6 +146,10 @@
                                 <option value="CashLoan" {{ old('debt_type') == 'CashLoan' ? 'selected' : '' }}>
                                     တောကြွေး
                                 </option>
+
+                                <option value="BeanPayment" {{ old('debt_type') == 'BeanPayment' ? 'selected' : '' }}>
+                                    ပဲဆံဖိုး
+                                </option>
                             </select>
 
                             @error('debt_type')

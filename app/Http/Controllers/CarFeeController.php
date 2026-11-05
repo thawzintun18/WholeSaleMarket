@@ -81,7 +81,7 @@ class CarFeeController extends Controller
             return $payment;
         });
 
-        dd($payment->id);
+        // dd($payment->id);
 
         return redirect()
             ->route('CarFee#voucher', $payment->id)

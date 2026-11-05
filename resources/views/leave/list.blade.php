@@ -149,9 +149,9 @@
                                 <th class="text-center" style="width: 60px;">စဉ်</th>
                                 <th>နေ့စွဲ</th>
                                 <th>သီးနှံအမည်</th>
-                                <th class="text-end">ဒီနေ့လက်ကျန်</th>
-                                <th class="text-end">ဒီနေ့လက်ကျန် (တင်း)</th>
+                                <th class="text-end">တစ်နေ့ချင်းလက်ကျန်</th>
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း</th>
+                                <th class="text-end">တစ်နေ့ချင်းလက်ကျန် (တင်း)</th>
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း (တင်း)</th>
                                 <th class="text-end">ပျမ်းမျှဈေးနှုန်း</th>
                             </tr>
@@ -176,12 +176,22 @@
                                     </td>
 
                                     <td class=" fw-bold">{{ \Carbon\Carbon::parse($balance->balance_date)->format('M-d') }}</td>
+
                                     <td>
                                         {{ $balance->crop_name ?? '-' }}
                                     </td>
 
                                     <td class="text-end">
-                                        {{ number_format($balance->daily_balance, 0) }}
+                                        {{ number_format($balance->daily_balance, 2) }}
+                                        @if ($balance->unit == 'viss')
+                                            ပိဿာ
+                                        @else
+                                            ပေါင်
+                                        @endif
+                                    </td>
+
+                                    <td class="text-end fw-semibold">
+                                        {{ number_format($balance->total_balance, 2) }}
                                         @if ($balance->unit == 'viss')
                                             ပိဿာ
                                         @else
@@ -191,28 +201,19 @@
 
                                     {{-- ဒီနေ့လက်ကျန် --}}
                                     <td class="text-end">
-                                        {{ number_format($dailyBasket, 0) }}
+                                        {{ number_format($dailyBasket, 2) }}
                                         တင်း
-                                    </td>
-
-                                    <td class="text-end fw-semibold">
-                                        {{ number_format($balance->total_balance, 0) }}
-                                        @if ($balance->unit == 'viss')
-                                            ပိဿာ
-                                        @else
-                                            ပေါင်
-                                        @endif
                                     </td>
 
                                     {{-- လက်ကျန်စုစုပေါင်း --}}
                                     <td class="text-end fw-semibold">
-                                        {{ number_format($totalBasket, 0) }}
+                                        {{ number_format($totalBasket, 2) }}
                                         တင်း
                                     </td>
 
                                     {{-- ပျမ်းမျှဈေးနှုန်း --}}
                                     <td class="text-end">
-                                        {{ number_format($balance->average_cost, 0) }}
+                                        {{ number_format($balance->average_cost, 2) }}
                                         <small class="text-muted">ကျပ်</small>
                                     </td>
 
@@ -221,7 +222,7 @@
                             @empty
 
                                 <tr>
-                                    <td colspan="7" class="text-center py-4">
+                                    <td colspan="8" class="text-center py-4">
 
                                         @if ($todayRun)
                                             ဒီနေ့အတွက် သီးနှံစာရင်း မရှိပါ။
@@ -234,24 +235,6 @@
                             @endforelse
 
                         </tbody>
-
-                        {{-- @if ($balances->isNotEmpty())
-                            <tfoot class="table-light">
-                                <tr>
-                                    <th colspan="2" class="text-end">
-                                        စုစုပေါင်း
-                                    </th>
-
-                                    <th class="text-end">
-                                        {{ number_format($balances->sum('daily_balance'), 2) }}
-                                    </th>
-
-                                    <th class="text-end">
-                                        {{ number_format($balances->sum('total_balance'), 2) }}
-                                    </th>
-                                </tr>
-                            </tfoot>
-                        @endif --}}
                     </table>
 
                 </div>

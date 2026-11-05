@@ -13,20 +13,15 @@ return new class extends Migration
     {
         Schema::create('daily_stock_balances', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('crop_id')
                 ->constrained('crops')
                 ->restrictOnDelete();
-
             $table->date('balance_date');
-
             $table->decimal('daily_balance', 15, 2)->default(0);
             $table->decimal('total_balance', 15, 2)->default(0);
             $table->decimal('average_cost', 15, 2)
                 ->default(0);
-
             $table->timestamps();
-
             $table->unique(['crop_id', 'balance_date']);
 
         });

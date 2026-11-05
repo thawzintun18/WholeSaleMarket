@@ -39,8 +39,8 @@
                     </div>
 
                     <div class=" d-flex justify-content-end">
-                        <button type="button" class="btn btn-success my-1" style="height: 40px;"
-                            data-bs-toggle="modal" data-bs-target="#newFarmerModal">
+                        <button type="button" class="btn btn-success my-1" style="height: 40px;" data-bs-toggle="modal"
+                            data-bs-target="#newFarmerModal">
                             <i class="bi bi-person-plus me-1"></i>
                             တောင်သူအသစ်ထည့်မည်
                         </button>
@@ -638,7 +638,9 @@
                     farmer.debts.forEach(debt => {
                         const balance = Number(debt.balance_amount) || 0;
                         let typeText = debt.debt_type === 'PurchaseAdvance' ? 'ကြိုသုံး' :
-                            'တောကြွေး';
+                            debt.debt_type === 'CashLoan' ? 'တောကြွေး' :
+                            debt.debt_type === 'BeanPayment' ? 'ပဲဆံဖိုး' :
+                            'အခြား';
 
                         // UI 1: အပေါ်ဘက် Profile Card ထဲမှ အကြွေးပြရန်
                         const debtItem = document.createElement('div');
@@ -1337,8 +1339,16 @@
             purchaseForm.addEventListener('submit', function(event) {
                 if (!document.getElementById('farmer_id').value) {
                     event.preventDefault();
-                    alert('တောင်သူကို အရင်ရွေးချယ်ပါ။');
-                    document.getElementById('farmer_search').focus();
+
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'တောင်သူကို အရင်ရွေးချယ်ပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    }).then(() => {
+                        document.getElementById('farmer_search').focus();
+                    });
+
                     return;
                 }
 
@@ -1391,27 +1401,55 @@
                 const isPound = rawUnit.toLowerCase() === 'pound';
                 const bagCount = numberValue(bagCountInput);
                 if (isPound) {
-                    if (bagCount <= 0 || !Number.isFinite(bagCount) || bagCountInput.value.trim() === '') {
-                        alert('ကျေးဇူးပြု၍ အိတ်အရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။');
+                    if (bagCountInput.value.trim() === '' || bagCount <= 0 || !Number.isFinite(bagCount)) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'သတိပြုပါ',
+                            text: 'ကျေးဇူးပြု၍ အိတ်အရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။',
+                            confirmButtonText: 'အိုကေ'
+                        });
+
                         bagCountInput.focus();
                         return;
                     }
                 }
+
                 if (!cropSelect.value) {
-                    alert('သီးနှံရွေးချယ်ပါ။');
-                    cropSelect.focus();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'သီးနှံရွေးချယ်ပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    }).then(() => {
+                        cropSelect.focus();
+                    });
+
                     return;
                 }
 
                 if (!gradeSelect.value) {
-                    alert('သီးနှံအမျိုးအစား ရွေးချယ်ပါ။');
-                    gradeSelect.focus();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'သီးနှံအမျိုးအစား ရွေးချယ်ပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    }).then(() => {
+                        gradeSelect.focus();
+                    });
+
                     return;
                 }
 
                 if (quantity <= 0 || !Number.isFinite(quantity)) {
-                    alert('အရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။');
-                    quantityInput.focus();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'အရေအတွက်ကို မှန်ကန်စွာ ဖြည့်ပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    }).then(() => {
+                        quantityInput.focus();
+                    });
+
                     return;
                 }
 
@@ -1420,8 +1458,15 @@
                     !Number.isFinite(actualPrice) ||
                     actualPriceInput.value.trim() === ''
                 ) {
-                    alert('အမှန်တကယ်ဝယ်ဈေး ဖြည့်ပါ။');
-                    actualPriceInput.focus();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'အမှန်တကယ်ဝယ်ဈေး ဖြည့်ပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    }).then(() => {
+                        actualPriceInput.focus();
+                    });
+
                     return;
                 }
 
@@ -1429,7 +1474,13 @@
                     commission < 0 ||
                     !Number.isFinite(commission)
                 ) {
-                    alert('ပွဲခကို မှန်ကန်စွာ ဖြည့်ပါ။');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'ပွဲခကို မှန်ကန်စွာ ဖြည့်ပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    });
+
                     return;
                 }
 

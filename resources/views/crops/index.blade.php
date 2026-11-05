@@ -7,238 +7,243 @@
 
 
 @section('content')
-<div class="container-fluid p-0">
+    <div class="container-fluid p-0">
 
 
-    @include('partials.crop-grade-dailyPrice-tabs')
+        @include('partials.crop-grade-dailyPrice-tabs')
 
 
-   <div class=" d-md-flex justify-content-between align-items-center mb-4">
-
-        <div>
-            <h1 class="page-title mb-1">သီးနှံစာရင်း</h1>
-
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
-                ပွဲရုံမှ လက်ခံဝယ်ယူမည့် သီးနှံအမျိုးအစားများနှင့် သက်ဆိုင်သော အချက်အလက်များကို ဤစာရင်းတွင်
-                ကြည့်ရှုနိုင်ပါသည်။
-            </p>
-        </div>
-
-        <div class=" d-flex justify-content-end">
-            <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-                <i class="bi bi-plus-lg me-1"></i>
-                သီးနှံထပ်ထည့်ရန်
-            </a>
-        </div>
-
-    </div>
-
-
-    {{-- Search --}}
-    <div class="dashboard-card mb-4 shadow-sm">
-        <form action="{{ route('Crop#list') }}" method="GET">
-            <div class="row g-3">
-
-                <div class="col-md-6">
-
-                    <label class="form-label">
-                        သီးနှံရှာဖွေရန်
-                    </label>
-
-                    <div class="input-group">
-
-                        <span class="input-group-text">
-                            <i class="bi bi-search"></i>
-                        </span>
-
-                        <input type="text" name="searchData" value="{{ request('searchData') }}" id="cropSearch"
-                            class="form-control p-2" placeholder="သီးနှံအမည် ရိုက်ထည့်ပါ...">
-
-                    </div>
-
-                </div>
-
-                <div class="col-md-auto d-flex align-items-end">
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search me-1"></i>
-                        ရှာဖွေမည်
-                    </button>
-
-                </div>
-
-                <div class="col-md-auto d-flex align-items-end">
-
-                    <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
-                        ပြန်လည်သတ်မှတ်မည်
-                    </a>
-
-                </div>
-
-            </div>
-        </form>
-
-    </div>
-
-
-    {{-- Crop Table --}}
-    <div class="dashboard-card shadow-sm">
-
-        <div class="d-md-flex justify-content-between align-items-center mb-3">
+        <div class=" d-md-flex justify-content-between align-items-center mb-4">
 
             <div>
-                <h5 class="mb-1">
-                    သီးနှံစာရင်း
-                </h5>
+                <h1 class="page-title mb-1">သီးနှံစာရင်း</h1>
 
-                <small class="text-muted" style="line-height: 30px">
-                    စာရင်းသွင်းထားသော သီးနှံအားလုံး
-                </small>
+                <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+                    ပွဲရုံမှ လက်ခံဝယ်ယူမည့် သီးနှံအမျိုးအစားများနှင့် သက်ဆိုင်သော အချက်အလက်များကို ဤစာရင်းတွင်
+                    ကြည့်ရှုနိုင်ပါသည်။
+                </p>
             </div>
 
-            <div class=" d-md-flex justify-content-end mt-md-0 mt-2">
-                <div class=" me-2">
-                    <span class="badge bg-light text-dark border">
-                        {{ $crops->count() }} သီးနှံ
-                    </span>
+            <div class=" d-flex justify-content-end">
+                <a href="{{ route('Crop#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    သီးနှံထပ်ထည့်ရန်
+                </a>
+            </div>
+
+        </div>
+
+
+        {{-- Search --}}
+        <div class="dashboard-card mb-4 shadow-sm">
+            <form action="{{ route('Crop#list') }}" method="GET">
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+
+                        <label class="form-label">
+                            သီးနှံရှာဖွေရန်
+                        </label>
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                <i class="bi bi-search"></i>
+                            </span>
+
+                            <input type="text" name="searchData" value="{{ request('searchData') }}" id="cropSearch"
+                                class="form-control p-2" placeholder="သီးနှံအမည် ရိုက်ထည့်ပါ...">
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-auto d-flex align-items-end">
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>
+                            ရှာဖွေမည်
+                        </button>
+
+                    </div>
+
+                    <div class="col-md-auto d-flex align-items-end">
+
+                        <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            ပြန်လည်သတ်မှတ်မည်
+                        </a>
+
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+
+
+        {{-- Crop Table --}}
+        <div class="dashboard-card shadow-sm">
+
+            <div class="d-md-flex justify-content-between align-items-center mb-3">
+
+                <div>
+                    <h5 class="mb-1">
+                        သီးနှံစာရင်း
+                    </h5>
+
+                    <small class="text-muted" style="line-height: 30px">
+                        စာရင်းသွင်းထားသော သီးနှံအားလုံး
+                    </small>
                 </div>
 
-                <div class="d-md-flex mt-md-0 mt-2">
+                <div class=" d-md-flex justify-content-end mt-md-0 mt-2">
                     <div class=" me-2">
-                        <a href="{{ route('Crop#history') }}" class=" btn btn-primary">သီးနှံပြင်ဆင်မှုစာရင်း</a>
+                        <span class="badge bg-light text-dark border">
+                            {{ $crops->count() }} သီးနှံ
+                        </span>
                     </div>
 
-                    <div class=" me-2 mt-md-0 mt-2">
-                        <a href="{{ route('Crop#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောသီးနှံစာရင်း</a>
+                    <div class="d-md-flex mt-md-0 mt-2">
+                        <div class=" me-2">
+                            <a href="{{ route('Crop#history') }}" class=" btn btn-primary">သီးနှံပြင်ဆင်မှုစာရင်း</a>
+                        </div>
+
+                        {{-- @if (Auth::user()->role == 'admin') --}}
+                        <div class=" me-2 mt-md-0 mt-2">
+                            <a href="{{ route('Crop#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောသီးနှံစာရင်း</a>
+                        </div>
+                        {{-- @endif --}}
                     </div>
                 </div>
+
             </div>
 
-        </div>
 
+            <div class="table-responsive">
 
-        <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
 
-            <table class="table table-hover align-middle mb-0">
+                    <thead>
 
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            စဉ်
-                        </th>
-
-                        <th>
-                            သီးနှံအမည်
-                        </th>
-
-                        <th>
-                            ပွဲခ
-                        </th>
-
-                        <th>
-                            တစ်တင်းပါ အရေအတွက်
-                        </th>
-
-                        <th width="150" class="text-center">
-                            လုပ်ဆောင်ချက်
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody>
-
-                    @if ($crops->count() > 0)
-
-                        @foreach ($crops as $item)
-                            <tr>
-
-                                <td>{{ $loop->iteration }}</td>
-
-                                <td>
-                                    <strong> {{ $item->crop_name }} </strong>
-                                </td>
-
-                                <td>
-                                    <span class="fs-5 fw-bold text-success">
-                                        {{ $item->commission_amount }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    {{ $item->quantity_per_basket }}
-                                    @if ($item->unit == 'viss')
-                                        ပိဿာ
-                                    @else
-                                        ပေါင်
-                                    @endif
-                                </td>
-
-                                <td class="text-center">
-
-                                    <div class=" d-flex mt-md-0">
-                                        <a href="{{ route('Crop#edit', $item->id) }}"
-                                            class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
-                                            ပြင်ဆင်ရန်
-                                        </a>
-
-                                        <button type="button" onclick="DeleteData({{ $item->id }})"
-                                            class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                            ဖျက်ရန်
-                                        </button>
-                                    </div>
-
-                                </td>
-
-                            </tr>
-                        @endforeach
-                    @else
                         <tr>
-                            <td colspan="5" class="empty-state-cell">
-                                <div class="empty-state">
 
-                                    <h5>သီးနှံစာရင်း မရှိသေးပါ</h5>
+                            <th>
+                                စဉ်
+                            </th>
 
-                                    <p>
-                                        သီးနှံကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
-                                    </p>
-                                </div>
-                            </td>
+                            <th>
+                                သီးနှံအမည်
+                            </th>
+
+                            <th>
+                                ပွဲခ
+                            </th>
+
+                            <th>
+                                တစ်တင်းပါ အရေအတွက်
+                            </th>
+
+                            <th width="150" class="text-center">
+                                လုပ်ဆောင်ချက်
+                            </th>
+
                         </tr>
-                    @endif
-                </tbody>
-            </table>
 
+                    </thead>
+
+
+                    <tbody>
+
+                        @if ($crops->count() > 0)
+
+                            @foreach ($crops as $item)
+                                <tr>
+
+                                    <td>{{ $loop->iteration }}</td>
+
+                                    <td>
+                                        <strong> {{ $item->crop_name }} </strong>
+                                    </td>
+
+                                    <td>
+                                        <span class="fs-5 fw-bold text-success">
+                                            {{ $item->commission_amount }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{ $item->quantity_per_basket }}
+                                        @if ($item->unit == 'viss')
+                                            ပိဿာ
+                                        @else
+                                            ပေါင်
+                                        @endif
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <div class=" d-flex mt-md-0">
+                                            <a href="{{ route('Crop#edit', $item->id) }}"
+                                                class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
+                                                ပြင်ဆင်ရန်
+                                            </a>
+
+                                            {{-- @if (Auth::user()->role == 'admin') --}}
+                                            <button type="button" onclick="DeleteData({{ $item->id }})"
+                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                                ဖျက်ရန်
+                                            </button>
+                                            {{-- @endif --}}
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="5" class="empty-state-cell">
+                                    <div class="empty-state">
+
+                                        <h5>သီးနှံစာရင်း မရှိသေးပါ</h5>
+
+                                        <p>
+                                            သီးနှံကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+
+            </div>
+            {{-- Pagination Example --}}
+            <div class="d-md-flex justify-content-between align-items-center mt-4">
+
+                <p class="text-muted">
+                    သီးနှံ {{ $crops->firstItem() ?? 0 }}
+                    မှ {{ $crops->lastItem() ?? 0 }}
+                    အထိ ပြသထားပြီး
+                    စုစုပေါင်း {{ $crops->total() }} မျိုး ရှိပါသည်။
+                </p>
+
+                <nav class=" d-flex justify-content-end">
+
+                    <ul class="pagination pagination-sm mb-0">
+
+                        <span> {{ $crops->links() }} </span>
+
+                    </ul>
+
+                </nav>
+
+            </div>
         </div>
-        {{-- Pagination Example --}}
-        <div class="d-md-flex justify-content-between align-items-center mt-4">
 
-            <p class="text-muted">
-                သီးနှံ {{ $crops->firstItem() ?? 0 }}
-                မှ {{ $crops->lastItem() ?? 0 }}
-                အထိ ပြသထားပြီး
-                စုစုပေါင်း {{ $crops->total() }} မျိုး ရှိပါသည်။
-            </p>
-
-            <nav class=" d-flex justify-content-end">
-
-                <ul class="pagination pagination-sm mb-0">
-
-                    <span> {{ $crops->links() }} </span>
-
-                </ul>
-
-            </nav>
-
-        </div>
     </div>
-
-</div>
 @endsection
 
 

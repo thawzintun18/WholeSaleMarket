@@ -46,11 +46,43 @@ class SaleController extends Controller
             ->orderBy('crops.crop_name')
             ->get();
 
+        // ဒီနေ့ နောက်ဆုံးတွက်ချက်ထားသော Record
+        $todayRun = DB::table('daily_average_price_runs')
+            ->where('price_date', $today)
+            ->first();
+
+        // တွက်ချက်ရန် Button ပြသသင့်/မသင့်
+        $canCalculateAveragePrice = ! $todayRun;
+
+        if ($todayRun) {
+
+            // နောက်ဆုံးတွက်ချက်ပြီးနောက် Purchase အသစ်ရှိမရှိ စစ်မယ်
+            $hasNewPurchase = DB::table('purchase_items')
+                ->join(
+                    'purchases',
+                    'purchase_items.purchase_id',
+                    '=',
+                    'purchases.id'
+                )
+                ->whereDate('purchases.purchase_date', $today)
+                ->whereNull('purchases.deleted_at')
+                ->where(function ($query) use ($todayRun) {
+                    $query->where('purchase_items.created_at', '>', $todayRun->calculated_at)
+                        ->orWhere('purchase_items.updated_at', '>', $todayRun->calculated_at);
+                })
+                ->exists();
+
+            $canCalculateAveragePrice = $hasNewPurchase;
+        }
+
+        $isCalculated = ! $canCalculateAveragePrice;
+
         return view('sales.create',
             compact('crops',
                 'isCalculated',
                 'averagePrices',
-                'today'
+                'today',
+                'canCalculateAveragePrice'
             ));
     }
 
@@ -79,18 +111,6 @@ class SaleController extends Controller
 
         try {
             DB::transaction(function () use ($today) {
-
-                // ဒီနေ့တွက်ပြီးသားဆိုရင် ထပ်မတွက်ရ
-                $alreadyCalculated = DB::table('daily_average_price_runs')
-                    ->where('price_date', $today)
-                    ->lockForUpdate()
-                    ->exists();
-
-                if ($alreadyCalculated) {
-                    throw new \RuntimeException(
-                        'ဒီနေ့အတွက် Average Price တွက်ပြီးသားဖြစ်ပါတယ်။'
-                    );
-                }
 
                 // ဒီနေ့ဝယ်ယူထားသော သီးနှံတစ်မျိုးချင်းစီ၏
                 // Gross Amount, Quantity, Bag Count စုစုပေါင်း
@@ -185,25 +205,35 @@ class SaleController extends Controller
                     $stock->save();
 
                     // ဒီနေ့ Average Price မှတ်တမ်းသိမ်းမည်
-                    DB::table('daily_average_prices')->insert([
-                        'price_date'           => $today,
-                        'crop_id'              => $crop->id,
-                        'total_gross_amount'   => $totalGrossAmount,
-                        'quantity_on_hand'     => $quantityOnHand,
-                        'average_cost'         => $averageCost,
-                        'average_basket_price' => $roundedBasketPrice,
-                        'created_at'           => now(),
-                        'updated_at'           => now(),
-                    ]);
+                    DB::table('daily_average_prices')->updateOrInsert(
+                        [
+                            'price_date' => $today,
+                            'crop_id'    => $crop->id,
+                        ],
+                        [
+                            'total_gross_amount'   => $totalGrossAmount,
+                            'quantity_on_hand'     => $quantityOnHand,
+                            'average_cost'         => $averageCost,
+                            'average_basket_price' => $roundedBasketPrice,
+                            'updated_at'           => now(),
+                            'created_at'           => now(),
+                        ]
+                    );
+
                 }
 
                 // တွက်ချက်မှုအားလုံး အောင်မြင်မှသာ Run မှတ်တမ်းသိမ်းမည်
-                DB::table('daily_average_price_runs')->insert([
-                    'price_date'    => $today,
-                    'calculated_at' => now(),
-                    'created_at'    => now(),
-                    'updated_at'    => now(),
-                ]);
+                DB::table('daily_average_price_runs')->updateOrInsert(
+                    [
+                        'price_date' => $today,
+                    ],
+                    [
+                        'calculated_at' => now(),
+                        'updated_at'    => now(),
+                        'created_at'    => now(),
+                    ]
+                );
+
             });
 
             return redirect()

@@ -15,18 +15,9 @@ class LeaveCountController extends Controller
     {
         $today = now()->toDateString();
 
-        // ဒီနေ့တွက်ပြီးသားဖြစ်ပါက ထပ်မတွက်ရန်
-        if (
-            DailyStockBalanceRun::where('balance_date', $today)->exists()
-        ) {
-            return redirect()
-                ->route('Leave#list')
-                ->with('error', 'ဒီနေ့အတွက် လက်ကျန်တွက်ချက်ပြီးပါပြီ။');
-        }
-
         DB::transaction(function () use ($today) {
 
-            // ဒီနေ့ Purchase / Sale အဝင်အထွက်ကို စုမယ်
+            // ဒီနေ့ Purchase / Sale အဝင်အထွက် စုမယ်
             $movements = DB::table('stock_movements')
                 ->select(
                     'crop_id',
@@ -56,46 +47,113 @@ class LeaveCountController extends Controller
                 ->get()
                 ->keyBy('crop_id');
 
-            // လက်ရှိ Stock Balance အားလုံးကို ယူမယ်
+            // ဒီနေ့ဝယ်ထားသော Pound သီးနှံများ၏ Bag Count
+            $purchaseBags = DB::table('purchase_items')
+                ->join(
+                    'purchases',
+                    'purchase_items.purchase_id',
+                    '=',
+                    'purchases.id'
+                )
+                ->select(
+                    'purchase_items.crop_id',
+                    DB::raw('SUM(COALESCE(purchase_items.bag_count, 0)) AS total_bag_count')
+                )
+                ->whereDate('purchases.purchase_date', $today)
+                ->whereNull('purchases.deleted_at')
+                ->whereNull('purchase_items.deleted_at')
+                ->groupBy('purchase_items.crop_id')
+                ->get()
+                ->keyBy('crop_id');
+
+            // ဒီနေ့ရောင်းထားသော Pound သီးနှံများ၏ Bag Count
+            $saleBags = DB::table('sale_items')
+                ->join(
+                    'sales',
+                    'sale_items.sale_id',
+                    '=',
+                    'sales.id'
+                )
+                ->select(
+                    'sale_items.crop_id',
+                    DB::raw('SUM(COALESCE(sale_items.bag_count, 0)) AS total_bag_count')
+                )
+                ->whereDate('sales.sale_date', $today)
+                ->whereNull('sales.deleted_at')
+                ->whereNull('sale_items.deleted_at')
+                ->groupBy('sale_items.crop_id')
+                ->get()
+                ->keyBy('crop_id');
+
+            // လက်ရှိ Stock Balance
             $stockBalances = DB::table('stock_balances')
                 ->get()
                 ->keyBy('crop_id');
 
-            // သီးနှံအားလုံးကို ယူမယ်
+            // သီးနှံအားလုံး
             $crops = Crop::all();
-
-            // တွက်ချက်မှုမှတ်တမ်း သိမ်းမယ်
-            DailyStockBalanceRun::create([
-                'balance_date'  => $today,
-                'calculated_at' => now(),
-            ]);
 
             foreach ($crops as $crop) {
 
-                // ဒီနေ့ အဝင်အထွက်
                 $movement = $movements->get($crop->id);
 
-                $totalIn  = $movement->total_in ?? 0;
-                $totalOut = $movement->total_out ?? 0;
+                $totalIn  = (float) ($movement->total_in ?? 0);
+                $totalOut = (float) ($movement->total_out ?? 0);
+
+                // Pound ဖြစ်မှ Bag Count နုတ်မယ်
+                $unit = strtolower(trim($crop->unit ?? ''));
+
+                if (in_array($unit, ['pound', 'ပေါင်'])) {
+
+                    $purchaseBagCount = (float) (
+                        $purchaseBags->get($crop->id)->total_bag_count ?? 0
+                    );
+
+                    $saleBagCount = (float) (
+                        $saleBags->get($crop->id)->total_bag_count ?? 0
+                    );
+
+                    // အဝယ် Quantity ထဲမှ Bag Count နုတ်မယ်
+                    $totalIn -= $purchaseBagCount;
+
+                    // အရောင်း Quantity ထဲမှ Bag Count နုတ်မယ်
+                    $totalOut -= $saleBagCount;
+                }
 
                 // ဒီနေ့ အသားတင်လက်ကျန်
                 $dailyBalance = $totalIn - $totalOut;
 
-                // Stock Balance မှ လက်ကျန်နှင့် ပျမ်းမျှဈေး ယူမယ်
-                $stock = $stockBalances->get($crop->id);
+                // လက်ရှိ Stock Balance
+                $stock  = $stockBalances->get($crop->id);
 
-                $totalBalance = $stock->quantity_on_hand ?? 0;
-                $averageCost  = $stock->average_cost ?? 0;
+                $totalBalance  = $stock->quantity_on_hand ?? 0;
+                $averageCost   = $stock->average_cost ?? 0;
 
-                // နေ့စဉ်လက်ကျန်စာရင်း သိမ်းမယ်
-                DailyStockBalance::create([
-                    'crop_id'       => $crop->id,
-                    'balance_date'  => $today,
-                    'daily_balance' => $dailyBalance,
-                    'total_balance' => $totalBalance,
-                    'average_cost'  => $averageCost,
-                ]);
+                // ရှိပြီးသားစာရင်းရှိရင် Update လုပ်မယ်
+                // မရှိသေးရင် Create လုပ်မယ်
+                DailyStockBalance::updateOrCreate(
+                    [
+                        'crop_id'      => $crop->id,
+                        'balance_date' => $today,
+                    ],
+                    [
+                        'daily_balance' => $dailyBalance,
+                        'total_balance' => $totalBalance,
+                        'average_cost'  => $averageCost,
+                    ]
+                );
             }
+
+            // ဒီနေ့တွက်ချက်မှုမှတ်တမ်းကို Update လုပ်မယ်
+            // မရှိသေးရင် Create လုပ်မယ်
+            DailyStockBalanceRun::updateOrCreate(
+                [
+                    'balance_date' => $today,
+                ],
+                [
+                    'calculated_at' => now(),
+                ]
+            );
         });
 
         Alert::success(
@@ -185,11 +243,30 @@ class LeaveCountController extends Controller
 
         $crops = Crop::get();
 
+        $today = today()->toDateString();
+
+        $lastRun = DailyStockBalanceRun::where(
+            'balance_date',
+            $today
+        )->first();
+
+        $canCalculateStock = ! $lastRun ||
+        DB::table('stock_movements')
+            ->whereDate('movement_date', $today)
+            ->whereNull('deleted_at')
+            ->whereIn('reference_type', ['Purchase', 'Sale'])
+            ->where(function ($query) use ($lastRun) {
+                $query->where('created_at', '>', $lastRun->calculated_at)
+                    ->orWhere('updated_at', '>', $lastRun->calculated_at);
+            })
+            ->exists();
+
         return view('Leave.list', compact(
             'today',
             'todayRun',
             'balances',
-            'crops'
+            'crops',
+            'canCalculateStock'
         ));
     }
 

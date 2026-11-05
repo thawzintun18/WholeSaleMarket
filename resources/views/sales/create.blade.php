@@ -199,8 +199,18 @@
                             ဒီနေ့အတွက် Average Price မတွက်ရသေးပါ။
                         </p>
 
-                        <form action="{{ route('Sale#calculateTodayAveragePrices') }}" method="POST"
+                        {{-- <form action="{{ route('Sale#calculateTodayAveragePrices') }}" method="POST"
                             onsubmit="return confirm('ဒီနေ့ဝယ်ထားသော သီးနှံအားလုံး၏ Average Price ကို တွက်ချက်မလား?')">
+                            @csrf
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-calculator me-1"></i>
+                                ဒီနေ့အတွက် သီးနှံအားလုံး၏ Average Price တွက်ရန်
+                            </button>
+                        </form> --}}
+
+                        <form action="{{ route('Sale#calculateTodayAveragePrices') }}" method="POST"
+                            id="calculateAveragePriceForm">
                             @csrf
 
                             <button type="submit" class="btn btn-primary">
@@ -221,7 +231,6 @@
                                         <th>သီးနှံအမည်</th>
                                         <th class="text-end">ဝယ်ယူငွေစုစုပေါင်း</th>
                                         <th class="text-end">Stock လက်ကျန်</th>
-                                        <th class="text-end">တစ်ယူနစ်ဈေး</th>
                                         <th class="text-end">တစ်တင်းဈေး</th>
                                     </tr>
                                 </thead>
@@ -245,11 +254,6 @@
                                                 @else
                                                     ပေါင်
                                                 @endif
-                                            </td>
-
-                                            <td class="text-end">
-                                                {{ number_format($price->average_cost, 0) }}
-                                                <small class="small text-secondary">ကျပ်</small>
                                             </td>
 
                                             <td class="text-end">
@@ -748,25 +752,25 @@
                         <div class="d-flex flex-wrap gap-3 text-secondary small">
 
                             ${customer.customer_code ? `
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class=' text-info'>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="bi bi-upc-scan me-1"></i>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ${escapeHtml(customer.customer_code)}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ` : ''}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class=' text-info'>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="bi bi-upc-scan me-1"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ${escapeHtml(customer.customer_code)}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ` : ''}
 
                             ${customer.phone ? `
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class=' fw-bold text-dark fs-6'>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="bi bi-telephone me-1"></i>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ${escapeHtml(customer.phone)}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ` : ''}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class=' fw-bold text-dark fs-6'>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="bi bi-telephone me-1"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ${escapeHtml(customer.phone)}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ` : ''}
 
                             ${customer.address ? `
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        <span class=' fw-bold text-dark fs-6'>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="bi bi-geo-alt me-1"></i>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ${escapeHtml(customer.address)}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        </span>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ` : ''}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                <span class=' fw-bold text-dark fs-6'>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="bi bi-geo-alt me-1"></i>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ${escapeHtml(customer.address)}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ` : ''}
 
                         </div>
                     </div>
@@ -1242,8 +1246,8 @@
 
                     ${item.unitType === 'pound'
                         ? `<div class="small text-muted">
-                                                                                                                                                                   အိတ် ${item.bagCount} အိတ်နုတ်ပြီး
-                                                                                                                                                               </div>`
+                                                                                                                                                                                           အိတ် ${item.bagCount} အိတ်နုတ်ပြီး
+                                                                                                                                                                                       </div>`
                         : ''
                     }
                 </td>
@@ -1666,6 +1670,32 @@
 
                     this.value = val;
                 });
+            });
+        });
+    </script>
+@endpush
+
+@push('scripts')
+    <script>
+        document.getElementById('calculateAveragePriceForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = this;
+
+            Swal.fire({
+                title: 'Average Price တွက်ချက်မလား?',
+                text: 'ဒီနေ့ဝယ်ထားသော သီးနှံအားလုံး၏ Average Price ကို တွက်ချက်မှာဖြစ်ပါတယ်။',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'တွက်ချက်မည်',
+                cancelButtonText: 'မလုပ်တော့ပါ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
             });
         });
     </script>

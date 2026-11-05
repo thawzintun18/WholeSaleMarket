@@ -92,7 +92,8 @@ class SaleController extends Controller
                     );
                 }
 
-                // ဒီနေ့ဝယ်ထားတဲ့ သီးနှံများ၏ gross_amount စုစုပေါင်း
+                // ဒီနေ့ဝယ်ယူထားသော သီးနှံတစ်မျိုးချင်းစီ၏
+                // Gross Amount, Quantity, Bag Count စုစုပေါင်း
                 $todayPurchases = DB::table('purchase_items')
                     ->join(
                         'purchases',
@@ -105,7 +106,9 @@ class SaleController extends Controller
                     ->whereNull('purchases.deleted_at')
                     ->select(
                         'purchase_items.crop_id',
-                        DB::raw('SUM(purchase_items.gross_amount) as total_gross_amount')
+                        DB::raw('SUM(purchase_items.gross_amount) as total_gross_amount'),
+                        DB::raw('SUM(purchase_items.quantity) as total_quantity'),
+                        DB::raw('SUM(COALESCE(purchase_items.bag_count, 0)) as total_bag_count')
                     )
                     ->groupBy('purchase_items.crop_id')
                     ->get();
@@ -117,6 +120,7 @@ class SaleController extends Controller
                 }
 
                 foreach ($todayPurchases as $item) {
+
                     $crop = Crop::find($item->crop_id);
 
                     if (! $crop) {
@@ -125,7 +129,7 @@ class SaleController extends Controller
                         );
                     }
 
-                    $quantityPerBasket = $crop->quantity_per_basket ?? 0;
+                    $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
 
                     if ($quantityPerBasket <= 0) {
                         throw new \RuntimeException(
@@ -133,19 +137,27 @@ class SaleController extends Controller
                         );
                     }
 
-                    $stock = StockBalance::where('crop_id', $crop->id)
-                        ->lockForUpdate()
-                        ->first();
+                    // ဒီနေ့ဝယ်ယူထားသော စုစုပေါင်းတန်ဖိုး
+                    $totalGrossAmount = (float) $item->total_gross_amount;
 
-                    if (! $stock || $stock->quantity_on_hand <= 0) {
-                        throw new \RuntimeException(
-                            "{$crop->crop_name} အတွက် Stock လက်ကျန် မရှိပါ။"
-                        );
+                    // ဒီနေ့ဝယ်ယူထားသော Quantity စုစုပေါင်း
+                    $totalQuantity = (float) $item->total_quantity;
+
+                    // ဒီနေ့ဝယ်ယူထားသော Bag Count စုစုပေါင်း
+                    $totalBagCount = (float) $item->total_bag_count;
+
+                    // မြေပဲ (ပေါင်) ဖြစ်ပါက Bag Count ကို နုတ်မည်
+                    if ($crop->unit === 'pound') {
+                        $quantityOnHand = $totalQuantity - $totalBagCount;
+                    } else {
+                        $quantityOnHand = $totalQuantity;
                     }
 
-                    // သင်သတ်မှတ်ထားသော တွက်ချက်နည်း
-                    $totalGrossAmount = (float) $item->total_gross_amount;
-                    $quantityOnHand   = (float) $stock->quantity_on_hand;
+                    if ($quantityOnHand <= 0) {
+                        throw new \RuntimeException(
+                            "{$crop->crop_name} အတွက် တွက်ချက်ရန် Quantity မလုံလောက်ပါ။"
+                        );
+                    }
 
                     // တစ်ပိဿာဈေး
                     $averageCost = $totalGrossAmount / $quantityOnHand;
@@ -153,24 +165,39 @@ class SaleController extends Controller
                     // တစ်တင်းဈေး
                     $averageBasketPrice = $averageCost * $quantityPerBasket;
 
-                    // လက်ရှိ Stock ထဲတွင် တစ်ပိဿာဈေး သိမ်းမည်
-                    $stock->average_cost = floor($averageBasketPrice / 1000) * 1000;
+                    // 500 ကျပ်စီ အပေါ်တိုးမည်
+                    // ဥပမာ 127,980 => 128,000
+                    $roundedBasketPrice = ceil($averageBasketPrice / 500) * 500;
+
+                    // Stock Balance ကို Update လုပ်မည်
+                    $stock = StockBalance::where('crop_id', $crop->id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (! $stock) {
+                        throw new \RuntimeException(
+                            "{$crop->crop_name} အတွက် Stock စာရင်း မတွေ့ပါ။"
+                        );
+                    }
+
+                    // Stock ထဲတွင် တစ်ပိဿာဈေး သိမ်းမည်
+                    $stock->average_cost = $roundedBasketPrice;
                     $stock->save();
 
-                    // ဒီနေ့တွက်ထားသောဈေးကို သီးခြားသိမ်းမည်
+                    // ဒီနေ့ Average Price မှတ်တမ်းသိမ်းမည်
                     DB::table('daily_average_prices')->insert([
                         'price_date'           => $today,
                         'crop_id'              => $crop->id,
                         'total_gross_amount'   => $totalGrossAmount,
                         'quantity_on_hand'     => $quantityOnHand,
-                        'average_cost'         => floor($averageCost / 1000) * 1000,
-                        'average_basket_price' => floor($averageBasketPrice / 1000) * 1000,
+                        'average_cost'         => $averageCost,
+                        'average_basket_price' => $roundedBasketPrice,
                         'created_at'           => now(),
                         'updated_at'           => now(),
                     ]);
                 }
 
-                // အားလုံးအောင်မြင်ပြီးမှ တွက်ပြီးကြောင်း မှတ်တမ်းတင်မည်
+                // တွက်ချက်မှုအားလုံး အောင်မြင်မှသာ Run မှတ်တမ်းသိမ်းမည်
                 DB::table('daily_average_price_runs')->insert([
                     'price_date'    => $today,
                     'calculated_at' => now(),
@@ -184,6 +211,7 @@ class SaleController extends Controller
                 ->with('success', 'ဒီနေ့အတွက် သီးနှံအားလုံး၏ Average Price တွက်ချက်ပြီးပါပြီ။');
 
         } catch (\RuntimeException $e) {
+
             return redirect()
                 ->back()
                 ->with('error', $e->getMessage());

@@ -82,9 +82,9 @@
                 </small>
             </div>
 
-            @if (!$todayRun)
-                <form action="{{ route('Leave#create') }}" method="POST"
-                    onsubmit="return confirm('ဒီနေ့အတွက် သီးနှံလက်ကျန်အားလုံး တွက်ချက်မှာ သေချာပါသလား?')">
+            @if ($canCalculateStock)
+                <form action="{{ route('Leave#create') }}" method="POST" id="calculateStockForm">
+
                     @csrf
 
                     <button type="submit" class="btn btn-primary">
@@ -236,24 +236,6 @@
                             @endforelse
 
                         </tbody>
-
-                        {{-- @if ($balances->isNotEmpty())
-                            <tfoot class="table-light">
-                                <tr>
-                                    <th colspan="2" class="text-end">
-                                        စုစုပေါင်း
-                                    </th>
-
-                                    <th class="text-end">
-                                        {{ number_format($balances->sum('daily_balance'), 2) }}
-                                    </th>
-
-                                    <th class="text-end">
-                                        {{ number_format($balances->sum('total_balance'), 2) }}
-                                    </th>
-                                </tr>
-                            </tfoot>
-                        @endif --}}
                     </table>
 
                 </div>
@@ -264,3 +246,29 @@
     </div>
 
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('calculateStockForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const form = this;
+
+            Swal.fire({
+                title: 'လက်ကျန်တွက်ချက်မလား?',
+                text: 'ဒီနေ့အတွက် သီးနှံလက်ကျန်အားလုံးကို တွက်ချက်မှာ သေချာပါသလား?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'တွက်ချက်မည်',
+                cancelButtonText: 'မလုပ်တော့ပါ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
+@endpush

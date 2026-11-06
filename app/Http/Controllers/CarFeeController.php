@@ -17,7 +17,6 @@ class CarFeeController extends Controller
     //create
     public function create(Request $request)
     {
-
         $validated = $request->validate([
             'car_no'      => 'required|string|max:255',
             'driver_name' => 'required|string|max:150',
@@ -33,35 +32,35 @@ class CarFeeController extends Controller
         $carNo = trim($validated['car_no']);
 
         $payment = DB::transaction(function () use ($today, $carNo, $validated) {
-            // တစ်ချိန်တည်းမှာ ထပ်သိမ်းခြင်းကို တားဆီးရန်
-            $existing = CarFeePayment::withTrashed()
-                ->whereDate('payment_date', $today)
-                ->where('car_no', $carNo)
-                ->lockForUpdate()
-                ->first();
 
-            if ($existing) {
-                throw ValidationException::withMessages([
-                    'car_no' => 'ဒီနေ့အတွက် ဒီကားနံပါတ်ကို တွက်ချက်ပြီးသား ဖြစ်ပါတယ်။',
-                ]);
-            }
-
+            // ယနေ့အတွက် ကားနံပါတ်တူပြီး အတည်ပြုထားသော
+            // မပေးချေရသေးသည့် Purchase များကို ရှာမည်
             $purchases = DB::table('purchases')
                 ->whereDate('purchase_date', $today)
                 ->where('car_no', $carNo)
                 ->whereIn('status', ['Confirm', 'Complete'])
+                ->whereNotExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('car_fee_payment_items')
+                        ->whereColumn(
+                            'car_fee_payment_items.purchase_id',
+                            'purchases.id'
+                        );
+                })
                 ->orderBy('id')
                 ->lockForUpdate()
                 ->get(['id', 'car_fee_amount']);
 
             if ($purchases->isEmpty()) {
                 throw ValidationException::withMessages([
-                    'car_no' => 'ဒီနေ့အတွက် ဒီကားနံပါတ်နဲ့ အတည်ပြုထားသော အဝယ်စာရင်း မရှိပါ။',
+                    'car_no' => 'ဒီနေ့အတွက် ဒီကားနံပါတ်နဲ့ ကားခတွက်ရန် ကျန်ရှိသော အဝယ်စာရင်း မရှိပါ။',
                 ]);
             }
 
+            // မပေးချေရသေးသော Purchase များ၏ ကားခပေါင်း
             $totalAmount = $purchases->sum('car_fee_amount');
 
+            // ကားခပေးချေမှု အသစ်ဖန်တီးမည်
             $payment = CarFeePayment::create([
                 'car_no'       => $carNo,
                 'driver_name'  => trim($validated['driver_name']),
@@ -69,6 +68,7 @@ class CarFeeController extends Controller
                 'payment_date' => $today,
             ]);
 
+            // ယခုအကြိမ်တွင် ပါဝင်သော Purchase များကို မှတ်တမ်းတင်မည်
             foreach ($purchases as $purchase) {
                 DB::table('car_fee_payment_items')->insert([
                     'car_fee_payment_id' => $payment->id,
@@ -81,12 +81,9 @@ class CarFeeController extends Controller
             return $payment;
         });
 
-        // dd($payment->id);
-
         return redirect()
             ->route('CarFee#voucher', $payment->id)
-            ->with('success', 'အရောင်းစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
-
+            ->with('success', 'ကားခစာရင်း သိမ်းဆည်းပြီးပါပြီ။');
     }
 
     //list
@@ -145,48 +142,50 @@ class CarFeeController extends Controller
         $today = now()->toDateString();
 
         // ကားနံပါတ်များ ရှာဖွေခြင်း
-        $cars = DB::table('purchases')
-            ->whereDate('purchase_date', $today)
-            ->whereNotNull('car_no')
-            ->where('car_no', 'like', '%' . $request->search . '%')
-            ->distinct()
-            ->orderBy('car_no')
-            ->pluck('car_no');
-
-        // ကားနံပါတ်ကို ရွေးချယ်ပြီးမှ စုစုပေါင်းတွက်မယ်
         if (! $request->filled('car_no')) {
+
+            $cars = DB::table('purchases')
+                ->whereDate('purchase_date', $today)
+                ->whereIn('status', ['Confirm', 'Complete'])
+                ->whereNotNull('car_no')
+                ->where('car_no', 'like', '%' . $request->search . '%')
+                ->distinct()
+                ->orderBy('car_no')
+                ->pluck('car_no');
+
             return response()->json([
                 'cars' => $cars,
             ]);
         }
 
+        // ကားနံပါတ် ရွေးချယ်ပြီးပါက
         $carNo = trim($request->car_no);
 
+        // ကားခမပေးရသေးသော Purchase များကိုသာ ရှာမည်
         $purchases = DB::table('purchases')
             ->whereDate('purchase_date', $today)
             ->where('car_no', $carNo)
             ->whereIn('status', ['Confirm', 'Complete'])
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('car_fee_payment_items')
+                    ->whereColumn(
+                        'car_fee_payment_items.purchase_id',
+                        'purchases.id'
+                    );
+            })
             ->orderBy('id')
             ->get(['id', 'car_fee_amount']);
 
+        // ကားခတွက်ရန် Purchase မရှိတော့ပါက
         if ($purchases->isEmpty()) {
             return response()->json([
-                'message' => 'ယနေ့အတွက် ဒီကားနံပါတ်နဲ့ အဝယ်စာရင်း မတွေ့ပါ။',
+                'already_paid' => true,
+                'message'      => 'ဒီကားနံပါတ်အတွက် ကားခပေးရန် ကျန်ရှိသော အဝယ်စာရင်း မရှိပါ။',
             ], 404);
         }
 
-        $existing = CarFeePayment::withTrashed()
-            ->whereDate('payment_date', $today)
-            ->where('car_no', $carNo)
-            ->first();
-
-        if ($existing) {
-            return response()->json([
-                'already_paid' => true,
-                'message'      => 'ဒီနေ့အတွက် ဒီကားနံပါတ်ကို တွက်ချက်ပြီးသား ဖြစ်ပါတယ်။',
-            ]);
-        }
-
+        // ကားခမပေးရသေးသော Purchase များ၏ စုစုပေါင်း
         return response()->json([
             'already_paid' => false,
             'car_no'       => $carNo,
@@ -219,17 +218,23 @@ class CarFeeController extends Controller
             ], 404);
         }
 
-        $purchases = DB::table('purchases')
+        // ဒီ Voucher မှာ ပါဝင်တဲ့ Purchase များကိုသာ ယူမည်
+        $purchases = DB::table('car_fee_payment_items')
+            ->join(
+                'purchases',
+                'car_fee_payment_items.purchase_id',
+                '=',
+                'purchases.id'
+            )
             ->join(
                 'farmers',
                 'purchases.farmer_id',
                 '=',
                 'farmers.id'
             )
-            ->where('purchases.car_no', $payment->car_no)
-            ->whereDate(
-                'purchases.purchase_date',
-                $payment->payment_date
+            ->where(
+                'car_fee_payment_items.car_fee_payment_id',
+                $payment->id
             )
             ->whereNull('purchases.deleted_at')
             ->whereNull('farmers.deleted_at')

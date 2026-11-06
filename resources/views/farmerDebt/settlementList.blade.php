@@ -105,7 +105,7 @@
                     <div class="border rounded p-3 h-100">
                         <small class="text-muted">မူလအကြွေး</small>
                         <div class="fw-bold fs-5">
-                            {{ number_format($farmerDebt->amount, 0) }}
+                            {{ number_format($farmerDebt->amount, 2) }}
                         </div>
                         <small class="text-muted">ကျပ်</small>
                     </div>
@@ -115,7 +115,7 @@
                     <div class="border rounded p-3 h-100">
                         <small class="text-muted">ပြန်ဆပ်ပြီး</small>
                         <div class="fw-bold fs-5 text-success">
-                            {{ number_format($farmerDebt->settled_amount ?? 0, 0) }}
+                            {{ number_format($farmerDebt->settled_amount ?? 0, 2) }}
                         </div>
                         <small class="text-muted">ကျပ်</small>
                     </div>
@@ -125,7 +125,7 @@
                     <div class="border rounded p-3 h-100">
                         <small class="text-muted">လက်ကျန်အကြွေး</small>
                         <div class="fw-bold fs-5 text-danger">
-                            {{ number_format($farmerDebt->balance_amount ?? 0, 0) }}
+                            {{ number_format($farmerDebt->balance_amount ?? 0, 2) }}
                         </div>
                         <small class="text-muted">ကျပ်</small>
                     </div>
@@ -204,7 +204,7 @@
 
                                     <td class="">
 
-                                        <p>{{ number_format($item->amount, 0) }} <small
+                                        <p>{{ number_format($item->amount, 2) }} <small
                                                 class="small text-secondary">ကျပ်</small></p>
 
                                     </td>

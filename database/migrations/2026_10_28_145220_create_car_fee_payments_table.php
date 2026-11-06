@@ -18,9 +18,6 @@ return new class extends Migration
             $table->decimal('total_amount', 15, 2)->default(0);
             $table->date('payment_date');
 
-            // ကားတစ်စီးကို တစ်နေ့တစ်ကြိမ်သာ တွက်ခွင့်ပြုမယ်
-            $table->unique(['payment_date', 'car_no']);
-
             $table->timestamps();
             $table->softDeletes();
 

@@ -29,8 +29,8 @@
         <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">အရင်နေ့က လက်ကျန် (Opening)</div>
-                <h4 class="fw-bold text-dark mb-0">{{ number_format($openingBalance, 2) }} တင်း</h4>
-                <div class="small text-muted">ပျမ်းမျှဈေး: {{ number_format($openingAverageCost, 2) }} ကျပ်</div>
+                <h4 class="fw-bold text-dark my-1">{{ number_format($openingBalance, 2) }} တင်း</h4>
+                <div class="small text-muted">ပျမ်းမျှဈေး <span class=" text-dark fw-bold">{{ number_format($openingAverageCost, 2) }} ကျပ်</span></div>
             </div>
         </div>
         <div class="col-md-3">
@@ -46,11 +46,14 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="p-3 border rounded-3 bg-white shadow-sm bg-light">
+            <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">ပွဲရုံတွင်း စုစုပေါင်းလက်ကျန်</div>
-                <h4 class="fw-bold text-success mb-0">
-                    {{ number_format($openingBalance + $totalPurchaseBasket + $totalDepositBasket, 2) }} တင်း
+                <h4 class="fw-bold text-success my-1">
+                    {{ number_format($openingBalance + $totalPurchaseBasket , 2) }} တင်း {{-- + $totalDepositBasket --}}
                 </h4>
+                <div class="small text-muted">
+                    * အပ်နှံစာရင်းမပါသေးပါ
+                </div>
             </div>
         </div>
     </div>

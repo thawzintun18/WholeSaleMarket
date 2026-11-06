@@ -26,36 +26,48 @@
 
     <!-- Summary Cards -->
     <div class="row g-3 mb-4 d-print-none">
-        <!-- ၁။ အရင်နေ့က လက်ကျန် -->
-        <div class="col-md-3">
+        <!-- အရင်နေ့က လက်ကျန် -->
+        {{-- <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">အရင်နေ့က လက်ကျန် (Opening)</div>
                 <h4 class="fw-bold text-secondary mb-0">{{ number_format($openingBalance, 2) }} တင်း</h4>
                 <div class="small text-muted">ပျမ်းမျှဈေး: {{ number_format($openingAverageCost, 2) }} ကျပ်</div>
             </div>
-        </div>
+        </div> --}}
 
-        <!-- ၂။ ယနေ့ ဝယ်ယူမှု (ဝင်ငွေစတော့) -->
-        <div class="col-md-3">
+        <!-- ယနေ့ ဝယ်ယူမှု (ဝင်ငွေစတော့) -->
+        {{-- <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">ယနေ့ ဝယ်ယူမှု (Purchase)</div>
                 <h4 class="fw-bold text-success mb-0">{{ number_format($totalPurchaseBasket, 2) }} တင်း</h4>
             </div>
+        </div> --}}
+
+        <div class="col-md-4">
+            <div class="p-3 border rounded-3 bg-white shadow-sm">
+                <div class="text-muted small">ပွဲရုံတွင်း စုစုပေါင်းလက်ကျန်</div>
+                <h4 class="fw-bold text-success my-1">
+                    {{ number_format($openingBalance + $totalPurchaseBasket , 2) }} တင်း {{-- + $totalDepositBasket --}}
+                </h4>
+                <div class="small text-muted">
+                    * အပ်နှံစာရင်းမပါသေးပါ
+                </div>
+            </div>
         </div>
 
-        <!-- ၃။ ယနေ့ ရောင်းချမှု (ထွက်ငွေစတော့) -->
-        <div class="col-md-3">
+        <!-- ယနေ့ ရောင်းချမှု (ထွက်ငွေစတော့) -->
+        <div class="col-md-4">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">ယနေ့ ရောင်းချမှု (Sales)</div>
+                <div class="text-muted small">ယနေ့ ရောင်းချမှု</div>
                 <h4 class="fw-bold text-danger mb-0">{{ number_format($totalSaleBasket, 2) }} တင်း</h4>
                 {{-- <div class="small text-muted">ဘောင်ချာ {{ $totalSales }} ခု</div> --}}
             </div>
         </div>
 
-        <!-- ၄။ ယနေ့ ကျန်ရှိလက်ကျန် (Closing Balance) -->
-        <div class="col-md-3">
+        <!-- ယနေ့ ကျန်ရှိလက်ကျန် (Closing Balance) -->
+        <div class="col-md-4">
             <div class="p-3 border rounded-3 bg-white shadow-sm bg-light">
-                <div class="text-muted small">ယနေ့ လက်ကျန် (Closing)</div>
+                <div class="text-muted small">ယနေ့ လက်ကျန်</div>
                 <h4 class="fw-bold text-primary mb-0">
                     {{ number_format($closingBalance, 2) }} တင်း
                 </h4>

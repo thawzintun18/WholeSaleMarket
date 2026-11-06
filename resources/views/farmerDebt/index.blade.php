@@ -172,17 +172,17 @@
                                 </td>
 
                                 <td class=" text-center">
-                                    {{ number_format($item->amount, 0) }} <small class="small text-secondary">ကျပ်</small>
+                                    {{ number_format($item->amount, 2) }} <small class="small text-secondary">ကျပ်</small>
 
                                 </td>
 
                                 <td class=" text-center">
-                                    {{ number_format($item->settled_amount, 0) == 0 ? 0 : number_format($item->settled_amount, 0) }}
+                                    {{ number_format($item->settled_amount, 2) == 0 ? 0 : number_format($item->settled_amount, 2) }}
                                     <small class="small text-secondary">ကျပ်</small>
                                 </td>
 
                                 <td class=" text-center">
-                                    {{ number_format($item->balance_amount, 0) }} <small
+                                    {{ number_format($item->balance_amount, 2) }} <small
                                         class="small text-secondary">ကျပ်</small>
                                 </td>
 

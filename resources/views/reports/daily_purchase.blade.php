@@ -36,13 +36,13 @@
         <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">ယနေ့ ဝယ်ယူမှုတင်း</div>
-                <h4 class="fw-bold text-primary mb-0">{{ number_format($totalPurchaseBasket, 2) }} တင်း</h4>
+                <h4 class="fw-bold text-primary mb-1">{{ number_format($totalPurchaseBasket, 2) }} တင်း</h4>
             </div>
         </div>
         <div class="col-md-3">
             <div class="p-3 border rounded-3 bg-white shadow-sm">
                 <div class="text-muted small">ယနေ့ အပ်နှံထားဆဲတင်း</div>
-                <h4 class="fw-bold text-warning mb-0">{{ number_format($totalDepositBasket, 2) }} တင်း</h4>
+                <h4 class="fw-bold text-warning mb-1">{{ number_format($totalDepositBasket, 2) }} တင်း</h4>
             </div>
         </div>
         <div class="col-md-3">
@@ -115,7 +115,7 @@
                     ပွဲရုံတွင် အပ်နှံထားဆဲ စာရင်းများ
                 </h5>
                 <div class="table-responsive">
-                    <table class="table table-bordered align-middle mb-0">
+                    <table class="table table-bordered align-middle mb-1">
                         <thead class="table-light text-secondary small text-uppercase">
                             <tr>
                                 <th class="text-center" style="width: 50px;">စဉ်</th>
@@ -165,7 +165,17 @@
                         @if($depositItems->isNotEmpty())
                             <tfoot class="table-light fw-bold">
                                 <tr>
-                                    <td colspan="5" class="text-end">အပ်နှံမှု စုစုပေါင်း</td>
+                                    <td colspan="4" class="text-end">အပ်နှံမှု စုစုပေါင်း</td>
+                                    <td class="text-end text-dark fs-5">
+                                        @php
+                                            $firstUnit = strtolower($depositItems->first()->unit ?? '');
+                                        @endphp
+                                        @if($firstUnit === 'viss')
+                                            {{ number_format($totalDepositVissQuantity, 2) }} ပိဿာ
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                     <td class="text-end text-warning fw-bold">{{ number_format($totalDepositBasket, 2) }} တင်း</td>
                                     <td colspan="3" class="text-muted small">ငွေရှင်းရန် ငွေပမာဏ မရှိသေးပါ</td>
                                 </tr>
@@ -228,13 +238,41 @@
                                 </tr>
                             @endforelse
                         </tbody>
-                        @if($purchaseItems->isNotEmpty())
+                        {{-- @if($purchaseItems->isNotEmpty())
                             <tfoot class="table-light fw-bold">
                                 <tr>
                                     <td colspan="5" class="text-end">ဝယ်ယူမှု စုစုပေါင်း</td>
                                     <td class="text-end text-primary">{{ number_format($totalPurchaseBasket, 2) }} တင်း</td>
                                     <td class="text-end">-</td>
                                     <td class="text-end text-dark">{{ number_format($totalAmount, 2) }} ကျပ်</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        @endif --}}
+                        @if($purchaseItems->isNotEmpty())
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td colspan="4" class="text-end py-3">အဝယ် စုစုပေါင်း (Total):</td>
+
+                                    {{-- ယူနစ်အလိုက် စုစုပေါင်းပြရန် (Viss ဆိုလျှင် ပိဿာပြမည်၊ Pound ဆိုလျှင် မပြ / တင်းကိုသာပြမည်) --}}
+                                    <td class="text-end text-dark fs-5">
+                                        @php
+                                            $firstUnit = strtolower($purchaseItems->first()->unit ?? '');
+                                        @endphp
+                                        @if($firstUnit === 'viss')
+                                            {{ number_format($totalVissQuantity, 2) }} ပိဿာ
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
+
+                                    {{-- တင်း စုစုပေါင်း (ယူနစ်မရွေး တင်းကို အမြဲပြမည်) --}}
+                                    <td class="text-end text-primary fs-5">
+                                        {{ number_format($totalPurchaseBasket, 2) }} တင်း
+                                    </td>
+
+                                    <td class="text-end">-</td>
+                                    <td class="text-end text-success fs-5">{{ number_format($totalAmount, 2) }} ကျပ်</td>
                                     <td></td>
                                 </tr>
                             </tfoot>

@@ -177,7 +177,7 @@
                             </tr>
                         @endforelse
                     </tbody>
-                    @if($items->isNotEmpty())
+                    {{-- @if($items->isNotEmpty())
                         <tfoot class="table-light fw-bold">
                             <tr>
                                 <td colspan="5" class="text-end py-3">စုစုပေါင်း (Total):</td>
@@ -188,6 +188,34 @@
                                 <td class="text-end text-success fs-5">
                                     {{ number_format($totalAmount, 2) }} ကျပ်
                                 </td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    @endif --}}
+                    @if($items->isNotEmpty())
+                        <tfoot class="table-light fw-bold">
+                            <tr>
+                                <td colspan="4" class="text-end py-3">အရောင်း စုစုပေါင်း (Total):</td>
+
+                                {{-- ယူနစ်အလိုက် စုစုပေါင်းပြရန် (Viss ဆိုလျှင် ပိဿာပြမည်၊ Pound ဆိုလျှင် - ပြမည်) --}}
+                                <td class="text-end text-dark fs-5">
+                                    @php
+                                        $firstUnit = strtolower($items->first()->unit ?? '');
+                                    @endphp
+                                    @if($firstUnit === 'viss')
+                                        {{ number_format($totalVissQuantity, 2) }} ပိဿာ
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
+                                {{-- တင်း စုစုပေါင်း --}}
+                                <td class="text-end text-primary fs-5">
+                                    {{ number_format($totalSaleBasket, 2) }} တင်း
+                                </td>
+
+                                <td class="text-end">-</td>
+                                <td class="text-end text-success fs-5">{{ number_format($totalAmount, 2) }} ကျပ်</td>
                                 <td></td>
                             </tr>
                         </tfoot>

@@ -1339,7 +1339,6 @@
             purchaseForm.addEventListener('submit', function(event) {
                 if (!document.getElementById('farmer_id').value) {
                     event.preventDefault();
-
                     Swal.fire({
                         icon: 'warning',
                         title: 'သတိပြုပါ',
@@ -1348,16 +1347,41 @@
                     }).then(() => {
                         document.getElementById('farmer_search').focus();
                     });
-
                     return;
                 }
-
                 if (items.length === 0) {
                     event.preventDefault();
                     alert('သိမ်းဆည်းရန် သီးနှံစာရင်း အနည်းဆုံးတစ်မျိုး ထည့်ပါ။');
                     cropSelect.focus();
                     return;
                 }
+
+
+                // သီးနှံ စုစုပေါင်းတန်ဖိုး (Gross Total)
+                const grossTotal = Number(
+                    document.getElementById('items_gross_total')
+                    .textContent.replace(/,/g, '')
+                ) || 0;
+                // ကားခ (Car Fee Amount)
+                const carFeeInput = document.getElementById('car_fee_amount');
+                const carFee = carFeeInput ? numberValue(carFeeInput) : 0;
+                //ကားခသည် သီးနှံတန်ဖိုးထက် မများရပါ
+                if (carFee > grossTotal) {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'ကားခသည် သီးနှံစုစုပေါင်းတန်ဖိုးထက် ပို၍မရပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    }).then(() => {
+                        if (carFeeInput) {
+                            carFeeInput.focus();
+                            carFeeInput.select();
+                        }
+                    });
+                    return;
+                }
+
 
                 // ပေးချေရမည့်ငွေ
                 const netPayable = Number(
@@ -1374,13 +1398,24 @@
                     paidAmountInput.focus();
                     return;
                 }
-                // ပေးချေမည့်ငွေသည် ပေးချေရမည့်ငွေထက် မများရ
+                // --- စစ်ဆေးချက် ၂။ ပေးချေမည့်ငွေသည် ပေးချေရမည့်ငွေထက် မများရပါ ---
                 if (paidAmount > netPayable) {
                     event.preventDefault();
-                    alert('ပေးချေမည့်ငွေသည် ပေးချေရမည့်ငွေထက် မများရပါ။');
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'သတိပြုပါ',
+                        text: 'ပေးချေမည့်ငွေသည် ပေးချေရမည့်ငွေထက် မများရပါ။',
+                        confirmButtonText: 'အိုကေ'
+                    });
                     paidAmountInput.focus();
                     paidAmountInput.select();
                     return;
+                }
+
+                const submitBtn = document.getElementById('save_purchase_btn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> သိမ်းဆည်းနေသည်...';
                 }
             });
 

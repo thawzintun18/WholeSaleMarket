@@ -5,7 +5,6 @@
 @section('breadcrumb', 'ပင်မစာမျက်နှာ / ဝယ်ယူမှု / အရောင်းဘောင်ချာအသစ်ဖန်တီး')
 
 @section('content')
-
     <div class="container-fluid p-0">
 
         @include('partials.purchase-sale-deposit-tabs')
@@ -1006,7 +1005,6 @@
 @endpush
 {{-- တောင်သူအပိုင်းအတွက် JS အဆုံး --}}
 
-
 {{-- သီးနှံစာရင်းအတွက် သီးနှံဈေး အလိုအလျောက်ပြပေးတဲ့ JS အစ --}}
 @push('scripts')
     <script>
@@ -1559,33 +1557,26 @@
 
             // ပေးချေငွေပြောင်းလဲလျှင် လက်ကျန်ငွေ ပြန်တွက်မည်
             paidInput.addEventListener('input', updateTotals);
-
             // သိမ်းပြီး Voucher ထုတ်မည်
             form.addEventListener('submit', function(event) {
-
                 if (!customerIdInput.value) {
                     event.preventDefault();
-
                     Swal.fire({
                         icon: 'warning',
                         title: 'သတိပြုပါ',
                         text: 'ဝယ်သူကို အရင်ရွေးချယ်ပါ။',
                         confirmButtonText: 'အိုကေ'
                     })
-
                     return;
                 }
-
                 if (items.length === 0) {
                     event.preventDefault();
-
                     Swal.fire({
                         icon: 'warning',
                         title: 'သတိပြုပါ',
                         text: 'သိမ်းဆည်းရန် သီးနှံစာရင်း အနည်းဆုံးတစ်မျိုး ထည့်ပါ။',
                         confirmButtonText: 'အိုကေ'
                     })
-
                     return;
                 }
 
@@ -1626,6 +1617,12 @@
                     return;
                 }
 
+                const submitBtn = document.getElementById('save_purchase_btn');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> သိမ်းဆည်းနေသည်...';
+                }
+
                 // Submit လုပ်ချိန်မှ hidden inputs များဖန်တီးမည်။
                 // အဲဒီအချိန်မှသာ sale_items[] ကို Server ဆီပို့မည်။
                 buildSubmitInputs();
@@ -1635,7 +1632,6 @@
         });
     </script>
 @endpush
-
 
 {{-- Phone number Input (Only) တွေမှာ number တွေကို myn to eng ပြောင်းပေးတဲ့ JS  --}}
 @push('scripts')

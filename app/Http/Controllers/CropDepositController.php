@@ -92,7 +92,6 @@ class CropDepositController extends Controller
     public function storeDeposit(Request $request)
     {
         // dd($request->toArray());
-        // 1. Validation ပြုလုပ်ခြင်း
         $data = $request->validate([
             'farmer_id'                        => ['required', 'integer', 'exists:farmers,id'],
             'car_no'                           => ['nullable', 'string', 'max:255'],
@@ -205,17 +204,39 @@ class CropDepositController extends Controller
             'car_fee_amount'           => ['nullable', 'numeric', 'min:0'],
             'paid_amount'              => ['nullable', 'numeric', 'min:0'],
             'debts'                    => ['nullable', 'array'],
+        ], [
+            'items.required'           => 'ဝယ်ယူမည့် သီးနှံစာရင်း ထည့်သွင်းပါ။',
+            'items.*.actual_buy_price.required' => 'ဝယ်ယူမည့်ဈေး ဖြည့်သွင်းရန် လိုအပ်ပါသည်။',
         ]);
 
-        DB::transaction(function () use ($request, $depositId) {
-            $deposit = DB::table('crop_deposits')->where('id', $depositId)->first();
-            $depositItems = DB::table('crop_deposit_items')->where('crop_deposit_id', $depositId)->get();
+        // ၁။ Deposit ရှိမရှိ နှင့် Status စစ်ဆေးခြင်း
+        $deposit = DB::table('crop_deposits')->where('id', $depositId)->first();
+        if (! $deposit) {
+            return redirect()->back()->with('error', 'သီးနှံအပ်နှံမှု အချက်အလက် မတွေ့ရှိပါ။');
+        }
 
+        if ($deposit->status === 'Converted') {
+            return redirect()->back()->with('error', 'ဤသီးနှံအပ်နှံမှုကို ဝယ်ယူမှုဘောင်ချာသို့ ပြောင်းပြီးသား ဖြစ်ပါသည်။');
+        }
+
+        // ၂။ Custom Validation (ငွေကြေးဆိုင်ရာ စစ်ဆေးချက်များ အားလုံး)
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), []);
+        $validator->after(function ($validator) use ($request, $depositId, $deposit) {
+            $requestItemIds = collect($request->input('items', []))->pluck('id');
+
+            $depositItems = DB::table('crop_deposit_items')
+                ->where('crop_deposit_id', $depositId)
+                ->get();
+
+            $validItemsCount = $depositItems->whereIn('id', $requestItemIds)->count();
+            if ($validItemsCount !== count($requestItemIds)) {
+                $validator->errors()->add('items', 'ရွေးချယ်ထားသော သီးနှံအချက်အလက်များသည် ဤအပ်နှံမှုစာရင်းနှင့် မကိုက်ညီပါ။');
+                return;
+            }
+
+            // --- သီးနှံစုစုပေါင်းတန်ဖိုး (Total Gross Amount) ကို အကြမ်းတွက်ချက်ခြင်း ---
             $totalGrossAmount = 0;
-            $purchaseItemsData = [];
-
             foreach ($depositItems as $item) {
-                // Form မှ ပို့လိုက်သော ဈေးနှုန်းအသစ်ကို ရှာယူခြင်း
                 $inputPrice = collect($request->items)->firstWhere('id', $item->id);
                 $actualPrice = $inputPrice ? (float) $inputPrice['actual_buy_price'] : (float) $item->actual_buy_price;
 
@@ -225,27 +246,97 @@ class CropDepositController extends Controller
                 $quantity = (float) $item->quantity;
                 $commission = (float) ($crop->commission_amount ?? 0);
 
-                // ယူနစ်အလိုက် အရေအတွက် တွက်ချက်ခြင်း
                 $calculationQty = $quantity;
                 if ($unit === 'pound') {
                     $bagCount = (int) ($item->bag_count ?? 0);
-                    $deductionPerBag = 1; // လိုအပ်ပါက တစ်အိတ်လျှင် လျှော့မည့် ပေါင်ပမာဏကို ချိန်ညှိပါ
-                    $calculationQty = $quantity - ($bagCount * $deductionPerBag);
-                    if ($calculationQty < 0) {
-                        $calculationQty = 0;
-                    }
+                    $calculationQty = max(0, $quantity - ($bagCount * 1));
                 }
 
                 $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
                 $basketCount = $quantityPerBasket > 0 ? $calculationQty / $quantityPerBasket : $calculationQty;
 
-                // Commission (ပွဲခ) နှုတ်ပြီးသား ဈေးနှုန်း
-                $netPricePerUnit = $actualPrice - $commission;
-                if ($netPricePerUnit < 0) {
-                    $netPricePerUnit = 0;
+                $netPricePerUnit = max(0, $actualPrice - $commission);
+                $rawAmount = round($basketCount * $netPricePerUnit, 2);
+                $grossAmt = floor($rawAmount / 1000) * 1000;
+
+                $totalGrossAmount += $grossAmt;
+            }
+
+            // ကားခ ပမာဏ ရယူခြင်း (Request ထဲကပါလာရင် ယူမယ်၊ မပါရင် Deposit ထဲက ယူမယ်)
+            $carFeeAmount = (float) ($request->car_fee_amount ?? $deposit->car_fee_amount ?? 0);
+
+            // --- စစ်ဆေးချက် ၁။ ကားခသည် သီးနှံစုစုပေါင်းတန်ဖိုးထက် မများရပါ ---
+            if ($carFeeAmount > $totalGrossAmount) {
+                $validator->errors()->add(
+                    'car_fee_amount',
+                    'ကားခ (Car Fee) သည် သီးနှံစုစုပေါင်းတန်ဖိုး (' . number_format($totalGrossAmount) . ' ကျပ်) ထက် ပို၍မရပါ။'
+                );
+            }
+
+            // အကြွေးရှင်းငွေ စုစုပေါင်း တွက်ချက်ခြင်း
+            $totalDebtSettled = 0;
+            if ($request->has('debts') && is_array($request->debts)) {
+                foreach ($request->debts as $debtId => $settleAmount) {
+                    $settleAmount = (float) $settleAmount;
+                    if ($settleAmount > 0) {
+                        $debtRecord = DB::table('farmer_debts')->where('id', $debtId)->first();
+                        if ($debtRecord) {
+                            $currentBalance = (float) ($debtRecord->balance_amount ?? ($debtRecord->amount - ($debtRecord->settled_amount ?? 0)));
+                            if ($settleAmount > $currentBalance) {
+                                $settleAmount = $currentBalance;
+                            }
+                            $totalDebtSettled += $settleAmount;
+                        }
+                    }
+                }
+            }
+
+            // စုစုပေါင်း ကျသင့်ငွေ (Net Amount)
+            $netAmount = round($totalGrossAmount - $totalDebtSettled - $carFeeAmount, 2);
+            if ($netAmount < 0) $netAmount = 0;
+
+            $paidAmount = (float) ($request->paid_amount ?? 0);
+
+            // --- စစ်ဆေးချက် ၂။ ပေးချေငွေသည် Net Amount ထက် မများရပါ ---
+            if ($paidAmount > $netAmount) {
+                $validator->errors()->add(
+                    'paid_amount',
+                    'ပေးချေငွေ (Paid Amount) သည် စုစုပေါင်းကျသင့်ငွေ (' . number_format($netAmount) . ' ကျပ်) ထက် ပို၍မရပါ။'
+                );
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        // ၃။ Database Transaction ဖြင့် အချက်အလက်များ သိမ်းဆည်းခြင်း
+        DB::transaction(function () use ($request, $depositId, $deposit) {
+            $depositItems = DB::table('crop_deposit_items')->where('crop_deposit_id', $depositId)->get();
+
+            $totalGrossAmount = 0;
+            $purchaseItemsData = [];
+
+            foreach ($depositItems as $item) {
+                $inputPrice = collect($request->items)->firstWhere('id', $item->id);
+                $actualPrice = $inputPrice ? (float) $inputPrice['actual_buy_price'] : (float) $item->actual_buy_price;
+
+                $crop = DB::table('crops')->where('id', $item->crop_id)->first();
+                $unit = strtolower($crop->unit ?? '');
+
+                $quantity = (float) $item->quantity;
+                $commission = (float) ($crop->commission_amount ?? 0);
+
+                $calculationQty = $quantity;
+                if ($unit === 'pound') {
+                    $bagCount = (int) ($item->bag_count ?? 0);
+                    $calculationQty = max(0, $quantity - ($bagCount * 1));
                 }
 
-                // Gross Amount တွက်ချက်ခြင်း
+                $quantityPerBasket = (float) ($crop->quantity_per_basket ?? 0);
+                $basketCount = $quantityPerBasket > 0 ? $calculationQty / $quantityPerBasket : $calculationQty;
+
+                $netPricePerUnit = max(0, $actualPrice - $commission);
                 $rawAmount = round($basketCount * $netPricePerUnit, 2);
                 $grossAmt = floor($rawAmount / 1000) * 1000;
                 $remainderAmt = round($rawAmount - $grossAmt, 2);
@@ -268,7 +359,7 @@ class CropDepositController extends Controller
                 ];
             }
 
-            // အကြွေးနှုတ်ငွေများ တွက်ချက်ခြင်းနှင့် ဇယားများ Update လုပ်ရန်
+            // အကြွေးရှင်းငွေများ update လုပ်ခြင်း
             $totalDebtSettled = 0;
             $debtSettlementsData = [];
 
@@ -278,9 +369,9 @@ class CropDepositController extends Controller
                     if ($settleAmount > 0) {
                         $debtRecord = DB::table('farmer_debts')->where('id', $debtId)->first();
                         if ($debtRecord) {
-                            $currentBalance = $debtRecord->balance_amount ?? ($debtRecord->amount - ($debtRecord->settled_amount ?? 0));
+                            $currentBalance = (float) ($debtRecord->balance_amount ?? ($debtRecord->amount - ($debtRecord->settled_amount ?? 0)));
                             if ($settleAmount > $currentBalance) {
-                                $settleAmount = $currentBalance; // လက်ကျန်ငွေထက် ပိုမနှုတ်မိစေရန်
+                                $settleAmount = $currentBalance;
                             }
 
                             $totalDebtSettled += $settleAmount;
@@ -293,7 +384,6 @@ class CropDepositController extends Controller
                                 'updated_at'      => now(),
                             ];
 
-                            // တောင်သူအကြွေးစာရင်း (farmer_debts) ကို update လုပ်ခြင်း
                             $newSettled = (float) ($debtRecord->settled_amount ?? 0) + $settleAmount;
                             $newBalance = (float) $debtRecord->amount - $newSettled;
                             $newStatus = ($newBalance <= 0) ? 'Close' : 'Partial';
@@ -311,7 +401,6 @@ class CropDepositController extends Controller
 
             $carFeeAmount = (float) ($request->car_fee_amount ?? $deposit->car_fee_amount ?? 0);
 
-            // ပေးချေရမည့်ငွေ (သီးနှံတန်ဖိုး - အကြွေး - ကားခ)
             $netAmount = round($totalGrossAmount - $totalDebtSettled - $carFeeAmount, 2);
             if ($netAmount < 0) $netAmount = 0;
 
@@ -321,7 +410,6 @@ class CropDepositController extends Controller
 
             $invoiceNo = $this->generateInvoiceNo();
 
-            // purchases ဇယားသို့ အချက်အလက်ထည့်သွင်းခြင်း
             $purchaseId = DB::table('purchases')->insertGetId([
                 'invoice_no'         => $invoiceNo,
                 'farmer_id'          => $deposit->farmer_id,
@@ -338,7 +426,6 @@ class CropDepositController extends Controller
                 'updated_at'         => now(),
             ]);
 
-            // purchase_payments ထဲသို့ ဘောင်ချာထုတ်ချိန် ပေးချေငွေ (initial) ထည့်သွင်းခြင်း
             if ($paidAmount > 0) {
                 DB::table('purchase_payments')->insert([
                     'purchase_id'  => $purchaseId,
@@ -350,13 +437,11 @@ class CropDepositController extends Controller
                 ]);
             }
 
-            // purchase_debt_settlements ထဲသို့ အကြွေးရှင်းလင်းမှု မှတ်တမ်းထည့်ခြင်း
             foreach ($debtSettlementsData as $settlement) {
                 $settlement['purchase_id'] = $purchaseId;
                 DB::table('purchase_debt_settlements')->insert($settlement);
             }
 
-            // purchase_items နှင့် Stock ဝင်ခြင်း
             foreach ($purchaseItemsData as $pItem) {
                 $pItem['purchase_id'] = $purchaseId;
                 DB::table('purchase_items')->insert($pItem);

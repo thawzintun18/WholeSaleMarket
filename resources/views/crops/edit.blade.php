@@ -26,107 +26,81 @@
         </div>
     </div>
 
-
     <div class="row">
-
         <div class="offset-lg-2 col-lg-8 col-12">
-
             <div class="dashboard-card shadow-sm">
-
                 <form id="editCropForm" action="{{ route('Crop#update', $crop->id) }}" method="POST">
-
                     @csrf
-
                     {{-- Crop Name --}}
                     <div class="mb-3">
-
                         <label class="form-label">
                             သီးနှံအမည်
                             <span class="text-danger">*</span>
                         </label>
-
                         <input type="text" name="crop_name" id="crop_name"
                             class="form-control p-2 @error('crop_name') is-invalid @enderror"
                             value="{{ old('crop_name', $crop->crop_name) }}" placeholder="ဥပမာ - ပြောင်း၊ နှမ်း">
-
                         @error('crop_name')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
                     <div class="mb-3">
-
                         <label class="form-label">
                             ပွဲခ
                             <span class="text-danger">*</span>
                         </label>
-
                         <input type="number" name="commission_amount" id="commission_amount"
                             class="form-control p-2 @error('commission_amount') is-invalid @enderror"
                             value="{{ old('commission_amount', $crop->commission_amount) }}" placeholder="ဥပမာ - 2000">
-
                         @error('commission_amount')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
 
                     {{-- Quantity Per Basket --}}
                     <div class="mb-4">
-
                         <label class="form-label">
                             တစ်တင်းပါ အရေအတွက်
                             <span class="text-danger">*</span>
                         </label>
-
                         <input type="number" name="quantity_per_basket" id="quantity_per_basket"
                             class="form-control p-2 @error('quantity_per_basket') is-invalid @enderror"
                             value="{{ old('quantity_per_basket', $crop->quantity_per_basket) }}" min="0"
                             step="0.01" placeholder="ဥပမာ - 20">
-
                         @error('quantity_per_basket')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                         <div class="form-text">
                             တစ်တင်းတွင် ပါဝင်သည့် ပမာဏကို ထည့်သွင်းပါ။
                         </div>
-
                     </div>
 
 
                     {{-- Unit --}}
                     <div class="mb-3">
-
                         <label class="form-label">
                             ယူနစ်
                             <span class="text-danger">*</span>
                         </label>
-
                         <select name="unit" id="unit" class="form-select p-2 @error('unit') is-invalid @enderror">
-
                             <option value="" disabled {{ old('unit') ? '' : 'selected' }}>
                                 ယူနစ်ရွေးချယ်ပါ
                             </option>
-
                             <option value="viss" {{ old('unit', $crop->unit) == 'viss' ? 'selected' : '' }}>
                                 ပိဿာ
                             </option>
-
                             <option value="pound" {{ old('unit', $crop->unit) == 'pound' ? 'selected' : '' }}>
                                 ပေါင်
                             </option>
-
                         </select>
-
                         @error('unit')
                             <div class="invalid-feedback">
                                 {{ $message }}
@@ -135,31 +109,47 @@
 
                     </div>
 
-
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end gap-2">
 
                         <div class="">
-                            <button type="submit" class="btn btn-success">
+                            <button type="submit" class="btn btn-success" id="submitButton">
                                 <i class="bi bi-check-lg me-1"></i>
                                 သီးနှံအချက်အလက်ပြင်ဆင်မည်
                             </button>
                         </div>
 
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
     </div>
-
 @endsection
 
 @push('scripts')
     <script>
+
+        const form = document.getElementById('editCropForm');
+        const button = document.getElementById('submitButton');
+        let isSubmitting = false;
+        form.addEventListener('submit', function(event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+            if (!form.checkValidity()) {
+                return;
+            }
+            isSubmitting = true;
+            button.disabled = true;
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                ခဏစောင့်ပါ...
+            `;
+        });
+
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const crop_name = document.getElementById('crop_name');
             const commission_amount = document.getElementById('commission_amount');

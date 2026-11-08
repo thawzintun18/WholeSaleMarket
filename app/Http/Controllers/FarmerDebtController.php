@@ -30,7 +30,7 @@ class FarmerDebtController extends Controller
             ],
             'phone'     => 'required|string|max:30|regex:/^[0-9၀-၉+\-\s()]+$/u',
             'village'   => 'required|string|max:150|regex:/\A[\p{Myanmar}\p{M}\s]+\z/u',
-            'amount'    => 'required|numeric|min:0.01',
+            'amount'    => 'required|numeric|min:0.01|max:9999999999999.99',
             'debt_type' => 'required|in:PurchaseAdvance,CashLoan,BeanPayment',
             'notes'     => 'nullable|string',
         ], [

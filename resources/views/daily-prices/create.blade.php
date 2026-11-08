@@ -5,10 +5,7 @@
 @section('breadcrumb', 'ဈေးနှုန်းများ / နေ့စဉ်သီးနှံဈေးနှုန်းများ / နေ့စဉ်သီးနှံဈေးနှုန်းများ ထပ်မံထည့်သွင်းခြင်း')
 
 @section('content')
-
     <div class="d-md-flex justify-content-between align-items-center mb-4">
-
-
         <div>
             <h1 class="page-title mb-1" style="line-height: 35px">နေ့စဉ်သီးနှံဈေးနှုန်းများ ထပ်မံထည့်သွင်းခြင်း</h1>
 
@@ -23,26 +20,18 @@
                 နောက်သို့
             </a>
         </div>
-
-
     </div>
-
     <div class="dashboard-card shadow-sm">
-
-
         <div class="mb-4">
 
             <h5 class="mb-1" style="line-height: 35px">
                 နေ့စဉ်သီးနှံဈေးနှုန်းများ ထည့်သွင်းရန်
             </h5>
-
             <small class="text-muted mt-2" style="line-height: 30px">
                 သီးနှံအမည် နှင့် အရည်အသွေးအဆင့်အမည် ရွေးချယ်ပြီး နေ့စဉ်သီးနှံဈေးနှုန်းများကို လိုအပ်သလို
                 ထပ်မံထည့်သွင်းနိုင်ပါသည်။
             </small>
-
         </div>
-
         <form action="{{ route('DailyPrice#create') }}" method="POST" id="dailyPriceForm">
             @csrf
 
@@ -141,55 +130,61 @@
             </template>
 
             <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success" id="submitButton">
                     <i class="bi bi-check-lg me-1"></i>
                     အားလုံး စာရင်းသွင်းမည်
                 </button>
             </div>
         </form>
-
-
-
-
     </div>
-
 @endsection
 
 @section('JS-Content')
     <script>
-        //*******************
+        const form = document.getElementById('dailyPriceForm');
+        const button = document.getElementById('submitButton');
+        const addRowButton = document.getElementById('addRow');
+        let isSubmitting = false;
+        form.addEventListener('submit', function(event) {
+            // Double Submit ကာကွယ်ခြင်း
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+            // HTML Validation စစ်ဆေးခြင်း
+            if (!form.checkValidity()) {
+                return;
+            }
+            isSubmitting = true;
+            // Submit Button Disable
+            button.disabled = true;
+            // Row ထပ်ထည့်မည့် Button Disable
+            addRowButton.disabled = true;
+            // Loading Spinner
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                ဈေးနှုန်းစာရင်းသွင်းနေသည်...
+            `;
+        });
 
         $(document).ready(function() {
-
             let rowIndex = 0;
-
             const rowTemplate = $('#rowTemplate').html();
-
-            // ----------------------------------
             // Add Row
-            // ----------------------------------
             function addRow() {
                 let html = rowTemplate.replace(/__INDEX__/g, rowIndex);
-
                 let $row = $(html);
-
                 $row.find('.row-title').text('အတန်း ' + (rowIndex + 1));
-
                 $('#gradeRows').append($row);
-
                 rowIndex++;
             }
-
             // ပထမ Row တစ်ခု စတင်ပြမည်
             addRow();
 
             $('#addRow').on('click', function() {
                 addRow();
             });
-
-            // ----------------------------------
             // Crop Change => Load Grades
-            // ----------------------------------
             $('#gradeRows').on('change', '.crop-select', function() {
 
                 let $row = $(this).closest('.grade-row');
@@ -199,36 +194,28 @@
                 $gradeSelect.empty().append(
                     new Option('သီးနှံအရည်အသွေးရွေးချယ်ပါ', '')
                 );
-
                 if (!cropId) {
                     return;
                 }
-
                 $gradeSelect.empty().append(
                     new Option('Loading...', '')
                 );
-
                 let url = @json(route('DailyPrice#getGrades', ['id' => '__ID__']));
                 url = url.replace('__ID__', encodeURIComponent(cropId));
-
                 $.ajax({
                     url: url,
                     type: 'GET',
                     dataType: 'json',
-
                     success: function(grades) {
-
                         $gradeSelect.empty().append(
                             new Option('သီးနှံအရည်အသွေးရွေးချယ်ပါ', '')
                         );
-
                         if (grades.length === 0) {
                             $gradeSelect.append(
                                 new Option('သီးနှံအရည်အသွေး မရှိသေးပါ', '')
                             );
                             return;
                         }
-
                         $.each(grades, function(index, grade) {
                             $gradeSelect.append(
                                 new Option(grade.grade_name, grade.id)
@@ -238,17 +225,13 @@
 
                     error: function(xhr) {
                         console.error(xhr.status, xhr.responseText);
-
                         $gradeSelect.empty().append(
                             new Option('Grade ရယူရာတွင် အမှားဖြစ်နေပါသည်', '')
                         );
                     }
                 });
             });
-
-            // ----------------------------------
             // Delete Row
-            // ----------------------------------
             $('#gradeRows').on('click', '.delete-row', function() {
 
                 if ($('#gradeRows .grade-row').length === 1) {
@@ -269,10 +252,7 @@
                     $(this).find('.row-title').text('အတန်း ' + (index + 1));
                 });
             });
-
-            // ----------------------------------
             // Reset Row
-            // ----------------------------------
             $('#gradeRows').on('click', '.reset-row', function() {
 
                 let $row = $(this).closest('.grade-row');

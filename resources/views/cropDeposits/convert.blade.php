@@ -26,6 +26,30 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            @push('scripts')
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Error စာရင်းအားလုံးကို HTML စာသားအဖြစ် စုစည်းခြင်း
+                        let errorMessages = '<ul class="text-start mb-0 ps-3">';
+                        @foreach ($errors->all() as $error)
+                            errorMessages += '<li>{{ $error }}</li>';
+                        @endforeach
+                        errorMessages += '</ul>';
+
+                        // SweetAlert ဖြင့် ပြသခြင်း
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'အမှားအယွင်းရှိနေပါသည်',
+                            html: errorMessages,
+                            confirmButtonText: 'အိုကေ',
+                            confirmButtonColor: '#d33'
+                        });
+                    });
+                </script>
+            @endpush
+        @endif
+
         <form action="{{ route('crop#deposits#convert#purchase', $deposit->id) }}" method="POST" class="convert-form">
             @csrf
 
@@ -233,7 +257,6 @@
                                                 step="0.01" min="0" inputmode="decimal" autocomplete="off">
                                         </div>
                                     </div>
-
                                     <hr>
 
                                     <!-- ပေးချေရမည့်ငွေ (Net Payable) -->
@@ -252,7 +275,6 @@
                                             step="0.01" min="0" inputmode="decimal" autocomplete="off"
                                             placeholder="ပေးချေမည့်ငွေ ဖြည့်ပါ">
                                     </div>
-
                                     <hr>
 
                                     <!-- နောက်ဆုံး ပေးရန်ကျန်ငွေ (Final Balance) -->

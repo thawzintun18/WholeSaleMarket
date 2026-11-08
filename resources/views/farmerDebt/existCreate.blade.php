@@ -169,7 +169,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('FarmerDebt#createSettlement') }}">
+                    <form method="POST" action="{{ route('FarmerDebt#createSettlement') }}" id="settlementForm">
                         @csrf
 
                         <input type="hidden" name="farmer_id" value="{{ $farmer->id }}">
@@ -213,7 +213,7 @@
                                         ပယ်ဖျက်ရန်
                                     </a>
 
-                                    <button type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success" id="settlementSubmitButton">
                                         <i class="bi bi-check-circle me-1"></i>
                                         ငွေထုတ်ပေးမည်
                                     </button>
@@ -237,6 +237,25 @@
 
 @push('scripts')
     <script>
+        const form = document.getElementById('settlementForm');
+        const button = document.getElementById('settlementSubmitButton');
+        let isSubmitting = false;
+        form.addEventListener('submit', function(event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+            if (!form.checkValidity()) {
+                return;
+            }
+            isSubmitting = true;
+            button.disabled = true;
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                ခဏစောင့်ပါ...
+            `;
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const priceInputs = ['amount'];
             const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';

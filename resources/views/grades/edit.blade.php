@@ -39,36 +39,28 @@
 
         </div>
 
-        <form action="{{ route('Quality#update', $grade->id) }}" method="POST">
-
+        <form action="{{ route('Quality#update', $grade->id) }}" method="POST" id="editQualityForm">
             @csrf
-
             <input type="hidden" name="crop_id" value="{{ $grade->crop_id }}">
-
             <div class="row g-3">
-
                 {{-- Grade Name --}}
                 <div class="col-md-5 offset-md-2">
-
                     <label for="grade_name" class="form-label">
                         အရည်အသွေးအမည် <span class="text-danger">*</span>
                     </label>
-
                     <input type="text" name="grade_name" id="grade_name"
                         value="{{ old('grade_name', $grade->grade_name) }}"
                         class="form-control @error('grade_name') is-invalid @enderror" placeholder="e.g. A, B, C"
                         maxlength="50">
-
                     @error('grade_name')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
                     @enderror
-
                 </div>
 
                 <div class="col-md-3 d-flex justify-content-md-start justify-content-end pt-4">
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success" id="submitButton">
                         <i class="bi bi-check-lg me-1"></i>
                         သီးနှံအရည်အသွေးပြင်ဆင်မည်
                     </button>
@@ -84,6 +76,25 @@
 
 @push('scripts')
     <script>
+        const form = document.getElementById('editQualityForm');
+        const button = document.getElementById('submitButton');
+        let isSubmitting = false;
+        form.addEventListener('submit', function(event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+            if (!form.checkValidity()) {
+                return;
+            }
+            isSubmitting = true;
+            button.disabled = true;
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                ပြင်ဆင်နေသည်...
+            `;
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const grade_name = document.getElementById('grade_name');
 

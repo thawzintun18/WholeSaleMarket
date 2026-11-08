@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <form action="{{ route('crop#deposits#create') }}" method="POST">
+        <form action="{{ route('crop#deposits#create') }}" method="POST" id="depositForm">
             @csrf
 
             <!-- ၁။ တောင်သူရွေးချယ်ခြင်း -->
@@ -218,11 +218,11 @@
 
 
                             </div>
-                            
+
                         </div>
                         <!-- Submit Button Section -->
                             <div class="text-end mb-5">
-                                <button type="submit" class="btn btn-success shadow">
+                                <button type="submit" class="btn btn-success shadow" id="submitButton">
                                     <i class="bi bi-check-circle-fill me-2"></i> သီးနှံအပ်နှံမှု အားလုံး သိမ်းဆည်းမည်
                                 </button>
                             </div>
@@ -624,6 +624,36 @@
 @endpush
 @push('scripts')
     <script>
+        (function () {
+            const form = document.getElementById('depositForm');
+            const button = document.getElementById('submitButton');
+            const addRowButton = document.getElementById('addRowBtn');
+            if (!form || !button) return;
+            let isSubmitting = false;
+            form.addEventListener('submit', function (event) {
+                if (isSubmitting) {
+                    event.preventDefault();
+                    return;
+                }
+                // Validation စစ်ဆေးရန်
+                if (!form.checkValidity()) {
+                    return;
+                }
+                isSubmitting = true;
+                // Submit Button ပိတ်ရန်
+                button.disabled = true;
+                // Dynamic Row ထပ်ထည့်ခြင်း ပိတ်ရန်
+                if (addRowButton) {
+                    addRowButton.disabled = true;
+                }
+                button.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    အပ်နှံမှုစာရင်း သိမ်းဆည်းနေသည်...
+                `;
+            });
+        })();
+
+
         document.addEventListener('DOMContentLoaded', function() {
             const priceInputs = ['quantity', 'reference_price', 'actual_buy_price',
                 'bag_count',

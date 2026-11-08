@@ -41,10 +41,10 @@ class FarmerController extends Controller
         return view('farmers.index', compact('farmers'));
     }
 
-    public function createPage()
-    {
-        return view('farmers.create');
-    }
+    // public function createPage()
+    // {
+    //     return view('farmers.create');
+    // }
 
     public function search(Request $request)
     {
@@ -318,8 +318,8 @@ class FarmerController extends Controller
     {
         return $request->validate([
             'name'      => ['required', 'string', 'max:150'],
-            'phone'     => ['nullable', 'string', 'max:30'],
-            'village'   => ['nullable', 'string', 'max:150'],
+            'phone'     => ['required', 'string', 'max:30'],
+            'village'   => ['required', 'string', 'max:150'],
             'notes'     => ['nullable', 'string', 'max:2000'],
             'is_active' => ['nullable', 'boolean'],
         ],
@@ -328,19 +328,15 @@ class FarmerController extends Controller
                 'name.required'     => ':attribute ကို မဖြစ်မနေ ဖြည့်သွင်းပေးပါ။',
                 'name.string'       => ':attribute သည် စာသားဖြစ်ရပါမည်။',
                 'name.max'          => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
-
                 // Phone
                 'phone.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
                 'phone.max'         => ':attribute သည် အများဆုံး စာလုံး ၃၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
-
                 // Village
                 'village.string'    => ':attribute သည် စာသားဖြစ်ရပါမည်။',
                 'village.max'       => ':attribute သည် အများဆုံး စာလုံး ၁၅၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
-
                 // Notes
                 'notes.string'      => ':attribute သည် စာသားဖြစ်ရပါမည်။',
                 'notes.max'         => ':attribute သည် အများဆုံး စာလုံး ၂၀၀၀ အထိသာ ဖြည့်သွင်းနိုင်ပါသည်။',
-
                 // Status
                 'is_active.boolean' => ':attribute သည် မှန်ကန်သော အခြေအနေတန်ဖိုး ဖြစ်ရပါမည်။',
             ]
@@ -356,12 +352,10 @@ class FarmerController extends Controller
     //farmerSettlementList
     public function farmerSettlementList($id)
     {
-
         $farmer = Farmer::where(
             'id',
             $id
         )->first();
-
         $settlementList = Farmer::leftJoin(
             'farmer_debts',
             'farmers.id',

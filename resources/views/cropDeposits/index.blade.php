@@ -25,11 +25,27 @@
         </div>
     </div>
 
-    @if(session('success'))
+    {{-- @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+    @endif --}}
+
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'အောင်မြင်ပါသည်',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'ကောင်းပြီ',
+                    confirmButtonColor: '#198754', // Bootstrap success color
+                    timer: 3000, // ၃ စက္ကန့်ကြာရင် အလိုအလျောက် ပိတ်သွားမည် (မလိုချင်ရင် ဖြုတ်လို့ရပါတယ်)
+                    timerProgressBar: true
+                });
+            });
+        </script>
     @endif
 
     <!-- Search & Filter Card (အဆင့်မြှင့်တင်ထားသော Filter များ) -->

@@ -34,11 +34,9 @@ blade
             </div>
         @endif
 
-        <form action="{{ route('Customer#update', $customer->id) }}" method="POST">
-
+        <form action="{{ route('Customer#update', $customer->id) }}" method="POST" id="editCustomerForm">
             @csrf
             <div class="row g-4">
-
                 {{-- customer Code --}}
                 <div class="col-md-6">
                     <label for="customer_code" class="form-label fw-semibold">
@@ -55,11 +53,9 @@ blade
                         ၀ယ်သူအမည်
                         <span class="text-danger">*</span>
                     </label>
-
                     <input type="text" id="name" name="name" value="{{ old('name', $customer->name) }}"
                         class="form-control @error('name') is-invalid @enderror" placeholder="၀ယ်သူအမည်ထည့်ပါ"
                         maxlength="150" required autofocus>
-
                     @error('name')
                         <div class="invalid-feedback">
                             {{ $message }}
@@ -155,7 +151,7 @@ blade
                     ပယ်ဖျက်မည်
                 </a>
 
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success" id="submitButton">
                     <i class="bi bi-check-lg me-1"></i>
                     ပြင်ဆင်ချက်သိမ်းမည်
                 </button>
@@ -170,14 +166,30 @@ blade
 
 @push('scripts')
     <script>
+        const form = document.getElementById('editCustomerForm');
+        const button = document.getElementById('submitButton');
+        let isSubmitting = false;
+        form.addEventListener('submit', function(event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+            if (!form.checkValidity()) {
+                return;
+            }
+            isSubmitting = true;
+            button.disabled = true;
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                ပြင်ဆင်ချက်သိမ်းနေသည်...
+            `;
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const phoneInput = document.getElementById('phone');
-
             if (!phoneInput) return;
-
             phoneInput.addEventListener('input', function() {
                 const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
-
                 this.value = this.value.replace(/[၀-၉]/g, function(digit) {
                     return myanmarNumbers.indexOf(digit);
                 });

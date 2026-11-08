@@ -35,68 +35,53 @@
             <div class="dashboard-card shadow-sm">
 
                 <form id="cropForm" action="{{ route('Crop#create') }}" method="POST">
-
                     @csrf
-
-
                     {{-- Crop Name --}}
                     <div class="mb-3">
-
                         <label class="form-label">
                             သီးနှံအမည်
                             <span class="text-danger">*</span>
                         </label>
-
                         <input type="text" name="crop_name" id="crop_name"
                             class="form-control p-2 @error('crop_name') is-invalid @enderror" value="{{ old('crop_name') }}"
                             placeholder="ဥပမာ - ပြောင်း၊ နှမ်း">
-
                         @error('crop_name')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
                     <div class="mb-3">
-
                         <label class="form-label">
                             ပွဲခ
                             <span class="text-danger">*</span>
                         </label>
-
                         <input type="number" name="commission_amount" id="commission_amount"
                             class="form-control p-2 @error('commission_amount') is-invalid @enderror"
                             value="{{ old('commission_amount') }}" placeholder="ဥပမာ - 2000">
-
                         @error('commission_amount')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
 
                     {{-- Quantity Per Basket --}}
                     <div class="mb-4">
-
                         <label class="form-label">
                             တစ်တင်းပါ အရေအတွက်
                             <span class="text-danger">*</span>
                         </label>
-
                         <input type="number" name="quantity_per_basket" id="quantity_per_basket"
                             class="form-control p-2 @error('quantity_per_basket') is-invalid @enderror"
                             value="{{ old('quantity_per_basket') }}" min="0" step="0.01" placeholder="ဥပမာ - 20">
-
                         @error('quantity_per_basket')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                         <div class="form-text">
                             တစ်တင်းတွင် ပါဝင်သည့် ပမာဏကို ထည့်သွင်းပါ။
                         </div>
@@ -106,47 +91,36 @@
 
                     {{-- Unit --}}
                     <div class="mb-3">
-
                         <label class="form-label">
                             ယူနစ်
                             <span class="text-danger">*</span>
                         </label>
-
                         <select name="unit" id="unit" class="form-select p-2 @error('unit') is-invalid @enderror">
-
                             <option value="" disabled {{ old('unit') ? '' : 'selected' }}>
                                 ယူနစ်ရွေးချယ်ပါ
                             </option>
-
                             <option value="viss" {{ old('unit') == 'viss' ? 'selected' : '' }}>
                                 ပိဿာ
                             </option>
-
                             <option value="pound" {{ old('unit') == 'pound' ? 'selected' : '' }}>
                                 ပေါင်
                             </option>
-
                         </select>
-
                         @error('unit')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
 
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end gap-2">
-
                         <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-lg me-1"></i>
                             သီးနှံထည့်သွင်းမည်
                         </button>
-
                     </div>
-
                 </form>
 
             </div>

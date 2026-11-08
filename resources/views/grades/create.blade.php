@@ -38,7 +38,7 @@
 
         </div>
 
-        <form action="{{ route('Quality#create') }}" method="POST">
+        <form action="{{ route('Quality#create') }}" method="POST" id="qualityForm" >
             @csrf
 
             <div class="d-flex justify-content-end align-items-center mb-3">
@@ -115,7 +115,7 @@
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success">
+                <button type="submit" class="btn btn-success" id="submitButton">
                     <i class="bi bi-check-lg me-1"></i>
                     အားလုံး စာရင်းသွင်းမည်
                 </button>
@@ -129,6 +129,29 @@
 
 @section('JS-Content')
     <script>
+        const form = document.getElementById('qualityForm');
+        const button = document.getElementById('submitButton');
+        let isSubmitting = false;
+        form.addEventListener('submit', function(event) {
+            if (isSubmitting) {
+                event.preventDefault();
+                return;
+            }
+            if (!form.checkValidity()) {
+                return;
+            }
+            isSubmitting = true;
+            // Submit Button Disable
+            button.disabled = true;
+            // Row ထပ်ထည့်မည့် Button ကိုပါ Disable လုပ်မည်
+            document.getElementById('addRow').disabled = true;
+            // Loading Spinner
+            button.innerHTML = `
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                စာရင်းသွင်းနေသည်...
+            `;
+        });
+
         const gradeRows = document.getElementById('gradeRows');
         const addRowBtn = document.getElementById('addRow');
 

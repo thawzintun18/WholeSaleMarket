@@ -26,7 +26,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
     Route::group(['prefix' => '/farmers'], function () {
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
 
-        Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
+        // Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
         // Route::post('create', [FarmerController::class, 'create'])->name('farmers#create');
 
         Route::get('search', [FarmerController::class, 'search'])->name('farmers#search');

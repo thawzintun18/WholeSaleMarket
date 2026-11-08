@@ -12,7 +12,7 @@
     @include('partials.farmer-customer-tabs')
 
     {{-- ခေါင်းစဉ်နှင့် အသစ်ထည့်ရန် --}}
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class="d-md-flex justify-content-start align-items-center mb-4">
         <div>
             <h1 class="page-title mb-1">တောင်သူစာရင်း</h1>
             <p class="text-muted mb-0 mt-2" style="line-height: 30px">
@@ -20,12 +20,12 @@
             </p>
         </div>
 
-        <div class=" d-flex justify-content-end">
+        {{-- <div class=" d-flex justify-content-end">
             <a href="{{ route('farmers#create#page') }}" class="btn btn-success mt-md-0 mt-3">
                 <i class="bi bi-plus-lg me-1"></i>
                 တောင်သူအသစ်ထည့်ရန်
             </a>
-        </div>
+        </div> --}}
 
     </div>
 

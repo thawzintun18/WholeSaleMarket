@@ -91,20 +91,27 @@ class SaleController extends Controller
     //avgPrice
     public function avgPrice($crop_id)
     {
-
         $crop = Crop::findOrFail($crop_id);
 
         $today = today()->toDateString();
 
-        $averagePrices = DailyAveragePrice::where('crop_id', $crop_id)->where('price_date', $today)->value('average_basket_price');
+        // ဒီနေ့၏ Average Price
+        $averagePrice = DailyAveragePrice::where('crop_id', $crop_id)
+            ->where('price_date', $today)
+            ->value('average_basket_price');
+
+        // သီးနှံ၏ လက်ရှိ Stock
+        $stockQuantity = DB::table('stock_balances')
+            ->where('crop_id', $crop_id)
+            ->value('quantity_on_hand');
 
         return response()->json([
             'success'         => true,
             'crop_id'         => $crop->id,
             'unit'            => $crop->unit,
-            'reference_price' => round($averagePrices, 2),
+            'reference_price' => round($averagePrice ?? 0, 2),
+            'stock_quantity'  => $stockQuantity ?? 0,
         ]);
-
     }
 
     public function calculateTodayAveragePrices()

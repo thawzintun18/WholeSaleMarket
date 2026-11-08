@@ -43,6 +43,9 @@
                         {{ number_format((float) ($summary->filtered_gross_total ?? 0), 2) }} <span
                             class="fs-6 text-muted">ကျပ်</span>
                     </div>
+                    <div class=" small text-muted fw-bold">
+                        * ကားခမနှုတ်ရသေးတဲ့ဈေး
+                    </div>
                 </div>
             </div>
             <div class="col-12 col-sm-6 col-xl-3">
@@ -51,6 +54,9 @@
                     <div class="fs-4 fw-bold text-info">
                         {{ number_format((float) ($summary->filtered_debt_settled ?? 0), 2) }} <span
                             class="fs-6 text-muted">ကျပ်</span>
+                    </div>
+                    <div class=" small text-muted fw-bold">
+                        * ဘောင်ချာတွင်နှုတ်သောအကြွေးသာ
                     </div>
                 </div>
             </div>
@@ -61,6 +67,9 @@
                     <div class="fs-4 fw-bold text-danger">
                         {{ number_format((float) ($summary->total_pending_balance ?? 0), 2) }} <span
                             class="fs-6 text-muted">ကျပ်</span>
+                    </div>
+                    <div class=" small text-muted fw-bold">
+                        * ကျန်ငွေအကုန်ပေါင်းထားသည်
                     </div>
                 </div>
             </div>
@@ -176,12 +185,13 @@
                             <th style="width: 7%;">စဉ်</th>
                             <th style="width: 8%;">နေ့စွဲ</th>
                             <th style="width: 15%;">တောင်သူအမည်</th>
-                            <th style="width: 25%;">ဝယ်ယူထားသော သီးနှံများ (Quality / Price)</th>
+                            <th style="width: 20%;">ဝယ်ယူထားသော သီးနှံများ (Quality / Price)</th>
                             <th class="text-end" style="width: 10%;">သင့်ငွေ</th>
                             <th class="text-end" style="width: 10%;">ပေးပြီးငွေ</th>
                             <th class="text-end" style="width: 10%;">ပေးရန်ကျန်</th>
-                            <th class="text-center" style="width: 5%;">အခြေအနေ</th>
-                            <th class="text-end pe-4" style="width: 10%;">လုပ်ဆောင်ချက်</th>
+                            <th class="text-end" style="width: 7%;">ကားခ</th>
+                            <th class="text-center" style="width: 5%;">အခြေနေ</th>
+                            <th class="text-end pe-4" style="width: 8%;">လုပ်ဆောင်ချက်</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -202,7 +212,7 @@
 
                                 <td>
                                     <span class="fw-semibold">
-                                        {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('Y-m-d') }}
+                                        {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('Y-M-d') }}
                                     </span>
                                     <div class="small text-muted" style="font-size: 11.5px;">
                                         <i class="bi bi-clock me-1"></i>
@@ -266,6 +276,10 @@
                                     @else
                                         <span class="text-muted">0.00</span>
                                     @endif
+                                </td>
+
+                                <td class=" text-end fw-bold">
+                                    {{ $purchase->car_fee_amount }}
                                 </td>
 
                                 <!-- အခြေအနေ -->
@@ -403,7 +417,7 @@
                                                                 @forelse($payments as $index => $pay)
                                                                     <tr>
                                                                         <td class="text-center">{{ $index + 1 }}</td>
-                                                                        <td class="text-center">{{ \Carbon\Carbon::parse($pay->payment_date)->format('Y-m-d h:i A') }}</td>
+                                                                        <td class="text-center">{{ \Carbon\Carbon::parse($pay->payment_date)->format('Y-M-d h:i A') }}</td>
                                                                         <td class="text-center">
                                                                             @if($pay->payment_type === 'initial')
                                                                                 <span class="badge bg-primary-subtle text-primary px-2 py-1">ဘောင်ချာထုတ်ချိန်ရှင်းငွေ (Initial)</span>

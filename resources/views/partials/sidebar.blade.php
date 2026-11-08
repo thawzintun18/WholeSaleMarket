@@ -66,15 +66,19 @@
             <span>နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</span>
         </a>
 
-        {{-- Reports --}}
-        <div class="menu-title">
-            Reports
-        </div>
-        <a href="{{ route('reports#daily#purchases') }}"
-            class="{{ request()->routeIs('reports#*') ? 'active' : '' }}">
-            <i class="bi bi-bar-chart"></i>
-            <span>တစ်နေ့တာအဝယ်/အရောင်း စာရင်းချုပ်</span>
-        </a>
+
+        @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+            {{-- Reports --}}
+            <div class="menu-title">
+                Reports
+            </div>
+            <a href="{{ route('reports#daily#purchases') }}"
+                class="{{ request()->routeIs('reports#*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart"></i>
+                <span>တစ်နေ့တာအဝယ်/အရောင်း စာရင်းချုပ်</span>
+            </a>
+        @endif
+        
 
     </div>
 

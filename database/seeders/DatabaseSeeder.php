@@ -14,19 +14,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-        // Admin User
+        // Super Admin
+        User::create([
+            'name'     => 'SuperAdministrator',
+            'email'    => 'superadmin@gmail.com',
+            'password' => Hash::make('password'),
+            'role'     => 'superadmin',
+        ]);
+        // Admin
         User::create([
             'name'     => 'Administrator',
-            'email'    => 'admin@example.com',
+            'email'    => 'admin@gmail.com',
             'password' => Hash::make('password'),
             'role'     => 'admin',
         ]);
-
-        // Staff User
+        // Staff
         User::create([
             'name'     => 'Staff User',
-            'email'    => 'staff@example.com',
+            'email'    => 'staff@gmail.com',
             'password' => Hash::make('password'),
             'role'     => 'staff',
         ]);

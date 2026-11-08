@@ -133,14 +133,14 @@
 
                     <tr>
                         <th style="width: 60px;">စဉ်</th>
-                        <th>အကြွေးယူသည့်နေ့ရက်</th>
-                        <th>တောင်သူကုဒ်</th>
+                        <th>နေ့စွဲ</th>
+                        {{-- <th>တောင်သူကုဒ်</th> --}}
                         <th>တောင်သူအမည်</th>
                         <th>မူလအကြွေးငွေ</th>
-                        <th>ပြန်လည်ရှင်းလင်းပြီးငွေ</th>
-                        <th>ကျန်ရှိအကြွေးငွေ</th>
-                        <th>အကြွေးအမျိုးအစား</th>
-                        <th>အကြွေးအခြေအနေ</th>
+                        <th>ပြန်ရှင်းပြီးငွေ</th>
+                        <th>ကျန်ငွေ</th>
+                        <th>အမျိုးအစား</th>
+                        <th>အခြေအနေ</th>
                         <th class="text-center" style="width: 130px;">လုပ်ဆောင်ချက်</th>
                     </tr>
 
@@ -157,33 +157,32 @@
                                 <td>{{ $loop->iteration }}</td>
 
                                 <td>
-                                    <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-m-Y') }}</div>
+                                    <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-M-Y') }}</div>
                                     <small class="text-muted">
                                         {{ \Carbon\Carbon::parse($item->debt_date)->format('h:i A') }}
                                     </small>
                                 </td>
 
-                                <td>
+                                {{-- <td>
                                     {{ $item->farmer_code }}
-
-                                </td>
+                                </td> --}}
 
                                 <td>
                                     {{ $item->name }}
                                 </td>
 
                                 <td class=" text-center">
-                                    {{ number_format($item->amount, 0) }} <small class="small text-secondary">ကျပ်</small>
+                                    {{ number_format($item->amount, 2) }} <small class="small text-secondary">ကျပ်</small>
 
                                 </td>
 
                                 <td class=" text-center">
-                                    {{ number_format($item->settled_amount, 0) == 0 ? 0 : number_format($item->settled_amount, 0) }}
+                                    {{ number_format($item->settled_amount, 2) == 0 ? 0 : number_format($item->settled_amount, 2) }}
                                     <small class="small text-secondary">ကျပ်</small>
                                 </td>
 
                                 <td class=" text-center">
-                                    {{ number_format($item->balance_amount, 0) }} <small
+                                    {{ number_format($item->balance_amount, 2) }} <small
                                         class="small text-secondary">ကျပ်</small>
                                 </td>
 
@@ -217,9 +216,9 @@
                                     <div class="d-flex justify-content-end">
 
                                         @if (
-                                            ($item->debt_type == 'CashLoan' && $item->status == 'Open') ||
-                                                $item->status == 'Partial' ||
-                                                $item->debt_type == 'BeanPayment')
+                                            ($item->debt_type === 'CashLoan' && in_array($item->status, ['Open', 'Partial'])) ||
+                                            ($item->debt_type === 'BeanPayment' && in_array($item->status, ['Open', 'Partial']))
+                                        )
                                             <a href="{{ route('FarmerDebt#settlement', $item->id) }}"
                                                 class=" btn btn-primary me-2">အကြွေးဆပ်ရန်</a>
                                         @endif

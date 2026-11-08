@@ -193,7 +193,7 @@
 
                                 <td>
                                     <span class="fw-semibold">
-                                        {{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d') }}
+                                        {{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-M-d') }}
                                     </span>
                                     <div class="small text-muted" style="font-size: 11.5px;">
                                         <i class="bi bi-clock me-1"></i>
@@ -407,7 +407,7 @@
                                                                     <tr>
                                                                         <td class="text-center">{{ $index + 1 }}</td>
                                                                         <td class="text-center">
-                                                                            {{ \Carbon\Carbon::parse($pay->payment_date)->format('Y-m-d h:i A') }}
+                                                                            {{ \Carbon\Carbon::parse($pay->payment_date)->format('Y-M-d h:i A') }}
                                                                         </td>
                                                                         <td class="text-center">
                                                                             @if ($pay->payment_type === 'initial')

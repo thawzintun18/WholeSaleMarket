@@ -15,14 +15,12 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'], function () {
+Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admin,superadmin']], function () {
 
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard.index');
-    // })->name('dashboard');
+
     Route::get('/dashboard', [ProfileController::class, 'index'])->name('dashboard');
 
     Route::group(['prefix' => '/farmers'], function () {
@@ -92,6 +90,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
         Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
     });
+
     Route::group(['prefix' => 'DailyPrice'], function () {
         Route::get('directPage', [DailyPriceController::class, 'directPage'])->name('DailyPrice#directPage');
         Route::post('create', [DailyPriceController::class, 'create'])->name('DailyPrice#create');
@@ -141,11 +140,6 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('delete/{id}', [SaleController::class, 'delete'])->name('Sale#delete');
     });
 
-    Route::group(['prefix' => 'reports'], function () {
-        Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
-        Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
-    });
-
     Route::group(['prefix' => 'Leave'], function () {
         Route::post('create', [LeaveCountController::class, 'create'])->name('Leave#create');
         Route::get('list', [LeaveCountController::class, 'list'])->name('Leave#list');
@@ -169,6 +163,17 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => 'StaffMiddleware'
         Route::get('history', [CustomerController::class, 'history'])->name('Customer#history');
         Route::get('trashList', [CustomerController::class, 'trashList'])->name('Customer#trashList');
         Route::get('restore/{id}', [CustomerController::class, 'restore'])->name('Customer#restore');
+    });
+
+
+
+
+
+
+
+    Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
+        Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
+        Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
     });
 
 });

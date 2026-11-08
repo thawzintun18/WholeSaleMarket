@@ -30,128 +30,104 @@
 
 
 
-    {{-- Farmer Debt Detail --}}
     <div class="dashboard-card shadow-sm mb-4">
-        <div class="card-header bg-white border-dark rounded-0 py-3">
-            <h5 class="mb-0 fw-bold">
-                <i class="bi bi-person-lines-fill me-2"></i>
-                အကြွေးအသေးစိတ်
-            </h5>
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-person-lines-fill me-2"></i>
+                    အကြွေးအသေးစိတ်
+                </h5>
+
+                @if ($farmerDebt->status == 'Open')
+                    <span class="badge bg-danger">အကြွေးကျန်ရှိ</span>
+                @elseif ($farmerDebt->status == 'Partial')
+                    <span class="badge bg-warning text-dark">တစ်စိတ်တစ်ပိုင်း ရှင်းပြီး</span>
+                @elseif ($farmerDebt->status == 'Close')
+                    <span class="badge bg-success">အကြွေးရှင်းပြီး</span>
+                @endif
+            </div>
         </div>
 
         <div class="card-body">
 
-            {{-- Farmer Information --}}
-            <h6 class="fw-bold border-bottom border-dark pb-2 mb-3">
-                တောင်သူအချက်အလက်
-            </h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3 col-6">
+                    <small class="text-muted">တောင်သူအမည်</small>
+                    <div class="fw-bold">{{ $farmerDebt->name }}</div>
+                </div>
 
-            <div class="row mb-4">
-                <div class="col-md-4 col-4 mb-3">
-                    <div class="text-secondary small mb-1">တောင်သူအမည်</div>
-                    <div class="fw-bold fs-5">
-                        {{ $farmerDebt->name }}
+                <div class="col-md-3 col-6">
+                    <small class="text-muted">ဖုန်းနံပါတ်</small>
+                    <div class="fw-semibold">{{ $farmerDebt->phone ?: '—' }}</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <small class="text-muted">နေရပ်</small>
+                    <div class="fw-semibold">{{ $farmerDebt->village ?: '—' }}</div>
+                </div>
+
+                <div class="col-md-3 col-6">
+                    <small class="text-muted">အကြွေးအမျိုးအစား</small>
+                    <div class="fw-semibold">
+                        @switch($farmerDebt->debt_type)
+                            @case('PurchaseAdvance')
+                                ကြိုသုံး
+                            @break
+
+                            @case('CashLoan')
+                                တောကြွေး
+                            @break
+
+                            @case('BeanPayment')
+                                ပဲဆံဖိုး
+                            @break
+
+                            @default
+                                အခြား
+                        @endswitch
                     </div>
                 </div>
 
-                <div class="col-md-4 col-4 mb-3">
-                    <div class="text-secondary small mb-1">ဖုန်းနံပါတ်</div>
+                <div class="col-md-3 col-6">
+                    <small class="text-muted">အကြွေးယူသည့်နေ့</small>
                     <div class="fw-semibold">
-                        {{ $farmerDebt->phone ?: '—' }}
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-4 mb-3">
-                    <div class="text-secondary small mb-1">နေရပ်လိပ်စာ</div>
-                    <div class="fw-semibold">
-                        {{ $farmerDebt->village ?: '—' }}
+                        {{ \Carbon\Carbon::parse($farmerDebt->debt_date)->format('d-M-Y') }}
                     </div>
                 </div>
             </div>
 
-            {{-- Debt Information --}}
-            <h6 class="fw-bold border-bottom border-dark pb-2 mb-3">
-                အကြွေးအချက်အလက်
-            </h6>
+            <hr>
 
-            <div class="row mb-4">
-                <div class="col-md-4 col-4 mb-3">
-                    <div class="text-secondary small mb-1">အကြွေးယူသည့်ရက်</div>
-                    <div class="fw-semibold">
-                        <div>{{ \Carbon\Carbon::parse($farmerDebt->debt_date)->format('d-m-Y') }}</div>
-                        <small class="text-muted">
-                            {{ \Carbon\Carbon::parse($farmerDebt->debt_date)->format('h:i A') }}
-                        </small>
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-4 mb-3">
-                    <div class="text-secondary small mb-1">အကြွေးအမျိုးအစား</div>
-                    <div class="fw-semibold">
-                        @if ($farmerDebt->debt_type == 'PurchaseAdvance')
-                            ကြိုယူငွေ
-                        @elseif($farmerDebt->debt_type == 'CashLoan')
-                            တောကြွေး
-                        @elseif($farmerDebt->debt_type == 'BeanPayment')
-                            ပဲဆံဖိုး
-                        @endif
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-4 mb-3">
-                    <div class="text-secondary small mb-1">အခြေအနေ</div>
-
-                    @if ($farmerDebt->status == 'Open')
-                        <span class="badge dashboard-card shadow-sm px-3 py-2 bg-danger text-white">အကြွေးကျန်ရှိ</span>
-                    @elseif($farmerDebt->status == 'Partial')
-                        <span class="badge dashboard-card shadow-sm px-3 py-2 bg-warning text-white">တစ်စိတ်တစ်ပိုင်း
-                            ရှင်းပြီး</span>
-                    @elseif($farmerDebt->status == 'Close')
-                        <span class="badge dashboard-card shadow-sm px-3 py-2 bg-success text-white">အကြွေးရှင်းပြီး</span>
-                    @endif
-
-                </div>
-            </div>
-
-            {{-- Amount Summary --}}
-            <h6 class="fw-bold border-bottom border-dark pb-2 mb-3">
-                ငွေစာရင်းချုပ်
-            </h6>
+            <h6 class="fw-bold mb-3">ငွေစာရင်းချုပ်</h6>
 
             <div class="row g-3">
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100 text-white bg-info fw-bold text-dark ">
-                        <div class="small mb-2">
-                            မူလအကြွေးငွေ
+                    <div class="border rounded p-3 h-100">
+                        <small class="text-muted">မူလအကြွေး</small>
+                        <div class="fw-bold fs-5">
+                            {{ number_format($farmerDebt->amount, 2) }}
                         </div>
-                        <div class="fs-4">
-                            {{ number_format($farmerDebt->amount, 0) }}
-                        </div>
-                        <div class="small">ကျပ်</div>
+                        <small class="text-muted">ကျပ်</small>
                     </div>
                 </div>
 
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100 bg-success fw-bold text-white ">
-                        <div class="small mb-2">
-                            ပြန်ဆပ်ပြီးငွေ
+                    <div class="border rounded p-3 h-100">
+                        <small class="text-muted">ပြန်ဆပ်ပြီး</small>
+                        <div class="fw-bold fs-5 text-success">
+                            {{ number_format($farmerDebt->settled_amount ?? 0, 2) }}
                         </div>
-                        <div class="fs-4">
-                            {{ number_format($farmerDebt->settled_amount ?? 0, 0) }}
-                        </div>
-                        <div class="small">ကျပ်</div>
+                        <small class="text-muted">ကျပ်</small>
                     </div>
                 </div>
 
                 <div class="col-md-4 col-4">
-                    <div class="dashboard-card shadow-sm p-3 h-100 bg-danger fw-bold text-white ">
-                        <div class=" small mb-2">
-                            လက်ကျန်အကြွေး
+                    <div class="border rounded p-3 h-100">
+                        <small class="text-muted">လက်ကျန်အကြွေး</small>
+                        <div class="fw-bold fs-5 text-danger">
+                            {{ number_format($farmerDebt->balance_amount ?? 0, 2) }}
                         </div>
-                        <div class="fs-4">
-                            {{ number_format($farmerDebt->balance_amount ?? 0, 0) }}
-                        </div>
-                        <div class="small">ကျပ်</div>
+                        <small class="text-muted">ကျပ်</small>
                     </div>
                 </div>
             </div>
@@ -216,7 +192,7 @@
                                     <td>{{ $loop->iteration }}</td>
 
                                     <td>
-                                        <div>{{ \Carbon\Carbon::parse($item->settlement_date)->format('d-m-Y') }}</div>
+                                        <div>{{ \Carbon\Carbon::parse($item->settlement_date)->format('d-M-Y') }}</div>
                                         <small class="text-muted">
                                             {{ \Carbon\Carbon::parse($item->settlement_date)->format('h:i A') }}
                                         </small>
@@ -228,7 +204,7 @@
 
                                     <td class="">
 
-                                        <p>{{ number_format($item->amount, 0) }} <small
+                                        <p>{{ number_format($item->amount, 2) }} <small
                                                 class="small text-secondary">ကျပ်</small></p>
 
                                     </td>

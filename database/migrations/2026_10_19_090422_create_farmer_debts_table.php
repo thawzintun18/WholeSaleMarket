@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->decimal('settled_amount', 15, 2)->nullable();
             $table->decimal('balance_amount', 15, 2)->nullable();
-            $table->string('status', 20)->nullable(); // Open Close (ဒါနှစ်ခုကကျတော့ ဘောင်ချာဖွင့်ရင်အကြွေးတွေအကုန်ရှင်းပြစ်မှာ အကုန်မဆပ်ချင်သေးတဲ့သူရှိရင် စာရင်းကိုတော့အကုန်နှုပ်ပြစ်ပြီး အသစ်ယူတယ်ဆိုပြီး ပြန်မှတ်မှာ) Partial (ဒါကကျ သီးနှံမပါပဲအကြွေးပဲလာဆပ်တယ်ဆိုရင် အကုန်ဆပ်မသွးရင်မှတ်မဲ့ဟာ)
+            $table->string('status', 20)->nullable(); // Open Close Partial
             $table->timestamps();
             $table->softDeletes();
 

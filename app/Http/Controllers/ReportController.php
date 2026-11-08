@@ -9,7 +9,6 @@ class ReportController extends Controller
 {
     public function dailyPurchaseReport(Request $request)
     {
-        // 1. ရက်စွဲ (Default: ယနေ့ရက်စွဲ)
         $startDate = $request->input('start_date', now()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
 
@@ -21,10 +20,8 @@ class ReportController extends Controller
 
         $gradeId = $request->input('grade_id');
 
-        // 2. သီးနှံအမျိုးအစားများ (Filter တွင် ရွေးချယ်ရန်)
         $crops = DB::table('crops')->orderBy('crop_name')->get();
 
-        // ရွေးချယ်ထားသော သီးနှံအလိုက် Grade များကို ဆွဲထုတ်ရန် (Ajax သို့မဟုတ် Select အတွက်)
         $grades = collect();
         if ($cropId) {
             $grades = DB::table('grades')->where('crop_id', $cropId)->get();
@@ -32,19 +29,52 @@ class ReportController extends Controller
             $grades = DB::table('grades')->get();
         }
 
-        // 3. Purchase Items များကို ရက်စွဲနှင့် Filter များအလိုက် ဆွဲထုတ်ခြင်း
-        $query = DB::table('purchase_items')
+
+
+        $selectedCrop = $crops->where('id', $cropId)->first();
+        $qtyPerBasket = (float) ($selectedCrop->quantity_per_basket ?? 0);
+
+        $rawOpeningBalance = 0;
+        $openingAverageCost = 0;
+
+        if ($cropId) {
+            $previousDate = \Carbon\Carbon::parse($startDate)->subDay()->toDateString();
+
+            // daily_stock_balances မှ အရင်နေ့က total_balance နှင့် average_cost ကို ယူခြင်း
+            $stockRecord = DB::table('daily_stock_balances')
+                ->where('crop_id', $cropId)
+                ->where('balance_date', $previousDate)
+                ->select('total_balance', 'average_cost')
+                ->first();
+
+            if ($stockRecord) {
+                $rawOpeningBalance = $stockRecord->total_balance ?? 0;
+                $openingAverageCost = $stockRecord->average_cost ?? 0;
+            }
+        }
+
+        // မူရင်းယူနစ်မှ တင်း (Basket) သို့ ပြောင်းလဲခြင်း
+        $openingBalance = 0;
+        if ($qtyPerBasket > 0) {
+            $openingBalance = $rawOpeningBalance / $qtyPerBasket;
+        }
+
+
+
+        // နေ့စဉ်ဝယ်ယူထားသော စာရင်းများ (Purchase Items)
+        $purchaseQuery = DB::table('purchase_items')
             ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
             ->join('farmers', 'purchases.farmer_id', '=', 'farmers.id')
             ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
             ->join('grades', 'purchase_items.grade_id', '=', 'grades.id')
             ->select(
-                'purchase_items.purchase_id',
-                'purchases.purchase_date',
+                'purchases.id as ref_id',
+                'purchases.purchase_date as date',
                 'farmers.name as farmer_name',
                 'farmers.village as farmer_village',
                 'crops.crop_name',
                 'crops.unit',
+                'crops.quantity_per_basket',
                 'grades.grade_name',
                 'purchase_items.quantity',
                 'purchase_items.bag_count',
@@ -53,34 +83,100 @@ class ReportController extends Controller
                 'purchase_items.note'
             );
 
-        if ($cropId) {
-            $query->where('purchase_items.crop_id', $cropId);
+        if ($cropId) $purchaseQuery->where('purchase_items.crop_id', $cropId);
+        if ($gradeId) $purchaseQuery->where('purchase_items.grade_id', $gradeId);
+        $purchaseQuery->whereDate('purchases.purchase_date', '>=', $startDate)
+                    ->whereDate('purchases.purchase_date', '<=', $endDate);
+        $purchaseItems = $purchaseQuery->orderBy('purchases.id', 'desc')->get();
+
+
+        // 4. အပ်နှံထားဆဲ စာရင်းများ (Crop Deposits - Status: Stored)
+        $depositQuery = DB::table('crop_deposit_items')
+            ->join('crop_deposits', 'crop_deposit_items.crop_deposit_id', '=', 'crop_deposits.id')
+            ->join('farmers', 'crop_deposits.farmer_id', '=', 'farmers.id')
+            ->join('crops', 'crop_deposit_items.crop_id', '=', 'crops.id')
+            ->join('grades', 'crop_deposit_items.grade_id', '=', 'grades.id')
+            ->where('crop_deposits.status', 'Stored')
+            ->select(
+                'crop_deposits.id as ref_id',
+                'crop_deposits.deposit_date as date',
+                'farmers.name as farmer_name',
+                'farmers.village as farmer_village',
+                'crops.crop_name',
+                'crops.unit',
+                'crops.quantity_per_basket',
+                'grades.grade_name',
+                'crop_deposit_items.quantity',
+                'crop_deposit_items.bag_count',
+                'crop_deposit_items.actual_buy_price',
+                'crop_deposit_items.note'
+            );
+
+        if ($cropId) $depositQuery->where('crop_deposit_items.crop_id', $cropId);
+        if ($gradeId) $depositQuery->where('crop_deposit_items.grade_id', $gradeId);
+        $depositQuery->whereDate('crop_deposits.deposit_date', '>=', $startDate)
+                    ->whereDate('crop_deposits.deposit_date', '<=', $endDate);
+        $depositItems = $depositQuery->orderBy('crop_deposits.id', 'desc')->get();
+
+
+        // 5. စုစုပေါင်း တွက်ချက်မှုများ (သီးသန့်စီ)
+        $totalAmount = $purchaseItems->sum('gross_amount');
+        $totalPurchases = $purchaseItems->pluck('ref_id')->unique()->count();
+        $totalDeposits = $depositItems->pluck('ref_id')->unique()->count();
+
+        // ဝယ်ယူမှု တင်းပေါင်း
+        $totalPurchaseBasket = 0;
+        $totalVissQuantity = 0;
+        foreach ($purchaseItems as $item) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $qtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            if ($rawUnit === 'viss') {
+                $totalVissQuantity += $qty;
+            }
+
+            if ($qtyPerBasket > 0) {
+                $calcQty = $qty;
+                if ($rawUnit === 'pound') {
+                    $calcQty = max(0, $qty - ($bagCount * 1));
+                }
+                $totalPurchaseBasket += ($calcQty / $qtyPerBasket);
+            }
         }
 
-        if ($gradeId) {
-            $query->where('purchase_items.grade_id', $gradeId);
+        // အပ်နှံမှု တင်းပေါင်း
+        $totalDepositBasket = 0;
+        $totalDepositVissQuantity = 0;
+        foreach ($depositItems as $item) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $qtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            $totalDepositVissQuantity += $qty;
+
+            if ($qtyPerBasket > 0) {
+                $calcQty = $qty;
+                if ($rawUnit === 'pound') {
+                    $calcQty = max(0, $qty - ($bagCount * 1));
+                }
+                $totalDepositBasket += ($calcQty / $qtyPerBasket);
+            }
         }
-
-        $query->whereDate('purchases.purchase_date', '>=', $startDate)
-            ->whereDate('purchases.purchase_date', '<=', $endDate);
-
-        $items = $query->orderBy('purchases.id', 'desc')->get();
-
-        // 4. စုစုပေါင်းများ တွက်ချက်ခြင်း (Total Quantity & Total Amount)
-        $totalQuantity = $items->sum('quantity');
-        $totalAmount = $items->sum('gross_amount');
-        $totalBagCount = $items->where('unit', 'pound')->sum('bag_count');
-        // စုစုပေါင်း ဘောင်ချာအရေအတွက် (Total Purchases Count)
-        $totalPurchases = $items->pluck('purchase_id')->unique()->count();
+        // dd($purchaseItems->toArray());
 
         return view('reports.daily_purchase', compact(
-            'items', 'crops', 'grades', 'startDate', 'endDate', 'cropId', 'gradeId', 'totalQuantity', 'totalAmount', 'totalPurchases', 'totalBagCount'
+            'purchaseItems', 'depositItems', 'crops', 'grades',
+            'startDate', 'endDate', 'cropId', 'gradeId',
+            'totalAmount', 'totalPurchases', 'totalDeposits',
+            'totalPurchaseBasket', 'totalDepositBasket', 'openingBalance', 'openingAverageCost', 'totalVissQuantity', 'totalDepositVissQuantity'
         ));
     }
 
     public function dailySaleReport(Request $request)
     {
-        // 1. ရက်စွဲ (Default: ယနေ့ရက်စွဲ)
         $startDate = $request->input('start_date', now()->toDateString());
         $endDate = $request->input('end_date', now()->toDateString());
 
@@ -90,10 +186,59 @@ class ReportController extends Controller
             $cropId = $firstCrop ? $firstCrop->id : null;
         }
 
-        // 2. သီးနှံအမျိုးအစားများ (Filter တွင် ရွေးချယ်ရန်)
         $crops = DB::table('crops')->orderBy('crop_name')->get();
+        $selectedCrop = $crops->where('id', $cropId)->first();
+        $qtyPerBasket = (float) ($selectedCrop->quantity_per_basket ?? 0);
 
-        // 3. Sale Items များကို ရက်စွဲနှင့် Filter များအလိုက် ဆွဲထုတ်ခြင်း
+        // ၁။ အရင်နေ့က လက်ကျန် (Opening Balance)
+        $rawOpeningBalance = 0;
+        $openingAverageCost = 0;
+
+        if ($cropId) {
+            $previousDate = \Carbon\Carbon::parse($startDate)->subDay()->toDateString();
+            $stockRecord = DB::table('daily_stock_balances')
+                ->where('crop_id', $cropId)
+                ->where('balance_date', $previousDate)
+                ->select('total_balance', 'average_cost')
+                ->first();
+
+            if ($stockRecord) {
+                $rawOpeningBalance = $stockRecord->total_balance ?? 0;
+                $openingAverageCost = $stockRecord->average_cost ?? 0;
+            }
+        }
+
+        $openingBalance = $qtyPerBasket > 0 ? ($rawOpeningBalance / $qtyPerBasket) : 0;
+
+        // ၂။ ယနေ့ ဝယ်ယူမှု တင်းပေါင်း တွက်ချက်ရန် (Daily Purchases for this date range)
+        $totalPurchaseBasket = 0;
+        if ($cropId) {
+            $purchaseItems = DB::table('purchase_items')
+                ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
+                ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
+                ->where('purchase_items.crop_id', $cropId)
+                ->whereDate('purchases.purchase_date', '>=', $startDate)
+                ->whereDate('purchases.purchase_date', '<=', $endDate)
+                ->select('purchase_items.quantity', 'purchase_items.bag_count', 'crops.unit', 'crops.quantity_per_basket')
+                ->get();
+
+            foreach ($purchaseItems as $pItem) {
+                $rawUnit = strtolower($pItem->unit ?? '');
+                $pQty = (float) $pItem->quantity;
+                $pBag = (int) ($pItem->bag_count ?? 0);
+                $pQpb = (float) ($pItem->quantity_per_basket ?? 0);
+
+                if ($pQpb > 0) {
+                    $calcPqty = $pQty;
+                    if ($rawUnit === 'pound') {
+                        $calcPqty = max(0, $pQty - ($pBag * 1));
+                    }
+                    $totalPurchaseBasket += ($calcPqty / $pQpb);
+                }
+            }
+        }
+
+        // ၃။ Sale Items များကို ဆွဲထုတ်ခြင်း
         $query = DB::table('sale_items')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
             ->join('customers', 'sales.customer_id', '=', 'customers.id')
@@ -106,6 +251,7 @@ class ReportController extends Controller
                 'customers.address as customer_address',
                 'crops.crop_name',
                 'crops.unit',
+                'crops.quantity_per_basket',
                 'sale_items.quantity',
                 'sale_items.bag_count',
                 'sale_items.sale_price',
@@ -122,16 +268,42 @@ class ReportController extends Controller
 
         $items = $query->orderBy('sales.id', 'desc')->get();
 
-        // 4. စုစုပေါင်းများ တွက်ချက်ခြင်း (Total Quantity, Amount, Bag Count & Sales Count)
-        $totalQuantity = $items->sum('quantity');
+        // ၄။ ရောင်းချမှု တင်းပေါင်း တွက်ချက်ခြင်း
+        $totalSaleBasket = 0;
+        $totalVissQuantity = 0;
+        $items->transform(function ($item) use (&$totalSaleBasket, &$totalVissQuantity) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $item->display_unit = $rawUnit === 'viss' ? 'ပိဿာ' : ($rawUnit === 'pound' ? 'ပေါင်' : $item->unit);
+
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $itemQtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            if ($rawUnit === 'viss') {
+                $totalVissQuantity += $qty;
+            }
+
+            $calcQty = $qty;
+            if ($rawUnit === 'pound') {
+                $calcQty = max(0, $qty - ($bagCount * 1));
+            }
+
+            $item->basket_count = $itemQtyPerBasket > 0 ? ($calcQty / $itemQtyPerBasket) : 0;
+            $totalSaleBasket += $item->basket_count;
+
+            return $item;
+        });
+
         $totalAmount = $items->sum('gross_amount');
-        $totalBagCount = $items->where('unit', 'pound')->sum('bag_count'); // သင့် Unit အပေါ်မူတည်၍ ချိန်ညှိနိုင်ပါသည်
-        $totalSales = $items->pluck('sale_id')->unique()->count(); // စုစုပေါင်း ဘောင်ချာအရေအတွက်
+        $totalSales = $items->pluck('sale_id')->unique()->count();
+
+        // ၅။ ယနေ့ ကျန်ရှိလက်ကျန် (Closing Balance = Opening + Purchase - Sale)
+        $closingBalance = ($openingBalance + $totalPurchaseBasket) - $totalSaleBasket;
 
         return view('reports.daily_sale', compact(
-            'items', 'crops', 'startDate', 'endDate', 
-            'cropId', 'totalQuantity', 'totalAmount', 
-            'totalSales', 'totalBagCount'
+            'items', 'crops', 'startDate', 'endDate', 'cropId',
+            'totalAmount', 'totalSales', 'totalSaleBasket', 'totalPurchaseBasket',
+            'openingBalance', 'openingAverageCost', 'closingBalance', 'totalVissQuantity'
         ));
     }
 }

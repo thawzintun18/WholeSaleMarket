@@ -637,8 +637,10 @@
                 if (farmer.debts && farmer.debts.length > 0) {
                     farmer.debts.forEach(debt => {
                         const balance = Number(debt.balance_amount) || 0;
-                        let typeText = debt.debt_type === 'PurchaseAdvance' ? 'မနက်ပိုင်း Advance' :
-                            'ရိုးရိုး အကြွေး (Cash Loan)';
+                        let typeText = debt.debt_type === 'PurchaseAdvance' ? 'ကြိုသုံး' :
+                            debt.debt_type === 'CashLoan' ? 'တောကြွေး' :
+                            debt.debt_type === 'BeanPayment' ? 'ပဲဆံဖိုး' :
+                            'အခြား';
 
                         // UI 1: အပေါ်ဘက် Profile Card ထဲမှ အကြွေးပြရန်
                         const debtItem = document.createElement('div');

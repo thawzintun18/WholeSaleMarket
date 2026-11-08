@@ -65,7 +65,7 @@
 
                             <div class="small">
                                 နေရပ်/ဖုန်း -
-                                {{ $farmer->village ?: '—' }} / {{ $farmer->phone ?: '—' }}
+                                <span class=" fw-bold">{{ $farmer->village ?: '—' }} / {{ $farmer->phone ?: '—' }}</span>
                             </div>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
                             <div class="small mb-1">
                                 နေ့စွဲ -
                                 <span class="fw-semibold">
-                                    {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-m-Y') }}
+                                    {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('d-M-Y') }}
                                     {{ \Carbon\Carbon::parse($purchase->purchase_date)->format('h:i A') }}
                                 </span>
                             </div>
@@ -162,7 +162,7 @@
                                     </td>
 
                                     <td class="text-end">
-                                        {{  $purchase->car_no }}
+                                        {{ filled($purchase->car_no) ? $purchase->car_no : '-' }}
                                     </td>
 
                                     <td class="text-end fw-bold">
@@ -208,7 +208,12 @@
                                             @if(isset($debtSettlements) && count($debtSettlements) > 0)
                                                 @foreach($debtSettlements as $settlement)
                                                     @php
-                                                        $typeName = $settlement->debt_type === 'PurchaseAdvance' ? 'ကြိုသုံး' : 'တောကြွေး';
+                                                        $typeName = match($settlement->debt_type) {
+                                                            'PurchaseAdvance' => 'ကြိုသုံး',
+                                                            'CashLoan' => 'တောကြွေး',
+                                                            'BeanPayment' => 'ပဲဆံဖိုး',
+                                                            default => 'အခြား',
+                                                        };
                                                     @endphp
                                                     <tr>
                                                         <td>

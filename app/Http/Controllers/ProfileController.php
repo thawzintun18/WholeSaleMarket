@@ -15,6 +15,7 @@ class ProfileController extends Controller
 {
     public function index()
     {
+        // dd(auth()->user()->role);
         $today = Carbon::today();
 
         // ၁။ ယနေ့ ဝယ်ယူငွေ (တောဘောင်ချာ) နှင့် ဘောင်ချာအရေအတွက်

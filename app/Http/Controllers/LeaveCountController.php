@@ -211,7 +211,6 @@ class LeaveCountController extends Controller
     }
 
     //list
-
     public function list(Request $request)
     {
         $request->validate([
@@ -285,7 +284,6 @@ class LeaveCountController extends Controller
             ->orderByDesc('daily_stock_balances.balance_date')
             ->orderBy('daily_stock_balances.crop_id')
             ->get();
-        // dd($balances->toArray());
 
         $crops = Crop::get();
 

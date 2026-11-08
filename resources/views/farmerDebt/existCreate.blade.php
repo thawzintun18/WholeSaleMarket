@@ -169,7 +169,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('FarmerDebt#createSettlement') }}">
+                    <form id="existForm" method="POST" action="{{ route('FarmerDebt#createSettlement') }}">
                         @csrf
 
                         <input type="hidden" name="farmer_id" value="{{ $farmer->id }}">
@@ -213,7 +213,7 @@
                                         ပယ်ဖျက်ရန်
                                     </a>
 
-                                    <button type="submit" class="btn btn-success">
+                                    <button type="submit" class="btn btn-success" id="submitBtn">
                                         <i class="bi bi-check-circle me-1"></i>
                                         ငွေထုတ်ပေးမည်
                                     </button>
@@ -259,6 +259,20 @@
                     this.value = val;
                 });
             });
+        });
+
+        //submit button
+        document.getElementById('existForm').addEventListener('submit', function() {
+
+            let submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+
+            submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            စာရင်းသွင်းနေပါသည်...
+        `;
+
         });
     </script>
 @endpush

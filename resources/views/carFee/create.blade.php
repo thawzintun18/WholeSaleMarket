@@ -55,7 +55,7 @@
             </div>
 
             <div class="card-body">
-                <form action="{{ route('CarFee#create') }}" method="POST" id="paymentForm">
+                <form id="carForm" action="{{ route('CarFee#create') }}" method="POST" id="paymentForm">
                     @csrf
 
                     <div class="row g-3">
@@ -255,6 +255,20 @@
                     saveButton.disabled = true;
                     saveButton.textContent = 'သိမ်းဆည်းနေပါသည်...';
                 });
+        });
+
+        //submit button
+        document.getElementById('carForm').addEventListener('submit', function() {
+
+            let submitBtn = document.getElementById('saveButton');
+
+            submitBtn.disabled = true;
+
+            submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            တွက်ချက်ပြီးထည့်သွင်းနေပါသည်...
+        `;
+
         });
     </script>
 @endpush

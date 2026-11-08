@@ -39,7 +39,7 @@
 
         </div>
 
-        <form action="{{ route('Quality#update', $grade->id) }}" method="POST">
+        <form id="editGradeForm" action="{{ route('Quality#update', $grade->id) }}" method="POST">
 
             @csrf
 
@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="col-md-3 d-flex justify-content-md-start justify-content-end pt-4">
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success" id="submitBtn">
                         <i class="bi bi-check-lg me-1"></i>
                         သီးနှံအရည်အသွေးပြင်ဆင်မည်
                     </button>
@@ -94,6 +94,20 @@
                     return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
                 });
             });
+        });
+
+        //submit button
+        document.getElementById('editGradeForm').addEventListener('submit', function() {
+
+            let submitBtn = document.getElementById('submitBtn');
+
+            submitBtn.disabled = true;
+
+            submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            သီးနှံအရည်အသွေးပြင်ဆင်နေပါသည်...
+        `;
+
         });
     </script>
 @endpush

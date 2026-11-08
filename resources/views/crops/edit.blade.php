@@ -33,7 +33,7 @@
 
             <div class="dashboard-card shadow-sm">
 
-                <form id="editCropForm" action="{{ route('Crop#update', $crop->id) }}" method="POST">
+                <form action="{{ route('Crop#update', $crop->id) }}" method="POST">
 
                     @csrf
 
@@ -140,7 +140,7 @@
                     <div class="d-flex justify-content-end gap-2">
 
                         <div class="">
-                            <button type="submit" class="btn btn-success" id="submitBtn">
+                            <button type="submit" class="btn btn-success">
                                 <i class="bi bi-check-lg me-1"></i>
                                 သီးနှံအချက်အလက်ပြင်ဆင်မည်
                             </button>
@@ -187,20 +187,6 @@
                     return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
                 });
             });
-
-        });
-
-        //submit button
-        document.getElementById('editCropForm').addEventListener('submit', function() {
-
-            let submitBtn = document.getElementById('submitBtn');
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            သီးနှံအချက်အလက်ပြင်ဆင်နေပါသည်...
-        `;
 
         });
     </script>

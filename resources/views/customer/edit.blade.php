@@ -36,7 +36,7 @@ blade
             </div>
         @endif
 
-        <form id="editCustomerForm" action="{{ route('Customer#update', $customer->id) }}" method="POST">
+        <form action="{{ route('Customer#update', $customer->id) }}" method="POST">
 
             @csrf
             <div class="row g-4">
@@ -160,7 +160,7 @@ blade
                 </div>
 
                 <div class=" d-flex justify-content-end mt-md-0 mt-3">
-                    <button type="submit" class="btn btn-success" id="submitBtn">
+                    <button type="submit" class="btn btn-success">
                         <i class="bi bi-check-lg me-1"></i>
                         ၀ယ်သူအချက်အလက်ပြင်ဆင်မည်
                     </button>
@@ -188,20 +188,6 @@ blade
                     return myanmarNumbers.indexOf(digit);
                 });
             });
-        });
-
-        //submit button
-        document.getElementById('editCustomerForm').addEventListener('submit', function() {
-
-            let submitBtn = document.getElementById('submitBtn');
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            ၀ယ်သူအချက်အလက်ကိုပြင်ဆင်နေပါသည်...
-        `;
-
         });
     </script>
 @endpush

@@ -149,8 +149,6 @@
                                 <th class="text-center" style="width: 60px;">စဉ်</th>
                                 <th>နေ့စွဲ</th>
                                 <th>သီးနှံအမည်</th>
-                                <th class="text-end">ဒီနေ့လက်ကျန်</th>
-                                <th class="text-end">ဒီနေ့လက်ကျန် (တင်း)</th>
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း</th>
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း (တင်း)</th>
                                 <th class="text-end">ပျမ်းမျှဈေးနှုန်း</th>
@@ -182,21 +180,6 @@
                                         {{ $balance->crop_name ?? '-' }}
                                     </td>
 
-                                    <td class="text-end">
-                                        {{ number_format($balance->daily_balance, 0) }}
-                                        @if ($balance->unit == 'viss')
-                                            ပိဿာ
-                                        @else
-                                            ပေါင်
-                                        @endif
-                                    </td>
-
-                                    {{-- ဒီနေ့လက်ကျန် --}}
-                                    <td class="text-end">
-                                        {{ number_format($dailyBasket, 0) }}
-                                        တင်း
-                                    </td>
-
                                     <td class="text-end fw-semibold">
                                         {{ number_format($balance->total_balance, 0) }}
                                         @if ($balance->unit == 'viss')
@@ -223,7 +206,7 @@
                             @empty
 
                                 <tr>
-                                    <td colspan="8" class="text-center py-4">
+                                    <td colspan="6" class="text-center py-4">
 
                                         @if ($todayRun)
                                             ဒီနေ့အတွက် သီးနှံစာရင်း မရှိပါ။

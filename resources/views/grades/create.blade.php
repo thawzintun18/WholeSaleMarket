@@ -38,7 +38,7 @@
 
         </div>
 
-        <form id="gradeForm" action="{{ route('Quality#create') }}" method="POST">
+        <form action="{{ route('Quality#create') }}" method="POST">
             @csrf
 
             <div class="d-flex justify-content-end align-items-center mb-3">
@@ -115,7 +115,7 @@
             </div>
 
             <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success" id="submitBtn">
+                <button type="submit" class="btn btn-success">
                     <i class="bi bi-check-lg me-1"></i>
                     အားလုံး စာရင်းသွင်းမည်
                 </button>
@@ -187,20 +187,6 @@
                     return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
                 });
             });
-        });
-
-        //submit button
-        document.getElementById('gradeForm').addEventListener('submit', function() {
-
-            let submitBtn = document.getElementById('submitBtn');
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            စာရင်းသွင်းနေပါသည်...
-        `;
-
         });
     </script>
 @endsection

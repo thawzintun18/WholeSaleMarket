@@ -34,7 +34,7 @@
 
             <div class="dashboard-card shadow-sm">
 
-                <form id="cropForm" action="{{ route('Crop#create') }}" method="POST">
+                <form action="{{ route('Crop#create') }}" method="POST">
 
                     @csrf
 
@@ -140,7 +140,7 @@
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end gap-2">
 
-                        <button type="submit" class="btn btn-success" id="submitBtn">
+                        <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-lg me-1"></i>
                             သီးနှံထည့်သွင်းမည်
                         </button>
@@ -156,33 +156,8 @@
     </div>
 
 @endsection
-{{-- @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const priceInputs = ['quantity_per_basket', 'commission_amount'];
-            const myanmarNumbers = '၀၁၂၃၄၅၆၇၈၉';
 
-            priceInputs.forEach(function(id) {
-                const input = document.getElementById(id);
-                if (!input) return;
 
-                input.addEventListener('input', function() {
-                    let val = this.value;
-
-                    // ၁။ မြန်မာနံပါတ်များကို အင်္ဂလိပ်နံပါတ်သို့ ပြောင်းခြင်း
-                    val = val.replace(/[၀-၉]/g, function(digit) {
-                        return myanmarNumbers.indexOf(digit);
-                    });
-
-                    // ၂။ နံပါတ် (0-9) နှင့် ဒဿသမ (.) မှလွဲ၍ ကျန်စာလုံးများနှင့် ကော်မာများအားလုံးကို ဖြတ်ထုတ်ခြင်း
-                    val = val.replace(/[^0-9.]/g, '');
-
-                    this.value = val;
-                });
-            });
-        });
-    </script>
-@endpush --}}
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -212,20 +187,6 @@
                     return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
                 });
             });
-
-        });
-
-        //submit button
-        document.getElementById('cropForm').addEventListener('submit', function() {
-
-            let submitBtn = document.getElementById('submitBtn');
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            စာရင်းသွင်းနေပါသည်...
-        `;
 
         });
     </script>

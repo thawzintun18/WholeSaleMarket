@@ -34,8 +34,7 @@
 
             <div class="dashboard-card shadow-sm">
 
-                <form id="settlementForm" action="{{ route('FarmerDebt#settlementCreate', $farmerDebt->id) }}"
-                    method="POST">
+                <form action="{{ route('FarmerDebt#settlementCreate', $farmerDebt->id) }}" method="POST">
 
                     @csrf
 
@@ -72,7 +71,7 @@
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end mt-3 gap-2">
 
-                        <button type="submit" class="btn btn-success" id="submitBtn">
+                        <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-lg me-1"></i>
                             ငွေပမာဏထည့်သွင်းမည်
                         </button>
@@ -101,20 +100,6 @@
                     return '၀၁၂၃၄၅၆၇၈၉'.indexOf(digit).toString();
                 });
             });
-        });
-
-        //submit button
-        document.getElementById('settlementForm').addEventListener('submit', function() {
-
-            let submitBtn = document.getElementById('submitBtn');
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            ငွေပမာဏထည့်သွင်းနေပါသည်...
-        `;
-
         });
     </script>
 @endpush

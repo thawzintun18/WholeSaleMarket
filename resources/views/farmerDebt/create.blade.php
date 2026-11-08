@@ -52,7 +52,7 @@
 
             <div class="dashboard-card shadow-sm">
 
-                <form id="farmerDebtForm" action="{{ route('FarmerDebt#create') }}" method="POST">
+                <form action="{{ route('FarmerDebt#create') }}" method="POST">
 
                     @csrf
 
@@ -181,7 +181,7 @@
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end mt-3 gap-2">
 
-                        <button type="submit" class="btn btn-success" id="submitBtn">
+                        <button type="submit" class="btn btn-success">
                             <i class="bi bi-check-lg me-1"></i>
                             ကြိုသုံးငွေယူမည့် တောင်သူထည့်သွင်းမည်
                         </button>
@@ -256,20 +256,6 @@
                     this.value = val;
                 });
             });
-        });
-
-        //submit button
-        document.getElementById('farmerDebtForm').addEventListener('submit', function() {
-
-            let submitBtn = document.getElementById('submitBtn');
-
-            submitBtn.disabled = true;
-
-            submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-1"></span>
-            ကြိုသုံးငွေယူမည့် တောင်သူစာရင်းသွင်းနေပါသည်...
-        `;
-
         });
     </script>
 @endpush

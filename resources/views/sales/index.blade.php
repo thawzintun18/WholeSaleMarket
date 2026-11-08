@@ -286,6 +286,11 @@
                                             <i class="bi bi-clock-history"></i>
                                         </button>
 
+                                        <button type="button" onclick="DeleteData({{ $sale->id }})"
+                                            class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                            ဖျက်ရန်
+                                        </button>
+
                                         {{-- ကျန်ငွေရှိမှ ငွေရှင်းရန်ပြမည် --}}
                                         @if ($sale->balance_amount > 0)
                                             <button type="button" class="btn btn-sm btn-outline-success rounded-2"
@@ -465,8 +470,29 @@
 
     </div>
 
+@endsection
 
-
-
-
+@section('DeleteData')
+    <script>
+        function DeleteData(id) {
+            Swal.fire({
+                title: "အရောင်းဘောင်ချာကို ဖျက်ရန် သေချာပါသလား?",
+                text: "ဖျက်ပြီးပါက ဤအရောင်းဘောင်ချာအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "ဖျက်မည်",
+                cancelButtonText: "မဖျက်တော့ပါ"
+            }).then((result) => {
+                if (result.isConfirmed) Swal.fire({
+                    title: "ဖျက်ပြီးပါပြီ!",
+                    text: "အရောင်းဘောင်ချာကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
+                    icon: "success"
+                }).then(() => {
+                    location.href = '/whole-sale-market/Sale/delete/' + id;
+                });
+            });
+        }
+    </script>
 @endsection

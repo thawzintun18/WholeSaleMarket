@@ -9,18 +9,20 @@ blade
 
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-md-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="page-title mb-1">၀ယ်သူအချက်အလက်ပြင်ဆင်မည်</h1>
-            <p class="text-muted mb-0">
+            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
                 ၀ယ်သူ၏ အချက်အလက်များကို ပြင်ဆင်နိုင်ပါသည်
             </p>
         </div>
 
-        <a href="{{ route('Customer#list') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>
-            နောက်သို့
-        </a>
+        <div class=" d-flex justify-content-end mt-md-0 mt-3">
+            <a href="{{ route('Customer#list') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
+        </div>
     </div>
 
     <div class="dashboard-card shadow-lg p-4">
@@ -144,12 +146,14 @@ blade
 
             <hr class="my-4">
 
-            <div class="d-flex justify-content-end gap-2">
+            <div class="d-md-flex justify-content-end gap-2">
 
-                <a href="{{ route('Customer#list') }}" class="btn btn-outline-danger">
-                    <i class="bi bi-x-lg me-1"></i>
-                    ပယ်ဖျက်မည်
-                </a>
+                <div class=" d-flex justify-content-end">
+                    <a href="{{ route('Customer#list') }}" class="btn btn-outline-danger">
+                        <i class="bi bi-x-lg me-1"></i>
+                        ပယ်ဖျက်မည်
+                    </a>
+                </div>
 
                 <button type="submit" class="btn btn-success" id="submitButton">
                     <i class="bi bi-check-lg me-1"></i>

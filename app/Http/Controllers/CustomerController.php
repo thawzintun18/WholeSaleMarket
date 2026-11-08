@@ -209,7 +209,7 @@ class CustomerController extends Controller
     {
         return $request->validate([
             'name'      => ['required', 'string', 'max:150'],
-            'phone'     => ['required', 'string', 'max:30'],
+            'phone'     => ['required', 'string', 'max:13'],
             'address'   => ['required', 'string', 'max:150'],
             'notes'     => ['nullable', 'string', 'max:2000'],
             'is_active' => ['nullable', 'boolean'],

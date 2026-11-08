@@ -10,12 +10,14 @@ use App\Models\SaleItem;
 use App\Models\SalePayment;
 use App\Models\StockBalance;
 use App\Models\StockMovement;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use RealRashid\SweetAlert\Facades\Alert;
+use Throwable;
 
 class SaleController extends Controller
 {
@@ -165,20 +167,51 @@ class SaleController extends Controller
                     }
 
                     // ဒီနေ့ဝယ်ယူထားသော စုစုပေါင်းတန်ဖိုး
-                    $totalGrossAmount = (float) $item->total_gross_amount;
+                    $todayGrossAmount = (float) $item->total_gross_amount;
 
                     // ဒီနေ့ဝယ်ယူထားသော Quantity စုစုပေါင်း
-                    $totalQuantity = (float) $item->total_quantity;
+                    $todayQuantity = (float) $item->total_quantity;
 
                     // ဒီနေ့ဝယ်ယူထားသော Bag Count စုစုပေါင်း
                     $totalBagCount = (float) $item->total_bag_count;
 
                     // မြေပဲ (ပေါင်) ဖြစ်ပါက Bag Count ကို နုတ်မည်
                     if ($crop->unit === 'pound') {
-                        $quantityOnHand = $totalQuantity - $totalBagCount;
+                        $todayQuantityOnHand = $todayQuantity - $totalBagCount;
                     } else {
-                        $quantityOnHand = $totalQuantity;
+                        $todayQuantityOnHand = $todayQuantity;
                     }
+
+                    if ($todayQuantityOnHand <= 0) {
+                        throw new \RuntimeException(
+                            "{$crop->crop_name} အတွက် တွက်ချက်ရန် Quantity မလုံလောက်ပါ။"
+                        );
+                    }
+
+                    // မနေ့က Stock Balance ကို ရယူမည်
+                    $yesterday = Carbon::parse($today)->subDay()->toDateString();
+
+                    $yesterdayStock = DB::table('daily_stock_balances')
+                        ->where('crop_id', $crop->id)
+                        ->whereDate('balance_date', $yesterday)
+                        ->first();
+
+                    // မနေ့က လက်ကျန် Quantity
+                    $yesterdayBalance = (float) ($yesterdayStock->daily_balance ?? 0);
+
+                    // မနေ့က တစ်တင်း Average Cost
+                    $yesterdayAverageCost = (float) ($yesterdayStock->average_cost ?? 0);
+
+                    // မနေ့က Stock ၏ တန်ဖိုး
+                    $yesterdayStockValue = (
+                        $yesterdayBalance / $quantityPerBasket
+                    ) * $yesterdayAverageCost;
+
+                    // မနေ့က Stock တန်ဖိုး + ဒီနေ့ဝယ်ယူထားသော တန်ဖိုး
+                    $totalGrossAmount = $yesterdayStockValue + $todayGrossAmount;
+
+                    // မနေ့က လက်ကျန် + ဒီနေ့ဝယ်ယူထားသော Quantity
+                    $quantityOnHand = $yesterdayBalance + $todayQuantityOnHand;
 
                     if ($quantityOnHand <= 0) {
                         throw new \RuntimeException(
@@ -186,14 +219,23 @@ class SaleController extends Controller
                         );
                     }
 
-                    // တစ်ပိဿာဈေး
-                    $averageCost = $totalGrossAmount / $quantityOnHand;
+                    $remainder = $totalGrossAmount % 1000;
 
-                    // တစ်တင်းဈေး
+                    if ($remainder > 0 && $remainder <= 500) {
+                        $roundedTotalGrossAmount = floor($totalGrossAmount / 1000) * 1000 + 500;
+                    } elseif ($remainder > 500) {
+                        $roundedTotalGrossAmount = ceil($totalGrossAmount / 1000) * 1000;
+                    } else {
+                        $roundedTotalGrossAmount = $totalGrossAmount;
+                    }
+
+                    // တစ်ပိဿာ Average Price
+                    $averageCost = $roundedTotalGrossAmount / $quantityOnHand;
+
+                    // တစ်တင်း Average Price
                     $averageBasketPrice = $averageCost * $quantityPerBasket;
 
                     // 500 ကျပ်စီ အပေါ်တိုးမည်
-                    // ဥပမာ 127,980 => 128,000
                     $roundedBasketPrice = ceil($averageBasketPrice / 500) * 500;
 
                     // Stock Balance ကို Update လုပ်မည်
@@ -207,7 +249,6 @@ class SaleController extends Controller
                         );
                     }
 
-                    // Stock ထဲတွင် တစ်ပိဿာဈေး သိမ်းမည်
                     $stock->average_cost = $roundedBasketPrice;
                     $stock->save();
 
@@ -218,7 +259,7 @@ class SaleController extends Controller
                             'crop_id'    => $crop->id,
                         ],
                         [
-                            'total_gross_amount'   => $totalGrossAmount,
+                            'total_gross_amount'   => $roundedTotalGrossAmount,
                             'quantity_on_hand'     => $quantityOnHand,
                             'average_cost'         => $averageCost,
                             'average_basket_price' => $roundedBasketPrice,
@@ -542,11 +583,25 @@ class SaleController extends Controller
                     'reference_id'   => $saleItem->id,
                 ]);
 
-                // Stock လက်ကျန်မှ ရောင်းလိုက်သောအရေအတွက် နုတ်ရန်
-                $stock->quantity_on_hand = round(
-                    $stock->quantity_on_hand - $item['quantity'],
-                    2
-                );
+                if ($item['crop']->unit == 'pound') {
+
+                    $saleAmount = $item['quantity'] - $item['bag_count'];
+
+                    // Stock လက်ကျန်မှ ရောင်းလိုက်သောအရေအတွက် နုတ်ရန်
+                    $stock->quantity_on_hand = round(
+                        $stock->quantity_on_hand - $saleAmount,
+                        2
+                    );
+
+                } else {
+
+                    // Stock လက်ကျန်မှ ရောင်းလိုက်သောအရေအတွက် နုတ်ရန်
+                    $stock->quantity_on_hand = round(
+                        $stock->quantity_on_hand - $item['quantity'],
+                        2
+                    );
+
+                }
 
                 $stock->save();
             }
@@ -766,6 +821,118 @@ class SaleController extends Controller
         return redirect()
             ->back()
             ->with('success', 'ကျန်ငွေ ပေးချေမှု အောင်မြင်ပါသည်။');
+    }
+
+    //delete
+    public function delete($sale_id)
+    {
+        try {
+            DB::transaction(function () use ($sale_id) {
+                // 1. Sale ကို Lock လုပ်ပြီး ရှာမယ်
+                $sale = DB::table('sales')
+                    ->where('id', $sale_id)
+                    ->whereNull('deleted_at')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $sale) {
+                    throw new \Exception('Sale စာရင်း မတွေ့ပါ။');
+                }
+
+                // 2. Sale Items နဲ့ Crop Unit ရယူမယ်
+                $saleItems = DB::table('sale_items')
+                    ->join('crops', 'sale_items.crop_id', '=', 'crops.id')
+                    ->where('sale_items.sale_id', $sale_id)
+                    ->whereNull('sale_items.deleted_at')
+                    ->select(
+                        'sale_items.id',
+                        'sale_items.crop_id',
+                        'sale_items.quantity',
+                        'sale_items.bag_count',
+                        'crops.unit'
+                    )
+                    ->lockForUpdate()
+                    ->get();
+
+                // Crop အလိုက် Quantity စုမယ်
+                $cropQuantities = $saleItems
+                    ->groupBy('crop_id')
+                    ->map(function ($items) {
+
+                        return $items->sum(function ($item) {
+
+                            if ($item->unit == 'pound') {
+                                return $item->quantity - $item->bag_count;
+                            }
+
+                            return $item->quantity;
+                        });
+                    });
+
+                // 3. Stock Balance ထဲ Quantity ပြန်ပေါင်းမယ်
+                foreach ($cropQuantities as $crop_id => $quantity) {
+
+                    $stock = DB::table('stock_balances')
+                        ->where('crop_id', $crop_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (! $stock) {
+                        throw new \Exception(
+                            "Crop ID {$crop_id} အတွက် Stock Balance မတွေ့ပါ။"
+                        );
+                    }
+
+                    DB::table('stock_balances')
+                        ->where('crop_id', $crop_id)
+                        ->increment('quantity_on_hand', $quantity);
+                }
+
+                // 4. Sale Items ID များ ရယူမယ်
+                $saleItemIds = $saleItems->pluck('id')->toArray();
+
+                // 5. Sale နဲ့ သက်ဆိုင်တဲ့ Stock Movements ဖျက်မယ်
+                if (! empty($saleItemIds)) {
+
+                    DB::table('stock_movements')
+                        ->where('reference_type', 'Sale')
+                        ->whereIn('reference_id', $saleItemIds)
+                        ->delete();
+                }
+
+                // 6. Sale Items ဖျက်မယ်
+                DB::table('sale_items')
+                    ->where('sale_id', $sale_id)
+                    ->delete();
+
+                // 7. Sale Payments ဖျက်မယ်
+                DB::table('sale_payments')
+                    ->where('sale_id', $sale_id)
+                    ->delete();
+
+                // 8. Sales ဖျက်မယ်
+                DB::table('sales')
+                    ->where('id', $sale_id)
+                    ->delete();
+
+                // 9. ဒီနေ့ Stock Balance Calculation ကို Reset လုပ်မယ်
+                DB::table('daily_stock_balance_runs')
+                    ->where('balance_date', today()->toDateString())
+                    ->delete();
+
+            });
+
+            return back()->with('success', 'Sale ဘောင်ချာကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။');
+
+        } catch (Throwable $e) {
+
+            report($e);
+
+            return back()->with(
+                'error',
+                'Sale ဘောင်ချာဖျက်ရာတွင် အမှားဖြစ်ပွားခဲ့ပါသည်။'
+            );
+        }
     }
 
 }

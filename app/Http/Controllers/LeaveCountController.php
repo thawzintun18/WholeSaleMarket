@@ -17,7 +17,7 @@ class LeaveCountController extends Controller
 
         DB::transaction(function () use ($today) {
 
-            // ဒီနေ့ Purchase / Sale အဝင်အထွက် စုမယ်
+            // 1. ဒီနေ့ Purchase / Sale အဝင်အထွက် စုမယ်
             $movements = DB::table('stock_movements')
                 ->select(
                     'crop_id',
@@ -47,26 +47,59 @@ class LeaveCountController extends Controller
                 ->get()
                 ->keyBy('crop_id');
 
-            // ဒီနေ့ဝယ်ထားသော Pound သီးနှံများ၏ Bag Count
-            $purchaseBags = DB::table('purchase_items')
+            // 2. ဒီနေ့ Purchase Bag Count စုမယ်
+            $todayPurchaseBags = DB::table('purchase_items')
                 ->join(
                     'purchases',
                     'purchase_items.purchase_id',
                     '=',
                     'purchases.id'
                 )
+                ->join(
+                    'crops',
+                    'purchase_items.crop_id',
+                    '=',
+                    'crops.id'
+                )
                 ->select(
                     'purchase_items.crop_id',
                     DB::raw('SUM(COALESCE(purchase_items.bag_count, 0)) AS total_bag_count')
                 )
                 ->whereDate('purchases.purchase_date', $today)
+                ->whereIn(DB::raw('LOWER(crops.unit)'), ['pound'])
                 ->whereNull('purchases.deleted_at')
                 ->whereNull('purchase_items.deleted_at')
                 ->groupBy('purchase_items.crop_id')
                 ->get()
                 ->keyBy('crop_id');
 
-            // ဒီနေ့ရောင်းထားသော Pound သီးနှံများ၏ Bag Count
+            // 3. အရင်နေ့မှ ဒီနေ့အထိ Purchase Bag Count စုမယ်
+            $totalPurchaseBags = DB::table('purchase_items')
+                ->join(
+                    'purchases',
+                    'purchase_items.purchase_id',
+                    '=',
+                    'purchases.id'
+                )
+                ->join(
+                    'crops',
+                    'purchase_items.crop_id',
+                    '=',
+                    'crops.id'
+                )
+                ->select(
+                    'purchase_items.crop_id',
+                    DB::raw('SUM(COALESCE(purchase_items.bag_count, 0)) AS total_bag_count')
+                )
+                ->whereDate('purchases.purchase_date', '<=', $today)
+                ->whereIn(DB::raw('LOWER(crops.unit)'), ['pound'])
+                ->whereNull('purchases.deleted_at')
+                ->whereNull('purchase_items.deleted_at')
+                ->groupBy('purchase_items.crop_id')
+                ->get()
+                ->keyBy('crop_id');
+
+            // 4. ဒီနေ့ Sale Bag Count စုမယ်
             $saleBags = DB::table('sale_items')
                 ->join(
                     'sales',
@@ -85,12 +118,12 @@ class LeaveCountController extends Controller
                 ->get()
                 ->keyBy('crop_id');
 
-            // လက်ရှိ Stock Balance
+            // 5. လက်ရှိ Stock Balance
             $stockBalances = DB::table('stock_balances')
                 ->get()
                 ->keyBy('crop_id');
 
-            // သီးနှံအားလုံး
+            // 6. သီးနှံအားလုံး
             $crops = Crop::all();
 
             foreach ($crops as $crop) {
@@ -100,37 +133,50 @@ class LeaveCountController extends Controller
                 $totalIn  = (float) ($movement->total_in ?? 0);
                 $totalOut = (float) ($movement->total_out ?? 0);
 
-                // Pound ဖြစ်မှ Bag Count နုတ်မယ်
+                // Pound ဖြစ်မဖြစ် စစ်မယ်
                 $unit = strtolower(trim($crop->unit ?? ''));
 
+                // ဒီနေ့ Purchase Bag Count
+                $purchaseBagCount = (float) (
+                    $todayPurchaseBags->get($crop->id)->total_bag_count ?? 0
+                );
+
+                // ဒီနေ့ Sale Bag Count
+                $saleBagCount = (float) (
+                    $saleBags->get($crop->id)->total_bag_count ?? 0
+                );
+
+                // Pound ဖြစ်မှ Bag Count နုတ်မယ်
                 if (in_array($unit, ['pound', 'ပေါင်'])) {
 
-                    $purchaseBagCount = (float) (
-                        $purchaseBags->get($crop->id)->total_bag_count ?? 0
-                    );
-
-                    $saleBagCount = (float) (
-                        $saleBags->get($crop->id)->total_bag_count ?? 0
-                    );
-
-                    // အဝယ် Quantity ထဲမှ Bag Count နုတ်မယ်
+                    // ဒီနေ့ အဝယ် Quantity ထဲမှ Bag Count နုတ်မယ်
                     $totalIn -= $purchaseBagCount;
 
-                    // အရောင်း Quantity ထဲမှ Bag Count နုတ်မယ်
+                    // ဒီနေ့ အရောင်း Quantity ထဲမှ Bag Count နုတ်မယ်
                     $totalOut -= $saleBagCount;
                 }
 
-                // ဒီနေ့ အသားတင်လက်ကျန်
-                $dailyBalance = $totalIn - $totalOut;
+                // 7. ဒီနေ့ အသားတင်လက်ကျန်
+                $dailyBalance  = $totalIn - $totalOut;
 
-                // လက်ရှိ Stock Balance
-                $stock  = $stockBalances->get($crop->id);
+                // 8. လက်ရှိ Stock Balance
+                $stock = $stockBalances->get($crop->id);
 
-                $totalBalance  = $stock->quantity_on_hand ?? 0;
-                $averageCost   = $stock->average_cost ?? 0;
+                $totalBalance = (float) ($stock->quantity_on_hand ?? 0);
 
-                // ရှိပြီးသားစာရင်းရှိရင် Update လုပ်မယ်
-                // မရှိသေးရင် Create လုပ်မယ်
+                $averageCost = (float) ($stock->average_cost ?? 0);
+
+                // 9. Pound ဖြစ်ရင် အရင်နေ့မှ ဒီနေ့အထိ Purchase Bag Count နုတ်မယ်
+                if (in_array($unit, ['pound', 'ပေါင်'])) {
+
+                    $totalBagCount = (float) (
+                        $totalPurchaseBags->get($crop->id)->total_bag_count ?? 0
+                    );
+
+                    $totalBalance -= $totalBagCount;
+                }
+
+                // 10. Daily Stock Balance သိမ်းမယ်
                 DailyStockBalance::updateOrCreate(
                     [
                         'crop_id'      => $crop->id,
@@ -144,8 +190,7 @@ class LeaveCountController extends Controller
                 );
             }
 
-            // ဒီနေ့တွက်ချက်မှုမှတ်တမ်းကို Update လုပ်မယ်
-            // မရှိသေးရင် Create လုပ်မယ်
+            // 11. ဒီနေ့တွက်ချက်မှုမှတ်တမ်း သိမ်းမယ်
             DailyStockBalanceRun::updateOrCreate(
                 [
                     'balance_date' => $today,
@@ -154,6 +199,7 @@ class LeaveCountController extends Controller
                     'calculated_at' => now(),
                 ]
             );
+
         });
 
         Alert::success(

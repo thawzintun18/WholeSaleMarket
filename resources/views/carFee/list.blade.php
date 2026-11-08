@@ -164,6 +164,11 @@
 
                                         <i class="bi bi-list-ul"></i>
                                     </button>
+
+                                    <button type="button" onclick="DeleteData({{ $item->id }})"
+                                        class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                        ဖျက်ရန်
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -285,33 +290,6 @@
 
 @endsection
 
-
-@section('DeleteData')
-    <script>
-        function DeleteData(id) {
-            Swal.fire({
-                title: "ဖျက်ရန် သေချာပါသလား?",
-                text: "ဖျက်ပြီးပါက ဤသီးနှံအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "ဖျက်မည်",
-                cancelButtonText: "မဖျက်တော့ပါ"
-            }).then((result) => {
-                if (result.isConfirmed) Swal.fire({
-                    title: "ဖျက်ပြီးပါပြီ!",
-                    text: "သီးနှံအချက်အလက်ကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
-                    icon: "success"
-                }).then(() => {
-                    location.href = '/whole-sale-market/Crop/delete/' + id;
-                });
-
-            });
-        }
-    </script>
-@endsection
-
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -419,3 +397,30 @@
         });
     </script>
 @endpush
+
+@section('DeleteData')
+    <script>
+        function DeleteData(id) {
+            Swal.fire({
+                title: "ကားဘောင်ချာကို ဖျက်ရန် သေချာပါသလား?",
+                text: "ဖျက်ပြီးပါက ဤကားဘောင်ချာအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "ဖျက်မည်",
+                cancelButtonText: "မဖျက်တော့ပါ"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: "ဖျက်ပြီးပါပြီ!",
+                        text: "ကားဘောင်ချာကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
+                        icon: "success"
+                    }).then(() => {
+                        location.href = '/whole-sale-market/CarFee/delete/' + id;
+                    });
+                }
+            });
+        }
+    </script>
+@endsection

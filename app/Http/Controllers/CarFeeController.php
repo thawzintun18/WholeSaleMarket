@@ -5,6 +5,7 @@ use App\Models\CarFeePayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class CarFeeController extends Controller
 {
@@ -254,6 +255,47 @@ class CarFeeController extends Controller
             'payment_date' => $payment->payment_date,
             'purchases'    => $purchases,
         ]);
+    }
+
+    //delete
+    public function delete($car_fee_payment_id)
+    {
+        try {
+
+            DB::transaction(function () use ($car_fee_payment_id) {
+
+                // 1. Car Fee Payment ရှာမယ်
+                $payment = DB::table('car_fee_payments')
+                    ->where('id', $car_fee_payment_id)
+                    ->whereNull('deleted_at')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $payment) {
+                    throw new \Exception('ကားဘောင်ချာစာရင်း မတွေ့ပါ။');
+                }
+
+                // 2. Car Fee Payment Items ဖျက်မယ်
+                DB::table('car_fee_payment_items')
+                    ->where('car_fee_payment_id', $car_fee_payment_id)
+                    ->delete();
+
+                // 3. Car Fee Payments ဖျက်မယ်
+                DB::table('car_fee_payments')
+                    ->where('id', $car_fee_payment_id)
+                    ->delete();
+
+            });
+
+            return back();
+
+        } catch (Throwable $e) {
+
+            report($e);
+
+            return back();
+        }
+
     }
 
 }

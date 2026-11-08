@@ -137,6 +137,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('smallVoucher/{id}', [SaleController::class, 'smallVoucher'])->name('Sale#smallVoucher');
         Route::get('list', [SaleController::class, 'list'])->name('Sale#list');
         Route::post('payBalance/{sale_id}', [SaleController::class, 'payBalance'])->name('Sale#payBlance');
+        Route::get('delete/{id}', [SaleController::class, 'delete'])->name('Sale#delete');
     });
 
     Route::group(['prefix' => 'Leave'], function () {
@@ -151,6 +152,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('search', [CarFeeController::class, 'search'])->name('CarFee#search');
         Route::get('voucher/{id}', [CarFeeController::class, 'voucher'])->name('CarFee#voucher');
         Route::get('detail/{id}', [CarFeeController::class, 'detail'])->name('CarFee#detail');
+        Route::get('delete/{id}', [CarFeeController::class, 'delete'])->name('CarFee#delete');
     });
 
     Route::group(['prefix' => 'Customer'], function () {

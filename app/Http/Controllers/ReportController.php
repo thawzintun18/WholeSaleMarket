@@ -302,4 +302,104 @@ class ReportController extends Controller
             'openingBalance', 'openingAverageCost', 'closingBalance', 'totalVissQuantity'
         ));
     }
+
+    public function dailyProfitReport(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        $cropId = $request->input('crop_id');
+        if (!$cropId) {
+            $firstCrop = DB::table('crops')->orderBy('crop_name')->first();
+            $cropId = $firstCrop ? $firstCrop->id : null;
+        }
+
+        $crops = DB::table('crops')->orderBy('crop_name')->get();
+        
+        // ရွေးချယ်ထားသော သီးနှံ၏ တစ်တင်းဝင်ဆံ့ပမာဏ (quantity_per_basket) ကို ယူရန်
+        $selectedCrop = $crops->where('id', $cropId)->first();
+        $qtyPerBasket = (float) ($selectedCrop->quantity_per_basket ?? 0);
+
+        // စတင်ရက်စွဲ၏ ယခင်နေ့မှ လက်ကျန်တန်ဖိုး (Opening Inventory Value) တွက်ချက်ခြင်း
+        $openingInventoryValue = 0;
+        if ($cropId) {
+            $previousDate = \Carbon\Carbon::parse($startDate)->subDay()->toDateString();
+            $openingStock = DB::table('daily_stock_balances')
+                ->where('crop_id', $cropId)
+                ->where('balance_date', $previousDate)
+                ->select('total_balance', 'average_cost')
+                ->first();
+
+            if ($openingStock) {
+                $openingBal = (float) ($openingStock->total_balance ?? 0);
+                $openingAvgCost = (float) ($openingStock->average_cost ?? 0);
+
+                // total_balance ကို တင်း (Basket) သို့ ပြောင်းလဲခြင်း
+                $openingBasket = $qtyPerBasket > 0 ? ($openingBal / $qtyPerBasket) : 0;
+
+                // တင်း (Basket) × တစ်တင်းဈေး (Average Cost)
+                $openingInventoryValue = $openingBasket * $openingAvgCost;
+            }
+        }
+
+        // ရွေးချယ်ထားသော ရက်စွဲအတွင်း ဝယ်ယူငွေ စုစုပေါင်း (Total Purchases from Start to End)
+        $totalPurchaseAmount = 0;
+        if ($cropId) {
+            $totalPurchaseAmount = DB::table('purchase_items')
+                ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
+                ->where('purchase_items.crop_id', $cropId)
+                ->whereDate('purchases.purchase_date', '>=', $startDate)
+                ->whereDate('purchases.purchase_date', '<=', $endDate)
+                ->sum('purchase_items.gross_amount');
+        }
+
+        // ** ပွဲရုံမှ အသုံးပြုထားသော စုစုပေါင်းငွေ / ကုန်ကျစရိတ် (Total Investment) **
+        $totalInvestment = $openingInventoryValue + $totalPurchaseAmount;
+
+
+        // ၃။ ရွေးချယ်ထားသော ရက်စွဲအတွင်း ရောင်းရငွေ စုစုပေါင်း (Total Sales Revenue from Start to End)
+        $totalSalesRevenue = 0;
+        if ($cropId) {
+            $totalSalesRevenue = DB::table('sale_items')
+                ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+                ->where('sale_items.crop_id', $cropId)
+                ->whereDate('sales.sale_date', '>=', $startDate)
+                ->whereDate('sales.sale_date', '<=', $endDate)
+                ->sum('sale_items.gross_amount');
+        }
+
+        // ၄။ ကုန်ဆုံးရက်၏ ကျန်ရှိလက်ကျန်တန်ဖိုး (Ending Inventory Value) တွက်ချက်ခြင်း
+        $endingInventoryValue = 0;
+        if ($cropId) {
+            $closingStock = DB::table('daily_stock_balances')
+                ->where('crop_id', $cropId)
+                ->where('balance_date', $endDate)
+                ->select('total_balance', 'average_cost')
+                ->first();
+
+            if ($closingStock) {
+                $closingBal = (float) ($closingStock->total_balance ?? 0);
+                $closingAvgCost = (float) ($closingStock->average_cost ?? 0);
+
+                // total_balance ကို တင်း (Basket) သို့ ပြောင်းလဲခြင်း
+                $closingBasket = $qtyPerBasket > 0 ? ($closingBal / $qtyPerBasket) : 0;
+
+                // တင်း (Basket) × တစ်တင်းဈေး (Average Cost)
+                $endingInventoryValue = $closingBasket * $closingAvgCost;
+            }
+        }
+
+        // ** ပွဲရုံမှ ပြန်လည်ရရှိမည့် စုစုပေါင်းတန်ဖိုး (Total Return = Sales Revenue + Remaining Stock Value) **
+        $totalReturn = $totalSalesRevenue + $endingInventoryValue;
+
+        // ၅။ အစစ်အမှန် အမြတ်ငွေ (Net Profit = Total Return - Total Investment)
+        $netProfit = $totalReturn - $totalInvestment;
+
+        return view('reports.daily_profit', compact(
+            'crops', 'cropId', 'startDate', 'endDate',
+            'openingInventoryValue', 'totalPurchaseAmount', 'totalInvestment',
+            'totalSalesRevenue', 'endingInventoryValue', 'totalReturn',
+            'netProfit'
+        ));
+    }
 }

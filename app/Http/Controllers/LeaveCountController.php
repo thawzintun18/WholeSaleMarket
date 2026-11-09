@@ -166,16 +166,6 @@ class LeaveCountController extends Controller
 
                 $averageCost = (float) ($stock->average_cost ?? 0);
 
-                // 9. Pound ဖြစ်ရင် အရင်နေ့မှ ဒီနေ့အထိ Purchase Bag Count နုတ်မယ်
-                if (in_array($unit, ['pound', 'ပေါင်'])) {
-
-                    $totalBagCount = (float) (
-                        $totalPurchaseBags->get($crop->id)->total_bag_count ?? 0
-                    );
-
-                    $totalBalance -= $totalBagCount;
-                }
-
                 // 10. Daily Stock Balance သိမ်းမယ်
                 DailyStockBalance::updateOrCreate(
                     [

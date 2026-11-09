@@ -445,9 +445,9 @@ class PurchaseController extends Controller
 
                 // 6.2 `stock_balances` တွင် လက်ကျန် (quantity_on_hand) ကို စစ်ဆေး၍ ပေါင်းထည့်ခြင်း သို့မဟုတ် အသစ်ဆောက်ခြင်း
                 $existingStock = DB::table('stock_balances')->where('crop_id', $cropId)->first();
-
+                $subBagQty = $qtyIn - $bagCount;
                 if ($existingStock) {
-                    $newQuantityOnHand = (float) $existingStock->quantity_on_hand + $qtyIn;
+                    $newQuantityOnHand = (float) $existingStock->quantity_on_hand + $subBagQty;
 
                     // လောလောဆယ် purchase အချိန်မှာ average_cost ကို မတွက်သေးဘဲ quantity ကိုသာ ပေါင်းပေးမည်
                     // (Average cost ကို နောက်ပိုင်း အဝယ်ချုပ်ချိန် / Action လုပ်ချိန်မှ ပြန်တွက်မည်)
@@ -461,7 +461,7 @@ class PurchaseController extends Controller
                     // အကယ်၍ ထိုသီးနှံအတွက် stock balance မရှိသေးပါက အသစ်ဆောက်မည် (average_cost ကို 0 သို့မဟုတ် လက်ရှိဝယ်ဈေးခဏထားမည်)
                     DB::table('stock_balances')->insert([
                         'crop_id'          => $cropId,
-                        'quantity_on_hand' => $qtyIn,
+                        'quantity_on_hand' => $subBagQty,
                         'average_cost'     => $unitCost, // လိုအပ်ပါက 0 ထားနိုင်သည်
                         'created_at'       => now(),
                         'updated_at'       => now(),
@@ -678,8 +678,11 @@ class PurchaseController extends Controller
                 DB::table('daily_stock_balance_runs')
                     ->where('balance_date', today()->toDateString())
                     ->delete();
-            });
 
+                DB::table('daily_average_price_runs')
+                ->where('price_date', today()->toDateString())
+                ->delete();
+            });
             return back()->with('success', 'ဝယ်ယူမှုဘောင်ချာကို အောင်မြင်စွာ ဖျက်ဆီးပြီး စတော့နှင့် အကြွေးများကို မူလအတိုင်း ပြန်ပြင်ပြီးပါပြီ။');
 
         } catch (\Throwable $e) {

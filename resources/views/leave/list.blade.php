@@ -150,7 +150,7 @@
                                 <th>နေ့စွဲ</th>
                                 <th>သီးနှံအမည်</th>
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း</th>
-                                <th class="text-end">တစ်နေ့ချင်းလက်ကျန် (တင်း)</th>
+                                {{-- <th class="text-end">တစ်နေ့ချင်းလက်ကျန် (တင်း)</th> --}}
                                 <th class="text-end">လက်ကျန်စုစုပေါင်း (တင်း)</th>
                                 <th class="text-end">ပျမ်းမျှဈေးနှုန်း</th>
                             </tr>

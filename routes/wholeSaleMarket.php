@@ -177,6 +177,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
     Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
         Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
         Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
+        Route::get('daily/profit', [ReportController::class, 'dailyProfitReport'])->name('reports#daily#profit');
     });
 
 });

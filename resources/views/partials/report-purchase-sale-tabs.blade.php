@@ -15,5 +15,12 @@
             </a>
         </li>
 
+        <li class="nav-item" role="presentation">
+            <a href="{{ route('reports#daily#profit') }}"
+               class="text-decoration-none pb-2 fw-semibold d-inline-block {{ request()->routeIs('reports#daily#profit') ? 'text-dark border-bottom border-dark border-2' : 'text-secondary opacity-75' }}">
+                <i class="bi-wallet"></i> အမြတ်
+            </a>
+        </li>
+
     </ul>
 </div>

@@ -484,7 +484,13 @@ class SaleController extends Controller
                     $calculationQuantity / $quantityPerBasket
                 ) * $salePrice;
 
-                $grossAmount = floor($rawAmount / 1000) * 1000;
+                $grossAmount = floor($rawAmount / 100) * 100;
+
+                $lastTwoDigits = $rawAmount % 100;
+
+                if ($lastTwoDigits >= 50) {
+                    $grossAmount += 100;
+                }
 
                 $remainderAmount = round(
                     $rawAmount - $grossAmount,

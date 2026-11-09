@@ -28,7 +28,8 @@
             <span>သီးနှံနှင့် ဈေးနှုန်းများ</span>
         </a>
 
-        <a href="{{ route('farmers#index') }}" class="{{ request()->routeIs('farmers#*', 'Customer#*') ? 'active' : '' }}">
+        <a href="{{ route('farmers#index') }}"
+            class="{{ request()->routeIs('farmers#*', 'Customer#*') ? 'active' : '' }}">
             <i class="bi bi-people"></i>
             <span>ရောင်း/ဝယ် သူစာရင်း</span>
         </a>
@@ -67,7 +68,7 @@
         </a>
 
 
-        @if(in_array(auth()->user()->role, ['admin', 'superadmin']))
+        @if (in_array(auth()->user()->role, ['admin', 'superadmin']))
             {{-- Reports --}}
             <div class="menu-title">
                 Reports
@@ -79,6 +80,17 @@
             </a>
         @endif
 
+<<<<<<< HEAD
+=======
+        <div class="menu-title">
+            Backup
+        </div>
+        <a href="{{ route('Backup#list') }}" class="{{ request()->routeIs('Backup#list') ? 'active' : '' }}">
+            <i class="bi bi-database-check"></i>
+            <span>Backup စာရင်း</span>
+        </a>
+
+>>>>>>> d099ef0aa9c66c355a2eda27a55aff92002a7d7a
 
     </div>
 

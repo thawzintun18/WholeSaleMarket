@@ -500,6 +500,49 @@ class CropDepositController extends Controller
         return view('cropDeposits.create', compact('farmers', 'crops', 'grades'));
     }
 
+    public function delete($deposit_id)
+    {
+        try {
+            DB::transaction(function () use ($deposit_id) {
+                // Crop Deposit ကို Lock လုပ်ပြီး ရှာမယ်
+                $deposit = DB::table('crop_deposits')
+                    ->where('id', $deposit_id)
+                    ->whereNull('deleted_at')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $deposit) {
+                    throw new \Exception('သီးနှံအပ်နှံမှု စာရင်း မတွေ့ပါ။');
+                }
+
+                // အကယ်၍ ဝယ်ယူမှုဘောင်ချာသို့ ပြောင်းပြီးသား (Converted) ဖြစ်နေလျှင် မဖျက်ခိုင်းရန်
+                if ($deposit->status === 'Converted') {
+                    throw new \Exception('ဤအပ်နှံမှုကို ဝယ်ယူမှုဘောင်ချာသို့ ပြောင်းပြီးဖြစ်သောကြောင့် ဖျက်၍ မရပါ။');
+                }
+
+                // Deposit Items များကို ဖျက်ဆီးခြင်း
+                DB::table('crop_deposit_items')
+                    ->where('crop_deposit_id', $deposit_id)
+                    ->delete();
+
+                // ပင်မ Crop Deposits ဘောင်ချာကို ဖျက်ခြင်း (Soft Delete သို့မဟုတ် Hard Delete)
+                DB::table('crop_deposits')
+                    ->where('id', $deposit_id)
+                    ->delete(); // (သို့) soft delete သုံးလျှင် ->update(['deleted_at' => now()]) သုံးနိုင်သည်
+            });
+
+            return back();
+
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with(
+                'error',
+                'သီးနှံအပ်နှံမှု ဘောင်ချာဖျက်ရာတွင် တစ်ခုခုမှားနေသည်။ ' . $e->getMessage()
+            );
+        }
+    }
+
     private function generateInvoiceNo(): string
     {
         do {

@@ -310,6 +310,11 @@
                                             <i class="bi bi-clock-history"></i>
                                         </button>
 
+                                        <button type="button" onclick="DeleteData({{ $purchase->id }})"
+                                            class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                            ဖျက်ရန်
+                                        </button>
+
                                         {{-- ကျန်ငွေရှိမှ ငွေရှင်းရန်ပြမည် --}}
                                         @if ($purchase->balance_amount > 0)
                                             <button type="button" class="btn btn-sm btn-outline-success rounded-2"
@@ -319,7 +324,6 @@
                                         @endif
 
                                     </div>
-
 
 
                                     <!-- ငွေရှင်းမည် Modal -->
@@ -451,7 +455,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center py-5 text-muted">
+                                <td colspan="10" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
                                     ရှာဖွေထားသော ဝယ်ယူမှု စာရင်းများ မရှိပါ။
                                 </td>
@@ -468,11 +472,29 @@
                 </div>
             @endif
         </div>
-
     </div>
-
-
-
-
-
+@endsection
+@section('DeleteData')
+    <script>
+        function DeleteData(id) {
+            Swal.fire({
+                title: "အဝယ်ဘောင်ချာကို ဖျက်ရန် သေချာပါသလား?",
+                text: "ဖျက်ပြီးပါက ဤအဝယ်ဘောင်ချာအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "ဖျက်မည်",
+                cancelButtonText: "မဖျက်တော့ပါ"
+            }).then((result) => {
+                if (result.isConfirmed) Swal.fire({
+                    title: "ဖျက်ပြီးပါပြီ!",
+                    text: "အဝယ်ဘောင်ချာကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
+                    icon: "success"
+                }).then(() => {
+                    location.href = '/whole-sale-market/purchases/delete/' + id;
+                });
+            });
+        }
+    </script>
 @endsection

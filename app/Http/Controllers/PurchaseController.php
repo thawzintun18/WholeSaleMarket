@@ -558,4 +558,137 @@ class PurchaseController extends Controller
     {
         return view('purchases.edit');
     }
+
+    public function delete($purchase_id)
+    {
+        try {
+            DB::transaction(function () use ($purchase_id) {
+                // 1. Purchase ကို Lock လုပ်ပြီး ရှာမယ်
+                $purchase = DB::table('purchases')
+                    ->where('id', $purchase_id)
+                    ->whereNull('deleted_at')
+                    ->lockForUpdate()
+                    ->first();
+
+                if (! $purchase) {
+                    throw new \Exception('ဝယ်ယူမှု စာရင်း မတွေ့ပါ။');
+                }
+
+                // 2. Purchase Items နဲ့ Crop Unit ရယူမယ်
+                $purchaseItems = DB::table('purchase_items')
+                    ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
+                    ->where('purchase_items.purchase_id', $purchase_id)
+                    ->whereNull('purchase_items.deleted_at')
+                    ->select(
+                        'purchase_items.id',
+                        'purchase_items.crop_id',
+                        'purchase_items.quantity',
+                        'purchase_items.bag_count',
+                        'crops.unit'
+                    )
+                    ->lockForUpdate()
+                    ->get();
+
+                // Crop အလိုက် Quantity စုမယ် (Pound ဖြစ်လျှင် bag_count နှုတ်ပြီးမှ တွက်ရန်)
+                $cropQuantities = $purchaseItems
+                    ->groupBy('crop_id')
+                    ->map(function ($items) {
+                        return $items->sum(function ($item) {
+                            if (strtolower($item->unit) == 'pound') {
+                                $calcQty = (float)$item->quantity - (int)$item->bag_count;
+                                return $calcQty > 0 ? $calcQty : 0;
+                            }
+                            return (float)$item->quantity;
+                        });
+                    });
+
+                // 3. Stock Balance ထဲမှ Quantity ပြန်နှုတ်မယ် (ဝယ်ယူထားတာကို ဖျက်ရင် စတော့ထဲက ပြန်လျော့မည်)
+                foreach ($cropQuantities as $crop_id => $quantity) {
+                    $stock = DB::table('stock_balances')
+                        ->where('crop_id', $crop_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (! $stock) {
+                        throw new \Exception("Crop ID {$crop_id} အတွက် Stock Balance မတွေ့ပါ။");
+                    }
+
+                    $newQuantityOnHand = (float)$stock->quantity_on_hand - $quantity;
+                    if ($newQuantityOnHand < 0) {
+                        $newQuantityOnHand = 0; // မိုင်းနပ် မသွားစေရန်
+                    }
+
+                    DB::table('stock_balances')
+                        ->where('crop_id', $crop_id)
+                        ->update([
+                            'quantity_on_hand' => $newQuantityOnHand,
+                            'updated_at'       => now(),
+                        ]);
+                }
+
+                // 4. Purchase Items ID များ ရယူမယ်
+                $purchaseItemIds = $purchaseItems->pluck('id')->toArray();
+
+                // 5. Stock Movements များကို ဖျက်မယ် (reference_id က purchase_item_id များကို ညွှန်းထားလျှင်)
+                if (! empty($purchaseItemIds)) {
+                    DB::table('stock_movements')
+                        ->where('reference_type', 'Purchase')
+                        ->whereIn('reference_id', $purchaseItemIds)
+                        ->delete();
+                }
+
+                // 6. အကြွေးဆပ်ခဲ့တာများ ရှိပါက farmer_debts များကို မူလအခြေအနေသို့ ပြန်ပြင်ပေးခြင်း
+                $settlements = DB::table('purchase_debt_settlements')
+                    ->where('purchase_id', $purchase_id)
+                    ->get();
+
+                foreach ($settlements as $st) {
+                    $debt = DB::table('farmer_debts')
+                        ->where('id', $st->farmer_debt_id)
+                        ->lockForUpdate()
+                        ->first();
+
+                    if ($debt) {
+                        $newSettledAmount = (float)$debt->settled_amount - (float)$st->amount;
+                        if ($newSettledAmount < 0) { $newSettledAmount = 0; }
+
+                        $newBalanceAmount = (float)$debt->amount - $newSettledAmount;
+                        $newStatus = $newBalanceAmount <= 0 ? 'Close' : ($newSettledAmount > 0 ? 'Partial' : 'Open');
+
+                        DB::table('farmer_debts')
+                            ->where('id', $debt->id)
+                            ->update([
+                                'settled_amount' => $newSettledAmount,
+                                'balance_amount' => $newBalanceAmount,
+                                'status'         => $newStatus,
+                                'updated_at'     => now(),
+                            ]);
+                    }
+                }
+
+                // 7. ဆက်စပ်နေသော ဇယားများမှ ဒေတာများကို ဖျက်ဆီးခြင်း
+                DB::table('purchase_debt_settlements')->where('purchase_id', $purchase_id)->delete();
+                DB::table('purchase_payments')->where('purchase_id', $purchase_id)->delete();
+                DB::table('purchase_items')->where('purchase_id', $purchase_id)->delete();
+
+                // 8. ပင်မ Purchases ဘောင်ချာကို ဖျက်ခြင်း
+                DB::table('purchases')->where('id', $purchase_id)->delete();
+
+                // 9. ဒီနေ့ Stock Balance Calculation ကို Reset လုပ်ရန်
+                DB::table('daily_stock_balance_runs')
+                    ->where('balance_date', today()->toDateString())
+                    ->delete();
+            });
+
+            return back()->with('success', 'ဝယ်ယူမှုဘောင်ချာကို အောင်မြင်စွာ ဖျက်ဆီးပြီး စတော့နှင့် အကြွေးများကို မူလအတိုင်း ပြန်ပြင်ပြီးပါပြီ။');
+
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with(
+                'error',
+                'ဝယ်ယူမှုဘောင်ချာဖျက်ရာတွင် အမှားဖြစ်ပွားခဲ့ပါသည်။: ' . $e->getMessage()
+            );
+        }
+    }
 }

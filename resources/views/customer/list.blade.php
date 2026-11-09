@@ -9,77 +9,7 @@
 @section('content')
     <div class="container-fluid p-0">
 
-    @include('partials.farmer-customer-tabs')
-
-    {{-- ခေါင်းစဉ်နှင့် အသစ်ထည့်ရန် --}}
-    <div class="d-md-flex justify-content-start align-items-center mb-4">
-        <div>
-            <h1 class="page-title mb-1">၀ယ်သူစာရင်း</h1>
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
-                ၀ယ်သူများ၏ ကိုယ်ရေးအချက်အလက်များကို စီမံခန့်ခွဲရန်
-            </p>
-        </div>
-
-    </div>
-
-    {{-- ရှာဖွေရန် --}}
-    <div class="dashboard-card mb-4 shadow-sm">
-        <form action="{{ route('Customer#list') }}" method="GET">
-            <div class="row g-3 align-items-end">
-                <small class=" fs-6">၀ယ်သူအချက်အလက်သိလျှင်အလွယ်တကူ ရှာဖွေနိုင်သည်</small>
-                <div class="col-md-3">
-                    <label class="form-label">၀ယ်သူ ရှာဖွေရန်</label>
-                    <input type="text" name="search" id="search" class="form-control" value="{{ request('search') }}"
-                        placeholder="ကုဒ်၊ အမည်၊ ဖုန်းနံပါတ်...">
-                </div>
-
-                <div class="col-md-3">
-                    <label class="form-label">ကျေးရွာ</label>
-                    <input type="text" name="address" class="form-control" value="{{ request('village') }}"
-                        placeholder="ကျေးရွာအမည် ရိုက်ထည့်ပါ">
-                </div>
-
-                <div class="col-md-2">
-                    <label class="form-label">အခြေအနေ</label>
-                    <select name="status" class="form-select">
-                        <option value="">အားလုံး</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
-                            အသုံးပြုနေ
-                        </option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>
-                            ပိတ်ထား
-                        </option>
-                    </select>
-                </div>
-
-                <div class="col-md-auto">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search me-1"></i>
-                        ရှာဖွေမည်
-                    </button>
-
-                    <a href="{{ route('Customer#list') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
-                        ပြန်လည်သတ်မှတ်မည်
-                    </a>
-                </div>
-
-            </div>
-        </form>
-    </div>
-
-    {{-- ၀ယ်သူစာရင်း --}}
-    <div class="dashboard-card shadow-lg">
-
-        <div class="row d-flex justify-content-between align-items-center mb-3">
-            <div class=" col-md-7">
-
-                <h5 class="mb-1">၀ယ်သူများစာရင်း</h5>
-
-                <small class="text-muted fs-6 mt-2" style="line-height: 30px">
-                    အရောင်းအဝယ်လုပ်ထားသော၀ယ်သူများကို သီးသန့်မှတ်သားဖော်ပြထားခြင်းဖြစ်သည် ( နောက်ဆုံးရောင်းသွားသော
-                    ၀ယ်သူကို အပေါ်ဆုံးကနေစပြီးပြထားပေးသည် )
-                </small>
+        @include('partials.farmer-customer-tabs')
 
         {{-- ခေါင်းစဉ်နှင့် အသစ်ထည့်ရန် --}}
         <div class="d-md-flex justify-content-between align-items-center mb-4">
@@ -89,14 +19,6 @@
                     ၀ယ်သူများ၏ ကိုယ်ရေးအချက်အလက်များကို စီမံခန့်ခွဲရန်
                 </p>
             </div>
-
-            {{-- <div class=" d-flex justify-content-end">
-                <a href="{{ route('Sale#directPage') }}" class="btn btn-success mt-md-0 mt-3">
-                    <i class="bi bi-plus-lg me-1"></i>
-                    ၀ယ်သူအသစ်ထည့်ရန်
-                </a>
-            </div> --}}
-
         </div>
 
         {{-- ရှာဖွေရန် --}}

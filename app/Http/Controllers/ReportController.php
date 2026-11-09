@@ -29,8 +29,6 @@ class ReportController extends Controller
             $grades = DB::table('grades')->get();
         }
 
-
-
         $selectedCrop = $crops->where('id', $cropId)->first();
         $qtyPerBasket = (float) ($selectedCrop->quantity_per_basket ?? 0);
 
@@ -58,8 +56,6 @@ class ReportController extends Controller
         if ($qtyPerBasket > 0) {
             $openingBalance = $rawOpeningBalance / $qtyPerBasket;
         }
-
-
 
         // နေ့စဉ်ဝယ်ယူထားသော စာရင်းများ (Purchase Items)
         $purchaseQuery = DB::table('purchase_items')

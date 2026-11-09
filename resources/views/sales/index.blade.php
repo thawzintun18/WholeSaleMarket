@@ -178,14 +178,6 @@
                     <tbody>
                         @forelse($sales as $sale)
                             <tr>
-                                <!-- ဘောင်ချာ No / ရက်စွဲ -->
-                                {{-- <td class="ps-4">
-                                    <span class="fw-bold text-primary">{{ $sale->invoice_no }}</span>
-                                    <div class="small text-muted" style="font-size: 11.5px;">
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        {{ \Carbon\Carbon::parse($sale->sale_date)->format('Y-m-d h:i A') }}
-                                    </div>
-                                </td> --}}
 
                                 <td class="ps-4">
                                     {{ $sales->firstItem() + $loop->index }}

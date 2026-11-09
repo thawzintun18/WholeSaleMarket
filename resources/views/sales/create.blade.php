@@ -221,7 +221,7 @@
                                         <th>သီးနှံအမည်</th>
                                         <th class="text-end">၀ယ်ယူထားသော Stock</th>
                                         <th class="text-end">တစ်တင်းဈေး</th>
-                                        <th class="text-end">ဝယ်ယူငွေစုစုပေါင်း</th>
+                                        {{-- <th class="text-end">ဝယ်ယူငွေစုစုပေါင်း</th> --}}
                                     </tr>
                                 </thead>
 
@@ -246,10 +246,10 @@
                                                 <small class="small text-secondary">ကျပ်</small>
                                             </td>
 
-                                            <td class="text-end">
+                                            {{-- <td class="text-end">
                                                 {{ number_format($price->total_gross_amount, 2) }}
                                                 <small class="small text-secondary">ကျပ်</small>
-                                            </td>
+                                            </td> --}}
                                         </tr>
                                     @empty
                                         <tr>

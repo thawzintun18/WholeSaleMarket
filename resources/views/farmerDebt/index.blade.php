@@ -143,12 +143,8 @@
                         <th>အခြေအနေ</th>
                         <th class="text-center" style="width: 130px;">လုပ်ဆောင်ချက်</th>
                     </tr>
-
                 </thead>
-
-
                 <tbody>
-
                     @if ($farmerDebt->count() > 0)
 
                         @foreach ($farmerDebt as $item)
@@ -201,12 +197,15 @@
                                 <td class=" text-center">
                                     <div class="">
                                         @if ($item->status == 'Open')
-                                            <small class=" bg-danger text-white rounded py-2 px-2">အကြွေးကျန်ရှိ</small>
+                                            <small class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-semibold">ကြွေးကျန်</small>
+                                            {{-- <small class=" bg-danger text-white rounded py-2 px-2">ကြွေးကျန်</small> --}}
                                         @elseif($item->status == 'Partial')
-                                            <small class=" bg-warning text-white rounded py-2 px-2">တစ်စိတ်တစ်ပိုင်း
+                                            {{-- <small class=" bg-warning text-white rounded py-2 px-2">တစ်စိတ်တစ်ပိုင်း --}}
+                                            <small class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill fw-semibold">တစ်စိတ်တစ်ပိုင်း
                                                 ရှင်းပြီး</small>
                                         @elseif($item->status == 'Close')
-                                            <small class=" bg-success text-white rounded py-2 px-2">အကြွေးရှင်းပြီး</small>
+                                            {{-- <small class=" bg-success text-white rounded py-2 px-2">ကြွေးရှင်း</small> --}}
+                                            <small class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold">ကြွေးရှင်း</small>
                                         @endif
                                     </div>
                                 </td>
@@ -220,12 +219,12 @@
                                             ($item->debt_type === 'BeanPayment' && in_array($item->status, ['Open', 'Partial']))
                                         )
                                             <a href="{{ route('FarmerDebt#settlement', $item->id) }}"
-                                                class=" btn btn-primary me-2">အကြွေးဆပ်ရန်</a>
+                                                class="btn btn-success btn-sm rounded-3 px-3 shadow-sm me-1">အကြွေးဆပ်ရန်</a>
                                         @endif
 
                                         @if ($item->debt_type == 'CashLoan' || $item->debt_type == 'BeanPayment')
                                             <a href="{{ route('FarmerDebt#settlementList', $item->id) }}"
-                                                class=" btn btn-primary">အကြွေးပြန်ဆပ်မှုစာရင်း</a>
+                                                class="btn btn-secondary btn-sm rounded-3 px-3 shadow-sm">အကြွေးပြန်ဆပ်မှုစာရင်း</a>
                                         @endif
                                     </div>
 
@@ -235,7 +234,7 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="10" class="empty-state-cell">
+                            <td colspan="9" class="empty-state-cell">
                                 <div class="empty-state">
 
                                     <h5>ကြိုသုံးငွေယူထားသော တောင်သူ မရှိသေးပါ</h5>

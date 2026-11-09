@@ -173,7 +173,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center py-4 text-muted">ဤရက်စွဲအတွက် အရောင်းစာရင်း မရှိသေးပါ။</td>
+                                <td colspan="9" class="text-center py-4 text-muted">ဤရက်စွဲအတွက် အရောင်းစာရင်း မရှိသေးပါ။</td>
                             </tr>
                         @endforelse
                     </tbody>

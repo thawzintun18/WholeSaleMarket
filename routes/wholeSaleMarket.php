@@ -89,6 +89,8 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
 
         Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
         Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
+
+        Route::get('/delete/{id}', [PurchaseController::class, 'delete'])->name('purchases#delete');
     });
 
     Route::group(['prefix' => 'DailyPrice'], function () {
@@ -121,6 +123,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::post('create', [CropDepositController::class, 'storeDeposit'])->name('crop#deposits#create');
         Route::get('convert-form/{purchaseId}', [CropDepositController::class, 'showConvertForm'])->name('crop#deposits#convert#form');
         Route::post('convert-to-purchase/{purchaseId}', [CropDepositController::class, 'convertToPurchase'])->name('crop#deposits#convert#purchase');
+        Route::get('/delete/{id}', [CropDepositController::class, 'delete'])->name('crop#deposits#delete');
     });
 
     Route::group(['prefix' => 'Customer'], function () {

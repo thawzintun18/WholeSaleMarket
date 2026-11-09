@@ -155,9 +155,7 @@
                                 <th class="text-end">ပျမ်းမျှဈေးနှုန်း</th>
                             </tr>
                         </thead>
-
                         <tbody>
-
                             @forelse ($balances as $balance)
                                 @php
                                     $qpb = (float) ($balance->quantity_per_basket ?? 0);
@@ -205,9 +203,8 @@
                                 </tr>
 
                             @empty
-
                                 <tr>
-                                    <td colspan="6" class="text-center py-4">
+                                    <td colspan="7" class="text-center py-4">
 
                                         @if ($todayRun)
                                             ဒီနေ့အတွက် သီးနှံစာရင်း မရှိပါ။

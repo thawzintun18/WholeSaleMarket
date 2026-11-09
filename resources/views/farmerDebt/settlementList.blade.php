@@ -51,22 +51,12 @@
         <div class="card-body">
 
             <div class="row g-3 mb-4">
-                <div class="col-md-3 col-6">
+                <div class="col-md-4 col-6">
                     <small class="text-muted">တောင်သူအမည်</small>
-                    <div class="fw-bold">{{ $farmerDebt->name }}</div>
+                    <div class="fw-bold">{{ $farmerDebt->name }} / {{ $farmerDebt->phone ?: '—' }} / {{ $farmerDebt->village ?: '—' }}</div>
                 </div>
 
-                <div class="col-md-3 col-6">
-                    <small class="text-muted">ဖုန်းနံပါတ်</small>
-                    <div class="fw-semibold">{{ $farmerDebt->phone ?: '—' }}</div>
-                </div>
-
-                <div class="col-md-3 col-6">
-                    <small class="text-muted">နေရပ်</small>
-                    <div class="fw-semibold">{{ $farmerDebt->village ?: '—' }}</div>
-                </div>
-
-                <div class="col-md-3 col-6">
+                <div class="col-md-4 col-6">
                     <small class="text-muted">အကြွေးအမျိုးအစား</small>
                     <div class="fw-semibold">
                         @switch($farmerDebt->debt_type)
@@ -88,7 +78,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-3 col-6">
+                <div class="col-md-4 col-6">
                     <small class="text-muted">အကြွေးယူသည့်နေ့</small>
                     <div class="fw-semibold">
                         {{ \Carbon\Carbon::parse($farmerDebt->debt_date)->format('d-M-Y') }}

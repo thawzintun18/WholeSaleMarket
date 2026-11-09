@@ -16,7 +16,6 @@ return new class extends Migration
             $table->date('balance_date')->unique();
             $table->dateTime('calculated_at');
             $table->timestamps();
-
         });
     }
 

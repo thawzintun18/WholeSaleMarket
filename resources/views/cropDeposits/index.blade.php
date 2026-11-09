@@ -14,7 +14,7 @@
     <div class="d-md-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <div>
             <h3 class="fw-bold text-dark mb-1">
-                <i class="bi bi-box-seam me-2 text-primary" style="line-height: 35px"></i>သီးနှံအပ်နှံမှု စာရင်းများ (Crop Deposits)
+                <i class="bi bi-box-seam me-2 text-primary" style="line-height: 35px"></i>သီးနှံအပ်နှံမှု စာရင်းများ
             </h3>
             <p class="text-muted small mb-0 mt-2" style="line-height: 30px">တောင်သူများ အပ်နှံထားသော သီးနှံများနှင့် အရေအတွက်များကို စစ်ဆေးစီမံရန်</p>
         </div>
@@ -75,9 +75,9 @@
                 <div class="col-md-2">
                     <label class="form-label small fw-semibold">အခြေအနေ</label>
                     <select name="status" class="form-select">
-                        <option value="">အားလုံး (All)</option>
-                        <option value="Stored" {{ request('status') === 'Stored' ? 'selected' : '' }}>သိမ်းဆည်းထားဆဲ (Stored)</option>
-                        <option value="Converted" {{ request('status') === 'Converted' ? 'selected' : '' }}>ဝယ်ယူပြီး (Converted)</option>
+                        <option value="">အားလုံး</option>
+                        <option value="Stored" {{ request('status') === 'Stored' ? 'selected' : '' }}>သိမ်းဆည်းထားဆဲ</option>
+                        <option value="Converted" {{ request('status') === 'Converted' ? 'selected' : '' }}>ဝယ်ယူပြီး</option>
                     </select>
                 </div>
 
@@ -196,6 +196,11 @@
                                             <a href="{{ route('crop#deposits#convert#form', $deposit->id) }}" class="btn btn-success btn-sm rounded-3 px-3 shadow-sm" title="ဝယ်ယူမှုဘောင်ချာသို့ ပြောင်းရန်">
                                                 <i class="bi bi-arrow-repeat me-1"></i> ဘောင်ချာပြောင်းမည်
                                             </a>
+
+                                            <button type="button" onclick="DeleteData({{ $deposit->id }})"
+                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                                ဖျက်ရန်
+                                            </button>
                                         @else
                                             <span class="text-muted small">ပြီးစီးပါပြီ<i class="bi bi-correct me-1"></i></span>
                                         @endif
@@ -204,7 +209,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="8" class="text-center py-5 text-muted">
                                     <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
                                     သီးနှံအပ်နှံမှု စာရင်း မရှိသေးပါ။
                                 </td>
@@ -223,4 +228,28 @@
         @endif
     </>
 </div>
+@endsection
+@section('DeleteData')
+    <script>
+        function DeleteData(id) {
+            Swal.fire({
+                title: "အပ်နှံဘောင်ချာကို ဖျက်ရန် သေချာပါသလား?",
+                text: "ဖျက်ပြီးပါက ဤအပ်နှံဘောင်ချာအချက်အလက်ကို ပြန်လည်ရယူ၍ မရတော့ပါ။",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "ဖျက်မည်",
+                cancelButtonText: "မဖျက်တော့ပါ"
+            }).then((result) => {
+                if (result.isConfirmed) Swal.fire({
+                    title: "ဖျက်ပြီးပါပြီ!",
+                    text: "အပ်နှံဘောင်ချာကို အောင်မြင်စွာ ဖျက်ပြီးပါပြီ။",
+                    icon: "success"
+                }).then(() => {
+                    location.href = '/whole-sale-market/crop-diposit/delete/' + id;
+                });
+            });
+        }
+    </script>
 @endsection

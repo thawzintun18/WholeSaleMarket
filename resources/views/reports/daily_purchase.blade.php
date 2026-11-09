@@ -238,17 +238,6 @@
                                 </tr>
                             @endforelse
                         </tbody>
-                        {{-- @if($purchaseItems->isNotEmpty())
-                            <tfoot class="table-light fw-bold">
-                                <tr>
-                                    <td colspan="5" class="text-end">ဝယ်ယူမှု စုစုပေါင်း</td>
-                                    <td class="text-end text-primary">{{ number_format($totalPurchaseBasket, 2) }} တင်း</td>
-                                    <td class="text-end">-</td>
-                                    <td class="text-end text-dark">{{ number_format($totalAmount, 2) }} ကျပ်</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        @endif --}}
                         @if($purchaseItems->isNotEmpty())
                             <tfoot class="table-light fw-bold">
                                 <tr>
@@ -282,10 +271,10 @@
             </div>
 
             <!-- Grand Total Summary Box -->
-            <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+            {{-- <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0 text-dark">ပွဲရုံတွင်းရှိ စုစုပေါင်း ကုန်ပမာဏ (ဝယ်ယူ + အပ်နှံ)</h5>
                 <h4 class="fw-bold text-success mb-0">{{ number_format($totalPurchaseBasket + $totalDepositBasket, 2) }} တင်း</h4>
-            </div>
+            </div> --}}
 
         </div>
     </div>

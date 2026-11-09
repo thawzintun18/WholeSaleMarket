@@ -41,7 +41,7 @@
         <div class="card-body">
             <div class="row g-3">
 
-                <div class="col-md-4 col-6">
+                <div class="col-md-3 col-6">
                     <div class="small text-secondary mb-1">
                         တောင်သူကုဒ်
                     </div>
@@ -50,38 +50,20 @@
                     </div>
                 </div>
 
-                <div class="col-md-4 col-6">
+                <div class="col-md-3 col-6">
                     <div class="small text-secondary mb-1">
                         တောင်သူအမည်
                     </div>
-                    <div class="fw-semibold text-dark">
+                    <div class="fw-semibold text-dark">{{ $farmer->name }} / {{ $farmer->phone ?: '—' }} / {{ $farmer->village ?: '—' }}</div>
+                    {{-- <div class="fw-semibold text-dark">
                         {{ $farmer->name }}
-                    </div>
+                    </div> --}}
                 </div>
 
-                <div class="col-md-4 col-6">
-                    <div class="small text-secondary mb-1">
-                        ဖုန်းနံပါတ်
-                    </div>
-                    <div class="fw-semibold text-dark">
-                        {{ $farmer->phone ?? '-' }}
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-6">
-                    <div class="small text-secondary mb-1">
-                        ကျေးရွာ
-                    </div>
-                    <div class="fw-semibold text-dark">
-                        {{ $farmer->village ?? '-' }}
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-6">
+                <div class="col-md-3 col-6">
                     <div class="small text-secondary mb-1">
                         အကောင့်အခြေအနေ
                     </div>
-
                     @if ($farmer->is_active)
                         <span class="badge bg-success-subtle text-success border border-success-subtle">
                             အသုံးပြုနေသည်
@@ -93,7 +75,7 @@
                     @endif
                 </div>
 
-                <div class="col-md-12">
+                <div class="col-md-3 col-6">
                     <div class="small text-secondary mb-1">
                         မှတ်ချက်
                     </div>
@@ -134,11 +116,8 @@
         </div>
 
         <div class="table-responsive">
-
             <table class="table table-hover align-middle mb-0">
-
                 <thead>
-
                     <tr>
                         <th style="width: 60px;">စဉ်</th>
                         <th>အကြွေးယူသည့်နေ့ရက်</th>
@@ -148,41 +127,29 @@
                         <th>အကြွေးအမျိုးအစား</th>
                         <th>အကြွေးအခြေအနေ</th>
                     </tr>
-
                 </thead>
-
-
                 <tbody>
-
                     @if ($settlementList->count() > 0)
-
                         @foreach ($settlementList as $item)
                             <tr>
-
                                 <td>{{ $loop->iteration }}</td>
-
                                 <td>
                                     <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-m-Y') }}</div>
                                     <small class="text-muted">
                                         {{ \Carbon\Carbon::parse($item->debt_date)->format('h:i A') }}
                                     </small>
                                 </td>
-
                                 <td class=" text-center">
                                     {{ number_format($item->amount, 0) }} <small class="small text-secondary">ကျပ်</small>
-
                                 </td>
-
                                 <td class=" text-center">
                                     {{ number_format($item->settled_amount, 0) == 0 ? 0 : number_format($item->settled_amount, 0) }}
                                     <small class="small text-secondary">ကျပ်</small>
                                 </td>
-
                                 <td class=" text-center">
                                     {{ number_format($item->balance_amount, 0) }} <small
                                         class="small text-secondary">ကျပ်</small>
                                 </td>
-
                                 <td class=" text-center">
                                     <small class="">
                                         @if ($item->debt_type == 'PurchaseAdvance')
@@ -192,29 +159,25 @@
                                         @endif
                                     </small>
                                 </td>
-
                                 <td class=" text-center">
                                     <div class="">
                                         @if ($item->status == 'Open')
-                                            <small class=" bg-danger text-white rounded py-2 px-2">အကြွေးကျန်ရှိ</small>
+                                            <small class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-semibold">ကြွေးကျန်</small>
                                         @elseif($item->status == 'Partial')
-                                            <small class=" bg-warning text-white rounded py-2 px-2">တစ်စိတ်တစ်ပိုင်း
+                                            <small class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill fw-semibold">တစ်စိတ်တစ်ပိုင်း
                                                 ရှင်းပြီး</small>
                                         @elseif($item->status == 'Close')
-                                            <small class=" bg-success text-white rounded py-2 px-2">အကြွေးရှင်းပြီး</small>
+                                            <small class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-semibold">ကြွေးရှင်း</small>
                                         @endif
                                     </div>
                                 </td>
-
                             </tr>
                         @endforeach
                     @else
                         <tr>
                             <td colspan="10" class="empty-state-cell">
                                 <div class="empty-state">
-
                                     <h5>ကြိုသုံးငွေယူထားသော တောင်သူ မရှိသေးပါ</h5>
-
                                     <p>
                                         ကြိုသုံးငွေယူထားသော တောင်သူကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
                                     </p>
@@ -224,10 +187,7 @@
                     @endif
                 </tbody>
             </table>
-
         </div>
-
-
         {{-- Pagination Example --}}
         <div class="d-md-flex justify-content-between align-items-center mt-4">
 

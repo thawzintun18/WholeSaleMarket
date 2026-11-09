@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CarFeeController;
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\CropDepositController;
@@ -165,15 +166,27 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('restore/{id}', [CustomerController::class, 'restore'])->name('Customer#restore');
     });
 
-
-
-
-
-
-
     Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
         Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
         Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
+    });
+
+    Route::group(['prefix' => 'Backup'], function () {
+        Route::get('/backups', [BackupController::class, 'index'])
+            ->name('Backup#list');
+
+        Route::post('/backups/manual', [BackupController::class, 'manual'])
+            ->name('Backup#manual');
+
+        Route::post('/backups/{id}/retry-usb', [BackupController::class, 'retryUsb'])
+            ->name('Backup#retryUsb');
+
+        Route::post('/backups/restore-local', [BackupController::class, 'restoreLocal'])
+            ->name('Backup#restoreLocal');
+
+        Route::post('/backups/{id}/restore', [BackupController::class, 'restore'])
+            ->name('Backup#restore');
+
     });
 
 });

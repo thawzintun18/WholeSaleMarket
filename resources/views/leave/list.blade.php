@@ -8,7 +8,7 @@
 
 @section('content')
 
-    <div class=" d-md-flex justify-content-start align-items-center mb-4">
+    <div class=" d-md-flex justify-content-between align-items-center mb-4">
 
         <div>
             <h1 class="page-title mb-1">နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</h1>
@@ -17,6 +17,15 @@
                 နေ့စဉ် သီးနှံအဝင်အထွက်များကို တွက်ချက်ပြီး သီးနှံတစ်ခုချင်းစီ၏ လက်ကျန်အရေအတွက်နှင့် စုစုပေါင်းလက်ကျန်များကို
                 ကြည့်ရှုစစ်ဆေးရန်။
             </p>
+        </div>
+
+        <div class=" d-flex justify-content-end">
+            @if (!$hasStockBalance && !$hasStockBalanceRun)
+                <a href="{{ route('Leave#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    သီးနှံလက်ကျန်ထည့်ရန်
+                </a>
+            @endif
         </div>
 
     </div>

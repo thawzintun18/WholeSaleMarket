@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 use App\Models\Crop;
 use App\Models\DailyStockBalance;
 use App\Models\DailyStockBalanceRun;
+use App\Models\StockBalance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class LeaveCountController extends Controller
@@ -305,13 +307,169 @@ class LeaveCountController extends Controller
             })
             ->exists();
 
+        $hasStockBalance    = DailyStockBalance::exists();
+        $hasStockBalanceRun = DailyStockBalanceRun::exists();
+
         return view('Leave.list', compact(
             'today',
             'todayRun',
             'balances',
             'crops',
-            'canCalculateStock'
+            'canCalculateStock',
+            'hasStockBalance',
+            'hasStockBalanceRun'
         ));
+    }
+
+    //directPage
+    public function directPage()
+    {
+
+        $crops = Crop::select('id', 'crop_name')
+            ->orderBy('crop_name')
+            ->get();
+
+        return view('Leave.create', compact('crops'));
+    }
+
+    //existCreate
+    public function existCreate(Request $request)
+    {
+
+        $validated = $request->validate([
+
+            'balance_date'             => 'required|date',
+
+            'balances'                 => 'required|array|min:1',
+
+            'balances.*.crop_id'       => [
+                'required',
+                'distinct',
+                'exists:crops,id',
+            ],
+
+            'balances.*.daily_balance' => 'required|numeric|min:0',
+
+            'balances.*.total_balance' => 'required|numeric|min:0',
+
+            'balances.*.average_cost'  => 'required|numeric|min:0',
+
+        ], [
+
+            'balance_date.required'             => 'စာရင်းသွင်းမည့်နေ့ကို ရွေးချယ်ပေးပါ။',
+            'balance_date.date'                 => 'ရက်စွဲမှန်ကန်မှုမရှိပါ။',
+
+            'balances.required'                 => 'အနည်းဆုံး သီးနှံတစ်မျိုး ထည့်သွင်းပေးပါ။',
+            'balances.array'                    => 'သီးနှံစာရင်းပုံစံ မှန်ကန်မှုမရှိပါ။',
+            'balances.min'                      => 'အနည်းဆုံး သီးနှံတစ်မျိုး ထည့်သွင်းပေးပါ။',
+
+            'balances.*.crop_id.required'       => 'သီးနှံအမည်ကို ရွေးချယ်ပေးပါ။',
+            'balances.*.crop_id.distinct'       => 'သီးနှံတစ်မျိုးကို တစ်ကြိမ်သာ ထည့်သွင်းခွင့်ရှိပါသည်။',
+            'balances.*.crop_id.exists'         => 'ရွေးချယ်ထားသော သီးနှံမရှိတော့ပါ။',
+
+            'balances.*.daily_balance.required' => 'နေ့စဉ်လက်ကျန်ကို ထည့်သွင်းပေးပါ။',
+            'balances.*.daily_balance.numeric'  => 'နေ့စဉ်လက်ကျန်ကို ကိန်းဂဏန်းဖြင့် ထည့်သွင်းပေးပါ။',
+            'balances.*.daily_balance.min'      => 'နေ့စဉ်လက်ကျန်သည် အနုတ်တန်ဖိုး မဖြစ်ရပါ။',
+
+            'balances.*.total_balance.required' => 'စုစုပေါင်းလက်ကျန်ကို ထည့်သွင်းပေးပါ။',
+            'balances.*.total_balance.numeric'  => 'စုစုပေါင်းလက်ကျန်ကို ကိန်းဂဏန်းဖြင့် ထည့်သွင်းပေးပါ။',
+            'balances.*.total_balance.min'      => 'စုစုပေါင်းလက်ကျန်သည် အနုတ်တန်ဖိုး မဖြစ်ရပါ။',
+
+            'balances.*.average_cost.required'  => 'ပျမ်းမျှတန်ဖိုးကို ထည့်သွင်းပေးပါ။',
+            'balances.*.average_cost.numeric'   => 'ပျမ်းမျှတန်ဖိုးကို ကိန်းဂဏန်းဖြင့် ထည့်သွင်းပေးပါ။',
+            'balances.*.average_cost.min'       => 'ပျမ်းမျှတန်ဖိုးသည် အနုတ်တန်ဖိုး မဖြစ်ရပါ။',
+
+        ]);
+
+        try {
+
+            DB::transaction(function () use ($validated) {
+
+                $balanceDate = $validated['balance_date'];
+
+                // အဲဒီနေ့အတွက် စာရင်းရှိပြီးသားလား စစ်မယ်
+                $exists = DailyStockBalanceRun::where(
+                    'balance_date',
+                    $balanceDate
+                )->lockForUpdate()->exists();
+
+                if ($exists) {
+                    throw ValidationException::withMessages([
+                        'balance_date' => 'ဤနေ့အတွက် လက်ကျန်စာရင်း ထည့်သွင်းပြီးဖြစ်ပါသည်။',
+                    ]);
+                }
+
+                // Daily Run Create
+                DailyStockBalanceRun::create([
+                    'balance_date'  => $balanceDate,
+                    'calculated_at' => now(),
+                ]);
+
+                foreach ($validated['balances'] as $item) {
+
+                    // Daily Stock Balance Create
+                    DailyStockBalance::create([
+                        'crop_id'       => $item['crop_id'],
+                        'balance_date'  => $balanceDate,
+                        'daily_balance' => $item['daily_balance'],
+                        'total_balance' => $item['total_balance'],
+                        'average_cost'  => $item['average_cost'],
+                    ]);
+
+                    // Current Stock Balance Update or Create
+                    StockBalance::updateOrCreate(
+                        [
+                            'crop_id' => $item['crop_id'],
+                        ],
+                        [
+                            'quantity_on_hand' => $item['total_balance'],
+                            'average_cost'     => $item['average_cost'],
+                        ]
+                    );
+                }
+            });
+
+            return redirect()->back()->with(
+                'success',
+                'သီးနှံလက်ကျန်စာရင်း အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ။'
+            );
+
+        } catch (ValidationException $e) {
+
+            throw $e;
+
+        } catch (\Exception $e) {
+
+            return back()->withInput()->with(
+                'error',
+                'သီးနှံလက်ကျန်စာရင်း ထည့်သွင်းရာတွင် အမှားဖြစ်နေပါသည်။'
+            );
+        }
+
+    }
+
+    //checkCreate
+    public function checkCreate(Request $request)
+    {
+        $request->validate([
+            'balance_date' => 'required|date',
+        ], [
+            'balance_date.required' => 'စာရင်းသွင်းမည့်နေ့ကို ရွေးချယ်ပေးပါ။',
+            'balance_date.date'     => 'ရက်စွဲမှန်ကန်မှုမရှိပါ။',
+        ]);
+
+        $exists = DailyStockBalanceRun::where(
+            'balance_date',
+            $request->balance_date
+        )->exists();
+
+        return response()->json([
+            'exists'  => $exists,
+            'message' => $exists
+                ? 'ဤနေ့အတွက် လက်ကျန်စာရင်း ထည့်သွင်းပြီးဖြစ်ပါသည်။'
+                : 'စာရင်းသွင်းနိုင်ပါသည်။',
+        ]);
+
     }
 
 }

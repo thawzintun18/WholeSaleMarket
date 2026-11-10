@@ -12,42 +12,36 @@
         @include('partials.farmer-customer-tabs')
 
         {{-- ခေါင်းစဉ်နှင့် အသစ်ထည့်ရန် --}}
-        <div class="d-md-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
             <div>
-                <h1 class="page-title mb-1">တောင်သူစာရင်း</h1>
-                <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+                <h1 class="page-title mb-1 fs-3 fs-md-2">တောင်သူစာရင်း</h1>
+                <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
                     တောင်သူများ၏ ကိုယ်ရေးအချက်အလက်များကို စီမံခန့်ခွဲရန်
                 </p>
             </div>
-
-            {{-- <div class=" d-flex justify-content-end">
-            <a href="{{ route('farmers#create#page') }}" class="btn btn-success mt-md-0 mt-3">
-                <i class="bi bi-plus-lg me-1"></i>
-                တောင်သူအသစ်ထည့်ရန်
-            </a>
-        </div> --}}
-
         </div>
 
         {{-- ရှာဖွေရန် --}}
-        <div class="dashboard-card mb-4 shadow-sm">
+        <div class="dashboard-card mb-3 shadow-sm p-3 p-md-4">
             <form action="{{ route('farmers#index') }}" method="GET">
-                <div class="row g-3 align-items-end">
-                    <small class=" fs-6">တောင်သူအချက်အလက်သိလျှင်အလွယ်တကူ ရှာဖွေနိုင်သည်</small>
-                    <div class="col-md-3">
-                        <label class="form-label">တောင်သူ ရှာဖွေရန်</label>
+                <div class="row align-items-end g-2">
+                    <div class="col-12 mb-1">
+                        <small class="text-muted">တောင်သူအချက်အလက်သိလျှင်အလွယ်တကူ ရှာဖွေနိုင်သည်</small>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label mb-1">တောင်သူ ရှာဖွေရန်</label>
                         <input type="text" name="search" id="search" class="form-control"
                             value="{{ request('search') }}" placeholder="ကုဒ်၊ အမည်၊ ဖုန်းနံပါတ်...">
                     </div>
 
-                    <div class="col-md-3">
-                        <label class="form-label">ကျေးရွာ</label>
+                    <div class="col-12 col-md-3">
+                        <label class="form-label mb-1">ကျေးရွာ</label>
                         <input type="text" name="village" class="form-control" value="{{ request('village') }}"
                             placeholder="ကျေးရွာအမည် ရိုက်ထည့်ပါ">
                     </div>
 
-                    <div class="col-md-2">
-                        <label class="form-label">အခြေအနေ</label>
+                    <div class="col-12 col-md-2">
+                        <label class="form-label mb-1">အခြေအနေ</label>
                         <select name="status" class="form-select">
                             <option value="">အားလုံး</option>
                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
@@ -59,13 +53,13 @@
                         </select>
                     </div>
 
-                    <div class="col-md-auto">
-                        <button type="submit" class="btn btn-primary">
+                    <div class="col-12 col-md-auto d-flex flex-wrap gap-2 mt-2 mt-md-1">
+                        <button type="submit" class="btn btn-primary flex-fill flex-md-grow-0 rounded-pill shadow-sm">
                             <i class="bi bi-search me-1"></i>
                             ရှာဖွေမည်
                         </button>
 
-                        <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary text-center flex-fill flex-md-grow-0 rounded-pill shadow-sm">
                             <i class="bi bi-arrow-clockwise me-1"></i>
                             ပြန်လည်သတ်မှတ်မည်
                         </a>
@@ -76,41 +70,41 @@
         </div>
 
         {{-- တောင်သူစာရင်း --}}
-        <div class="dashboard-card shadow-lg">
+        <div class="dashboard-card shadow-lg p-3 p-md-4">
 
-            <div class="row d-flex justify-content-between align-items-center mb-3">
-                <div class=" col-md-7">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+                <div class="col-12 col-md-7 ps-0">
 
                     <h5 class="mb-1">တောင်သူများစာရင်း</h5>
 
-                    <small class="text-muted fs-6 mt-2" style="line-height: 30px">
+                    <small class="text-muted d-block mt-1" style="line-height: 1.5">
                         အရောင်းအဝယ်လုပ်ထားသောတောင်သူများကို သီးသန့်မှတ်သားဖော်ပြထားခြင်းဖြစ်သည် ( နောက်ဆုံးရောင်းသွားသော
                         တောင်သူကို အပေါ်ဆုံးကနေစပြီးပြထားပေးသည် )
                     </small>
 
                 </div>
 
-                <div class=" col-md-5 d-md-flex justify-content-end mt-md-0 mt-2">
-                    <div class="me-2">
-                        <span class="badge bg-light text-dark border">
+                <div class="col-12 col-md-5 d-flex flex-wrap align-items-center justify-content-md-end gap-2 pe-0">
+                    <div>
+                        <span class="badge bg-light text-dark border px-3 py-2">
                             စုစုပေါင်း {{ number_format($farmers->total()) }} ဦး
                         </span>
                     </div>
 
-                    <div class="d-md-flex mt-md-0 mt-2">
-                        <div class=" me-2">
-                            <a href="{{ route('farmers#history') }}" class=" btn btn-primary">ပြင်ဆင်မှုစာရင်း</a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div>
+                            <a href="{{ route('farmers#history') }}" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">ပြင်ထားသောစာရင်း</a>
                         </div>
 
-                        <div class=" me-2 mt-md-0 mt-2">
-                            <a href="{{ route('farmers#trashList') }}" class=" btn btn-primary">ဖျက်ထားသောစာရင်း</a>
+                        <div>
+                            <a href="{{ route('farmers#trashList') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm">ဖျက်ထားသောစာရင်း</a>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0 text-nowrap">
 
                     <thead class="table-light">
                         <tr>
@@ -142,7 +136,7 @@
                                     <strong>{{ $farmer->name }}</strong>
                                 </td>
 
-                                <td class=" fs-5 fw-bold">
+                                <td class="fs-6 fw-bold">
                                     {{ $farmer->phone ?: '-' }}
                                 </td>
 
@@ -167,42 +161,36 @@
                                     @endif
                                 </td>
 
-                                <td class=" d-flex justify-content-end">
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-1">
+                                        @if ($farmer->has_outstanding_debt)
+                                            <a href="{{ route('farmer#farmerSettlementList', $farmer->id) }}"
+                                                class="btn btn-sm btn-outline-primary" title="အကြွေးပြန်ဆပ်မှုစာရင်း">
+                                                အကြွေးပြန်ဆပ်မှု
+                                            </a>
+                                        @endif
 
-
-                                    @if ($farmer->has_outstanding_debt)
-                                        <a href="{{ route('farmer#farmerSettlementList', $farmer->id) }}"
-                                            class="btn btn-sm btn-outline-primary" title="အကြွေးပြန်ဆပ်မှုစာရင်း">
-                                            အကြွေးပြန်ဆပ်မှုစာရင်း
+                                        <a href="{{ route('farmers#edit#page', $farmer->id) }}"
+                                            class="btn btn-sm btn-outline-dark" title="ပြင်ဆင်ရန်">
+                                            ပြင်ရန်
                                         </a>
-                                    @endif
 
-
-                                    <a href="{{ route('farmers#edit#page', $farmer->id) }}"
-                                        class="btn btn-sm btn-outline-dark mx-2" title="ပြင်ဆင်ရန်">
-                                        ပြင်ရန်
-                                    </a>
-
-                                    <button type="button" onclick="DeleteData({{ $farmer->id }})"
-                                        class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                        ဖျက်ရန်
-                                    </button>
+                                        <button type="button" onclick="DeleteData({{ $farmer->id }})"
+                                            class="btn btn-sm btn-outline-danger" title="ဖျက်ရန်">
+                                            ဖျက်ရန်
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="empty-state-cell">
-
-                                    <div class="empty-state">
-
-                                        <h5>တောင်သူစာရင်း မရှိသေးပါ</h5>
-
-                                        <p>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <h5 class="mb-1 text-secondary fw-bold">တောင်သူစာရင်း မရှိသေးပါ</h5>
+                                        <p class="text-muted mb-0">
                                             တောင်သူကို ထည့်သွင်းထားသော မှတ်တမ်း မရှိသေးပါ။
                                         </p>
-
                                     </div>
-
                                 </td>
                             </tr>
                         @endforelse
@@ -213,15 +201,19 @@
 
             {{-- Pagination --}}
             @if ($farmers->total() > 0)
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-4">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
 
-                    <small class="text-muted">
+                    <p class="text-muted mb-0 text-center text-md-start">
                         စာရင်း {{ number_format($farmers->firstItem()) }}
                         မှ {{ number_format($farmers->lastItem()) }} အထိ၊
                         စုစုပေါင်း {{ number_format($farmers->total()) }} ဦး
-                    </small>
+                    </p>
 
-                    {{ $farmers->links('pagination::bootstrap-5') }}
+                    <nav class="d-flex justify-content-end">
+                        <ul class="pagination pagination-sm mb-0">
+                            {{ $farmers->links('pagination::bootstrap-5') }}
+                        </ul>
+                    </nav>
 
                 </div>
             @endif
@@ -229,6 +221,7 @@
         </div>
     </div>
 @endsection
+
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {

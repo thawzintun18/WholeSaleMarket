@@ -1,4 +1,3 @@
-blade
 @extends('layouts.app')
 
 @section('page-title', 'Farmer History')
@@ -10,17 +9,17 @@ blade
 @section('content')
 
     {{-- Page Header --}}
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
         <div>
-            <h1 class="page-title mb-1">၀ယ်သူပြင်ဆင်မှုစာရင်း</h1>
+            <h1 class="page-title mb-1 fs-3 fs-md-2">၀ယ်သူပြင်ဆင်မှုစာရင်း</h1>
 
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+            <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
                 ၀ယ်သူအချက်အလက် အဟောင်းနှင့် အသစ်များကို ကြည့်ရှုနိုင်ပါသည်။
             </p>
         </div>
 
-        <div class=" d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
+        <div class="d-flex justify-content-end w-100 w-md-auto">
+            <a href="{{ route('Customer#list') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
@@ -28,19 +27,19 @@ blade
     </div>
 
     {{-- Search --}}
-    <div class="dashboard-card mb-4 shadow-sm">
+    <div class="dashboard-card mb-3 shadow-sm p-3 p-md-4">
 
         <form action="{{ route('Customer#history') }}" method="GET">
-            <div class="row g-3">
+            <div class="row align-items-end g-2">
 
-                <div class="col-md-8">
-                    <label class="form-label">
+                <div class="col-12 col-lg-8">
+                    <label class="form-label mb-1">
                         ၀ယ်သူနှင့် ရက်စွဲ ရှာဖွေရန်
                     </label>
 
-                    <div class="d-flex gap-2">
+                    <div class="d-flex flex-column flex-sm-row gap-2">
 
-                        <select name="customer_code" id="customerSearch" class="form-select w-50">
+                        <select name="customer_code" id="customerSearch" class="form-select w-100 w-sm-50">
 
                             <option value="">၀ယ်သူအားလုံး</option>
 
@@ -53,21 +52,19 @@ blade
 
                         </select>
 
-                        <input type="date" id="dateSearch" name="changed_date" class="form-control w-50"
+                        <input type="date" id="dateSearch" name="changed_date" class="form-control w-100 w-sm-50"
                             value="{{ request('changed_date') }}">
 
                     </div>
                 </div>
 
-                <div class="col-md-auto d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary">
+                <div class="col-12 col-lg-4 d-flex flex-wrap gap-2 mt-2 mt-lg-0">
+                    <button type="submit" class="btn btn-primary flex-fill flex-lg-grow-0 rounded-pill shadow-sm">
                         <i class="bi bi-search me-1"></i>
                         ရှာဖွေမည်
                     </button>
-                </div>
 
-                <div class="col-md-auto d-flex align-items-end">
-                    <a href="{{ route('Customer#history') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('Customer#history') }}" class="btn btn-outline-secondary text-center flex-fill flex-lg-grow-0 rounded-pill shadow-sm">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်မည်
                     </a>
@@ -78,34 +75,32 @@ blade
 
     </div>
 
-    {{-- Farmer History Table --}}
-    <div class="dashboard-card shadow-sm">
+    {{-- Customer History Table --}}
+    <div class="dashboard-card shadow-sm p-3 p-md-4">
 
-        <div class="d-md-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
 
             <div>
                 <h5 class="mb-1">၀ယ်သူပြင်ဆင်မှုစာရင်း</h5>
 
-                <small class="text-muted mt-2" style="line-height: 30px">
+                <small class="text-muted d-block mt-1" style="line-height: 1.5">
                     ပြင်ဆင်ထားသော ၀ယ်သူအချက်အလက်မှတ်တမ်းများ
                 </small>
             </div>
 
-            <div class="d-flex justify-content-end mt-md-0 mt-2">
-
-                <div class="me-2">
-                    <span class="badge bg-light text-dark border">
+            <div class="d-flex justify-content-end">
+                <div>
+                    <span class="badge bg-light text-dark border px-3 py-2">
                         {{ $histories->total() }} မှတ်တမ်း
                     </span>
                 </div>
-
             </div>
 
         </div>
 
         <div class="table-responsive">
 
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
 
                 <thead>
                     <tr>
@@ -122,10 +117,10 @@ blade
                         <th>လိပ်စာ</th>
                         <th>မှတ်ချက်</th>
 
-                        <th class=" text-success">အမည်</th>
-                        <th class=" text-success">ဖုန်းနံပါတ်</th>
-                        <th class=" text-success">လိပ်စာ</th>
-                        <th class=" text-success">မှတ်ချက်</th>
+                        <th class="text-success">အမည်</th>
+                        <th class="text-success">ဖုန်းနံပါတ်</th>
+                        <th class="text-success">လိပ်စာ</th>
+                        <th class="text-success">မှတ်ချက်</th>
                     </tr>
                 </thead>
 
@@ -138,7 +133,7 @@ blade
                             </td>
 
                             <td class="fw-semibold">
-                                {{ $history->farmer_code ?? '-' }}
+                                {{ $history->customer_code ?? '-' }}
                             </td>
 
                             {{-- Old Data --}}
@@ -172,7 +167,7 @@ blade
                             {{-- Changed Date --}}
                             <td style="min-width: 120px;" class="text-info">
                                 <div>
-                                    {{ \Carbon\Carbon::parse($history->changed_at)->format('d-m-Y') }}
+                                    {{ \Carbon\Carbon::parse($history->changed_at)->format('d-M-Y') }}
                                 </div>
 
                                 <small>
@@ -184,11 +179,11 @@ blade
                     @empty
 
                         <tr>
-                            <td colspan="11" class="empty-state-cell">
-                                <div class="empty-state">
-                                    <h5>ပြင်ဆင်မှုမှတ်တမ်း မရှိသေးပါ</h5>
+                            <td colspan="11" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <h5 class="mb-1 text-secondary fw-bold">ပြင်ဆင်မှုမှတ်တမ်း မရှိသေးပါ</h5>
 
-                                    <p>
+                                    <p class="text-muted mb-0">
                                         ၀ယ်သူအချက်အလက်ကို ပြင်ဆင်ထားသော
                                         မှတ်တမ်း မရှိသေးပါ။
                                     </p>
@@ -204,18 +199,20 @@ blade
         </div>
 
         {{-- Pagination --}}
-        <div class="d-md-flex justify-content-between align-items-center mt-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
 
-            <p class="text-muted mb-md-0">
+            <p class="text-muted mb-0 text-center text-md-start">
                 မှတ်တမ်း {{ $histories->firstItem() ?? 0 }}
                 မှ {{ $histories->lastItem() ?? 0 }}
                 အထိ ပြသထားပြီး
                 စုစုပေါင်း {{ $histories->total() }} ခု ရှိပါသည်။
             </p>
 
-            <div class="d-flex justify-content-end">
-                {{ $histories->links() }}
-            </div>
+            <nav class="d-flex justify-content-end">
+                <ul class="pagination pagination-sm mb-0">
+                    {{ $histories->links() }}
+                </ul>
+            </nav>
 
         </div>
 

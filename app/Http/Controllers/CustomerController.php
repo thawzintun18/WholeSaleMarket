@@ -246,7 +246,7 @@ class CustomerController extends Controller
     //history
     public function history(Request $request)
     {
-        $customers = Customer::select('farmer_code', 'name')
+        $customers = Customer::select('customer_code', 'name')
             ->orderBy('name')
             ->get();
 

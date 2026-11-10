@@ -8,24 +8,27 @@
 
 @section('content')
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    {{-- Page Header --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
         <div>
-            <h1 class="page-title mb-1">တောင်သူအချက်အလက်ပြင်ဆင်မည်</h1>
-            <p class="text-muted mb-0">
+            <h1 class="page-title mb-1 fs-3 fs-md-2">တောင်သူအချက်အလက်ပြင်ဆင်မည်</h1>
+            <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
                 တောင်သူ၏ အချက်အလက်များကို ပြင်ဆင်နိုင်ပါသည်
             </p>
         </div>
 
-        <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i>
-            နောက်သို့
-        </a>
+        <div class="d-flex justify-content-end w-100 w-md-auto">
+            <a href="{{ route('farmers#index') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i>
+                နောက်သို့
+            </a>
+        </div>
     </div>
 
-    <div class="dashboard-card shadow-lg p-4">
+    <div class="dashboard-card shadow-lg p-3 p-md-4">
 
         @if (session('warning'))
-            <div class="alert alert-warning alert-dismissible fade show">
+            <div class="alert alert-warning alert-dismissible fade show mb-3">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 {{ session('warning') }}
 
@@ -35,10 +38,10 @@
 
         <form action="{{ route('farmers#update', $farmer->id) }}" method="POST" id="editFarmerForm">
             @csrf
-            <div class="row g-4">
+            <div class="row g-3">
                 {{-- Farmer Code --}}
-                <div class="col-md-6">
-                    <label for="farmer_code" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="farmer_code" class="form-label fw-semibold mb-1">
                         တောင်သူကုဒ်
                     </label>
 
@@ -46,8 +49,8 @@
                 </div>
 
                 {{-- Farmer Name --}}
-                <div class="col-md-6">
-                    <label for="name" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="name" class="form-label fw-semibold mb-1">
                         တောင်သူအမည်
                         <span class="text-danger">*</span>
                     </label>
@@ -64,8 +67,8 @@
                 </div>
 
                 {{-- Phone --}}
-                <div class="col-md-6">
-                    <label for="phone" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="phone" class="form-label fw-semibold mb-1">
                         ဖုန်းနံပါတ်
                     </label>
 
@@ -81,8 +84,8 @@
                 </div>
 
                 {{-- Village --}}
-                <div class="col-md-6">
-                    <label for="village" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="village" class="form-label fw-semibold mb-1">
                         ကျေးရွာအမည်
                     </label>
 
@@ -98,8 +101,8 @@
                 </div>
 
                 {{-- Active Status --}}
-                <div class="col-md-6">
-                    <label for="is_active" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="is_active" class="form-label fw-semibold mb-1">
                         Status
                         <span class="text-danger">*</span>
                     </label>
@@ -126,11 +129,11 @@
 
                 {{-- Notes --}}
                 <div class="col-12">
-                    <label for="notes" class="form-label fw-semibold">
+                    <label for="notes" class="form-label fw-semibold mb-1">
                         မှတ်ချက်
                     </label>
 
-                    <textarea id="notes" name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror"
+                    <textarea id="notes" name="notes" rows="3" class="form-control @error('notes') is-invalid @enderror"
                         placeholder="တောင်သူနှင့်ပတ်သက်သော မှတ်ချက်များ ထည့်ပါ">{{ old('notes', $farmer->notes) }}</textarea>
 
                     @error('notes')
@@ -141,14 +144,15 @@
                 </div>
 
             </div>
-            <hr class="my-4">
-            <div class="d-flex justify-content-end gap-2">
 
-                <a href="{{ route('farmers#index') }}" class="btn btn-outline-danger">
+            <hr class="my-3">
+
+            <div class="d-flex flex-column flex-md-row justify-content-end gap-2">
+                <a href="{{ route('farmers#index') }}" class="btn btn-outline-danger w-100 w-md-auto text-center rounded-pill shadow-sm">
                     <i class="bi bi-x-lg me-1"></i>
                     ပယ်ဖျက်မည်
                 </a>
-                <button type="submit" class="btn btn-success" id="submitButton">
+                <button type="submit" class="btn btn-success w-100 w-md-auto rounded-pill shadow-sm" id="submitButton">
                     <i class="bi bi-check-lg me-1"></i>
                     ပြင်ဆင်ချက်သိမ်းမည်
                 </button>

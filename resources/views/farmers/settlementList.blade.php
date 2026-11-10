@@ -21,7 +21,7 @@
         </div>
 
         <div class="col-md-4 d-flex justify-content-end">
-            <a href="{{ route('farmers#index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('farmers#index') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
@@ -134,7 +134,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
-                                    <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-m-Y') }}</div>
+                                    <div>{{ \Carbon\Carbon::parse($item->debt_date)->format('d-M-Y') }}</div>
                                     <small class="text-muted">
                                         {{ \Carbon\Carbon::parse($item->debt_date)->format('h:i A') }}
                                     </small>
@@ -156,6 +156,8 @@
                                             ကြိုယူငွေ
                                         @elseif($item->debt_type == 'CashLoan')
                                             တောကြွေး
+                                        @elseif($item->debt_type == 'BeanPayment')
+                                            ပဲဆံဖိုး
                                         @endif
                                     </small>
                                 </td>

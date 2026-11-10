@@ -1,4 +1,3 @@
-blade
 @extends('layouts.app')
 
 @section('page-title', 'Edit Farmer')
@@ -9,26 +8,27 @@ blade
 
 @section('content')
 
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    {{-- Page Header --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
         <div>
-            <h1 class="page-title mb-1">၀ယ်သူအချက်အလက်ပြင်ဆင်မည်</h1>
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+            <h1 class="page-title mb-1 fs-3 fs-md-2">၀ယ်သူအချက်အလက်ပြင်ဆင်မည်</h1>
+            <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
                 ၀ယ်သူ၏ အချက်အလက်များကို ပြင်ဆင်နိုင်ပါသည်
             </p>
         </div>
 
-        <div class=" d-flex justify-content-end mt-md-0 mt-3">
-            <a href="{{ route('Customer#list') }}" class="btn btn-outline-secondary">
+        <div class="d-flex justify-content-end w-100 w-md-auto">
+            <a href="{{ route('Customer#list') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
         </div>
     </div>
 
-    <div class="dashboard-card shadow-lg p-4">
+    <div class="dashboard-card shadow-lg p-3 p-md-4">
 
         @if (session('warning'))
-            <div class="alert alert-warning alert-dismissible fade show">
+            <div class="alert alert-warning alert-dismissible fade show mb-3">
                 <i class="bi bi-exclamation-triangle me-2"></i>
                 {{ session('warning') }}
 
@@ -38,10 +38,10 @@ blade
 
         <form action="{{ route('Customer#update', $customer->id) }}" method="POST" id="editCustomerForm">
             @csrf
-            <div class="row g-4">
+            <div class="row g-3">
                 {{-- customer Code --}}
-                <div class="col-md-6">
-                    <label for="customer_code" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="customer_code" class="form-label fw-semibold mb-1">
                         ၀ယ်သူကုဒ်
                     </label>
 
@@ -50,8 +50,8 @@ blade
                 </div>
 
                 {{-- customer Name --}}
-                <div class="col-md-6">
-                    <label for="name" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="name" class="form-label fw-semibold mb-1">
                         ၀ယ်သူအမည်
                         <span class="text-danger">*</span>
                     </label>
@@ -66,8 +66,8 @@ blade
                 </div>
 
                 {{-- Phone --}}
-                <div class="col-md-6">
-                    <label for="phone" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="phone" class="form-label fw-semibold mb-1">
                         ဖုန်းနံပါတ်
                     </label>
 
@@ -83,8 +83,8 @@ blade
                 </div>
 
                 {{-- Village --}}
-                <div class="col-md-6">
-                    <label for="address" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="address" class="form-label fw-semibold mb-1">
                         လိပ်စာအမည်
                     </label>
 
@@ -100,8 +100,8 @@ blade
                 </div>
 
                 {{-- Active Status --}}
-                <div class="col-md-6">
-                    <label for="is_active" class="form-label fw-semibold">
+                <div class="col-12 col-md-6">
+                    <label for="is_active" class="form-label fw-semibold mb-1">
                         Status
                         <span class="text-danger">*</span>
                     </label>
@@ -128,11 +128,11 @@ blade
 
                 {{-- Notes --}}
                 <div class="col-12">
-                    <label for="notes" class="form-label fw-semibold">
+                    <label for="notes" class="form-label fw-semibold mb-1">
                         မှတ်ချက်
                     </label>
 
-                    <textarea id="notes" name="notes" rows="4" class="form-control @error('notes') is-invalid @enderror"
+                    <textarea id="notes" name="notes" rows="3" class="form-control @error('notes') is-invalid @enderror"
                         placeholder="၀ယ်သူနှင့်ပတ်သက်သော မှတ်ချက်များ ထည့်ပါ">{{ old('notes', $customer->notes) }}</textarea>
 
                     @error('notes')
@@ -144,22 +144,18 @@ blade
 
             </div>
 
-            <hr class="my-4">
+            <hr class="my-3">
 
-            <div class="d-md-flex justify-content-end gap-2">
+            <div class="d-flex flex-column flex-md-row justify-content-end gap-2">
+                <a href="{{ route('Customer#list') }}" class="btn btn-outline-danger w-100 w-md-auto text-center rounded-pill shadow-sm">
+                    <i class="bi bi-x-lg me-1"></i>
+                    ပယ်ဖျက်မည်
+                </a>
 
-                <div class=" d-flex justify-content-end">
-                    <a href="{{ route('Customer#list') }}" class="btn btn-outline-danger">
-                        <i class="bi bi-x-lg me-1"></i>
-                        ပယ်ဖျက်မည်
-                    </a>
-                </div>
-
-                <button type="submit" class="btn btn-success" id="submitButton">
+                <button type="submit" class="btn btn-success w-100 w-md-auto rounded-pill shadow-sm" id="submitButton">
                     <i class="bi bi-check-lg me-1"></i>
                     ပြင်ဆင်ချက်သိမ်းမည်
                 </button>
-
             </div>
 
         </form>

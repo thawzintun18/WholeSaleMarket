@@ -80,8 +80,6 @@
             </a>
         @endif
 
-<<<<<<< HEAD
-=======
         <div class="menu-title">
             Backup
         </div>
@@ -90,7 +88,6 @@
             <span>Backup စာရင်း</span>
         </a>
 
->>>>>>> d099ef0aa9c66c355a2eda27a55aff92002a7d7a
 
     </div>
 

@@ -344,13 +344,17 @@ class ReportController extends Controller
 
         // ရွေးချယ်ထားသော ရက်စွဲအတွင်း ဝယ်ယူငွေ စုစုပေါင်း (Total Purchases from Start to End)
         $totalPurchaseAmount = 0;
+        $totalRemainderAmount = 0; // အစွန်းထွက်ငွေအတွက် ထည့်ရန်
+
         if ($cropId) {
-            $totalPurchaseAmount = DB::table('purchase_items')
+            $purchaseQuery = DB::table('purchase_items')
                 ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
                 ->where('purchase_items.crop_id', $cropId)
                 ->whereDate('purchases.purchase_date', '>=', $startDate)
-                ->whereDate('purchases.purchase_date', '<=', $endDate)
-                ->sum('purchase_items.gross_amount');
+                ->whereDate('purchases.purchase_date', '<=', $endDate);
+
+            $totalPurchaseAmount  = (float) $purchaseQuery->sum('purchase_items.gross_amount');
+            $totalRemainderAmount = (float) $purchaseQuery->sum('purchase_items.remainder_amount'); // အစွန်းထွက်ငွေ ပေါင်းခြင်း
         }
 
         // ** ပွဲရုံမှ အသုံးပြုထားသော စုစုပေါင်းငွေ / ကုန်ကျစရိတ် (Total Investment) **
@@ -397,7 +401,7 @@ class ReportController extends Controller
 
         return view('reports.daily_profit', compact(
             'crops', 'cropId', 'startDate', 'endDate',
-            'openingInventoryValue', 'totalPurchaseAmount', 'totalInvestment',
+            'openingInventoryValue', 'totalPurchaseAmount', 'totalRemainderAmount', 'totalInvestment',
             'totalSalesRevenue', 'endingInventoryValue', 'totalReturn',
             'netProfit'
         ));

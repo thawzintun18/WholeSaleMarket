@@ -3,56 +3,98 @@
 @section('page-title', 'တစ်နေ့တာအမြတ်စာရင်း')
 
 @section('breadcrumb', 'ပင်မစာမျက်နှာ / တစ်နေ့တာအမြတ်စာရင်းချုပ်')
+
 @section('content')
-<div class="container-fluid py-4">
-    <h3 class="fw-bold mb-4">သီးနှံအမြတ်အစွန်း စာရင်းချုပ်</h3>
+<div class="container-fluid p-0">
 
-    <!-- Filter Form -->
-    <form method="GET" action="{{ route('reports#daily#profit') }}" class="row g-3 mb-4">
-        <div class="col-md-3">
-            <label class="form-label">သီးနှံရွေးရန်</label>
-            <select name="crop_id" class="form-select" onchange="this.form.submit()">
-                @foreach($crops as $crop)
-                    <option value="{{ $crop->id }}" {{ $cropId == $crop->id ? 'selected' : '' }}>{{ $crop->crop_name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">စတင်ရက်စွဲ</label>
-            <input type="date" name="start_date" value="{{ $startDate }}" class="form-control">
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">ကုန်ဆုံးရက်စွဲ</label>
-            <input type="date" name="end_date" value="{{ $endDate }}" class="form-control">
-        </div>
-        <div class="col-md-3 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">ရှာဖွေမည်</button>
-        </div>
-    </form>
+    @include('partials.report-purchase-sale-tabs')
 
-    <!-- Results Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-4">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">စိုက်ထုတ်သုံးစွဲထားသော ငွေစုစုပေါင်း (Investment)</div>
-                <h4 class="fw-bold text-danger mb-0">{{ number_format($totalInvestment, 2) }} ကျပ်</h4>
-                <div class="small text-muted mt-1">(ရှေ့နေ့လက်ကျန်တန်ဖိုး + ဝယ်ယူငွေ)</div>
+    <!-- Header Title -->
+    <div class="d-flex align-items-center mb-4">
+        <div class="bg-primary-subtle text-primary p-3 rounded-4 me-3">
+            <i class="bi bi-wallet2 fs-4"></i>
+        </div>
+        <div>
+            <h4 class="fw-bold text-dark mb-1">သီးနှံအမြတ်အစွန်း စာရင်းချုပ်</h4>
+            <p class="text-muted small mb-0">ရွေးချယ်ထားသော ရက်စွဲအလိုက် စုစုပေါင်းရင်းနှီးငွေ၊ ရောင်းရငွေနှင့် အမြတ်အစွန်းများ တွက်ချက်မှု</p>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+        <div class="card-body p-4">
+            <form method="GET" action="{{ route('reports#daily#profit') }}" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-secondary small">သီးနှံရွေးရန်</label>
+                    <select name="crop_id" class="form-select rounded-3 py-2" onchange="this.form.submit()">
+                        @foreach($crops as $crop)
+                            <option value="{{ $crop->id }}" {{ $cropId == $crop->id ? 'selected' : '' }}>{{ $crop->crop_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-secondary small">စတင်ရက်စွဲ (မှ)</label>
+                    <input type="date" name="start_date" value="{{ $startDate }}" class="form-control rounded-3 py-2">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-secondary small">ကုန်ဆုံးရက်စွဲ (ထိ)</label>
+                    <input type="date" name="end_date" value="{{ $endDate }}" class="form-control rounded-3 py-2">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                        <i class="bi bi-search me-1"></i> ရှာဖွေမည်
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Cards (Modern Grid Layout) -->
+    <div class="row g-4 mb-4">
+        <!-- Card 1: Investment -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100 border-start border-danger border-4">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">စိုက်ထုတ်သုံးစွဲငွေ (Investment)</div>
+                <h4 class="fw-bold text-danger mb-2">{{ number_format($totalInvestment, 2) }} <span class="fs-6 fw-normal">ကျပ်</span></h4>
+                <div class="text-secondary small bg-light p-2 rounded-3 mt-auto">
+                    <i class="bi bi-info-circle me-1"></i> ရှေ့နေ့လက်ကျန် + ဝယ်ယူငွေ
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">ပြန်လည်ရရှိမည့် တန်ဖိုးစုစုပေါင်း (Total Return)</div>
-                <h4 class="fw-bold text-primary mb-0">{{ number_format($totalReturn, 2) }} ကျပ်</h4>
-                <div class="small text-muted mt-1">(ရောင်းရငွေ + လက်ကျန်တန်ဖိုး)</div>
+
+        <!-- Card 2: Return -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100 border-start border-primary border-4">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">ပြန်လည်ရရှိမည့်တန်ဖိုး (Return)</div>
+                <h4 class="fw-bold text-primary mb-2">{{ number_format($totalReturn, 2) }} <span class="fs-6 fw-normal">ကျပ်</span></h4>
+                <div class="text-secondary small bg-light p-2 rounded-3 mt-auto">
+                    <i class="bi bi-info-circle me-1"></i> ရောင်းရငွေ + လက်ကျန်တန်ဖိုး
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">အစစ်အမှန် အမြတ်ငွေ (Net Profit)</div>
-                <h4 class="fw-bold text-success mb-0">{{ number_format($netProfit, 2) }} ကျပ်</h4>
-                <div class="small text-muted mt-1">(Return - Investment)</div>
+
+        <!-- Card 3: Net Profit -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100 border-start border-success border-4">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">အစစ်အမှန် အမြတ်ငွေ</div>
+                <h4 class="fw-bold text-success mb-2">{{ number_format($netProfit, 2) }} <span class="fs-6 fw-normal">ကျပ်</span></h4>
+                <div class="text-secondary small bg-light p-2 rounded-3 mt-auto">
+                    <i class="bi bi-check-circle me-1"></i> စုစုပေါင်း Return - Investment
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Remainder Amount (အစွန်းထွက်ငွေ စုစုပေါင်း) -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white p-3 h-100 border-start border-warning border-4">
+                <div class="text-muted small fw-semibold text-uppercase mb-1">အစွန်းထွက်ငွေ စုစုပေါင်း</div>
+                <h4 class="fw-bold text-warning-emphasis mb-2">{{ number_format($totalRemainderAmount ?? 0, 2) }} <span class="fs-6 fw-normal">ကျပ်</span></h4>
+                <div class="text-secondary small bg-light p-2 rounded-3 mt-auto">
+                    <i class="bi bi-bookmark-star me-1"></i> အဝယ်ဘောင်ချာ အစွန်းထွက်များ
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 @endsection

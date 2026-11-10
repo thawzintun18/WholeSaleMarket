@@ -13,7 +13,7 @@
     <div class="d-md-flex flex-wrap justify-content-between align-items-center mb-4 gap-3 d-print-none">
         <div>
             <h3 class="fw-bold text-dark mb-1" style="line-height: 35px">
-                <i class="bi bi-journal-text me-2 text-primary"></i>နေ့စဉ်သီးနှံအရောင်းစာရင်းချုပ် (Daily Sale Report)
+                <i class="bi bi-journal-text me-1 text-primary"></i> နေ့စဉ်သီးနှံအရောင်းစာရင်းချုပ်
             </h3>
             <p class="text-muted small mb-0 mt-2" style="line-height: 30px">သီးနှံအမျိုးအစားနှင့် ဝယ်ယူသူ (Customer) အလိုက် တစ်နေ့တာ ရောင်းချခဲ့သော စာရင်းများ</p>
         </div>

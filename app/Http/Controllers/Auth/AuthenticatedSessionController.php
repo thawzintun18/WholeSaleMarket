@@ -28,6 +28,16 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        
+        // ဤနေရာတွင် တခြား Device များကို Logout ဖြစ်စေရန် ထည့်ပါ
+        // User ရဲ့ လက်ရှိ password ကို ယူပြီး ကျန်တဲ့ Device တွေကနေ ဖြုတ်ချသည်
+        Auth::logoutOtherDevices($request->getPassword());
+
+        // Remember Me နှိပ်ထားလျှင် Session lifetime ကို တိုးပေးခြင်း
+        if ($request->boolean('remember')) {
+            // ရက် ၃၀ (မိနစ်အားဖြင့် 30 * 24 * 60 = 43200 မိနစ်)
+            config(['session.lifetime' => 43200]);
+        }
 
         return redirect()->route('dashboard');
     }

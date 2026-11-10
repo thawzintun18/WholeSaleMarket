@@ -67,7 +67,6 @@
             <span>နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</span>
         </a>
 
-
         @if (in_array(auth()->user()->role, ['admin', 'superadmin']))
             {{-- Reports --}}
             <div class="menu-title">
@@ -80,15 +79,14 @@
             </a>
         @endif
 
-        <div class="menu-title">
-            Backup
-        </div>
-        <a href="{{ route('Backup#list') }}" class="{{ request()->routeIs('Backup#list') ? 'active' : '' }}">
-            <i class="bi bi-database-check"></i>
-            <span>Backup စာရင်း</span>
-        </a>
-
-
+        @if (auth()->user()->role === 'superadmin')
+            <div class="menu-title">
+                Backup
+            </div>
+            <a href="{{ route('Backup#list') }}" class="{{ request()->routeIs('Backup#list') ? 'active' : '' }}">
+                <i class="bi bi-database-check"></i>
+                <span>Backup စာရင်း</span>
+            </a>
+        @endif
     </div>
-
 </aside>

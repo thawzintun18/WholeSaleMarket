@@ -82,4 +82,10 @@ class LoginRequest extends FormRequest
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
     }
+
+    // For only device login
+    public function getPassword(): string
+    {
+        return $this->input('password');
+    }
 }

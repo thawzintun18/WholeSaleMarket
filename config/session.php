@@ -31,7 +31,7 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 480), // ၈ နာရီ (မိနစ် ၄၈၀)
 
     'expire_on_close' => true,
 

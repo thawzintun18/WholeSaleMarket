@@ -26,22 +26,30 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
 
     Route::group(['prefix' => '/farmers'], function () {
         Route::get('list', [FarmerController::class, 'index'])->name('farmers#index');
-
-        // Route::get('create/page', [FarmerController::class, 'createPage'])->name('farmers#create#page');
-        // Route::post('create', [FarmerController::class, 'create'])->name('farmers#create');
-
         Route::get('search', [FarmerController::class, 'search'])->name('farmers#search');
         Route::post('create', [FarmerController::class, 'store'])->name('farmers#store');
-
         Route::get('edit/{id}/page', [FarmerController::class, 'edit'])->name('farmers#edit#page');
         Route::post('update/{id}', [FarmerController::class, 'update'])->name('farmers#update');
         Route::get('history', [FarmerController::class, 'history'])->name('farmers#history');
         Route::get('trashList', [FarmerController::class, 'trashList'])->name('farmers#trashList');
         Route::get('restore/{id}', [FarmerController::class, 'restore'])->name('farmers#restore');
         Route::get('delete/{id}', [FarmerController::class, 'delete'])->name('farmers#delete');
-
         //farmer settlement
         Route::get('farmerSettlementList/{id}', [FarmerController::class, 'farmerSettlementList'])->name('farmer#farmerSettlementList');
+    });
+
+    Route::group(['prefix' => 'Customer'], function () {
+        Route::post('create', [CustomerController::class, 'create'])->name('Customer#create');
+        Route::get('search', [CustomerController::class, 'search'])->name('Customer#search');
+    });
+    Route::group(['prefix' => 'Customer'], function () {
+        Route::get('list', [CustomerController::class, 'list'])->name('Customer#list');
+        Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('Customer#edit');
+        Route::post('update/{id}', [CustomerController::class, 'update'])->name('Customer#update');
+        Route::get('delete/{id}', [CustomerController::class, 'delete'])->name('Customer#delete');
+        Route::get('history', [CustomerController::class, 'history'])->name('Customer#history');
+        Route::get('trashList', [CustomerController::class, 'trashList'])->name('Customer#trashList');
+        Route::get('restore/{id}', [CustomerController::class, 'restore'])->name('Customer#restore');
     });
 
     Route::group(['prefix' => 'Crop'], function () {
@@ -56,16 +64,6 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
     });
 
-    // Route::group(['middleware' => 'AdminMiddleware'], function () {
-
-    //     Route::group(['prefix' => 'Crop'], function () {
-    // Route::get('delete/{id}', [CropController::class, 'delete'])->name('Crop#delete');
-    // Route::get('trashList', [CropController::class, 'trashList'])->name('Crop#trashList');
-    // Route::get('restore/{id}', [CropController::class, 'restore'])->name('Crop#restore');
-    //     });
-
-    // });
-
     Route::group(['prefix' => 'Quality'], function () {
         Route::get('directPage', [CropQualityController::class, 'directPage'])->name('Quality#directPage');
         Route::post('create', [CropQualityController::class, 'create'])->name('Quality#create');
@@ -76,22 +74,6 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('trashList', [CropQualityController::class, 'trashList'])->name('Quality#trashList');
         Route::get('restore/{id}', [CropQualityController::class, 'restore'])->name('Quality#restore');
         Route::get('history', [CropQualityController::class, 'history'])->name('Quality#history');
-    });
-
-    Route::group(['prefix' => 'purchases'], function () {
-        Route::get('list', [PurchaseController::class, 'index'])->name('purchases#index');
-        // ဝယ်ယူမှု ကျန်ငွေ ထပ်မံပေးချေရန် Route
-        Route::post('/{id}/pay-balance', [PurchaseController::class, 'payBalance'])
-            ->name('purchases#payBalance');
-
-        Route::get('create/page', [PurchaseController::class, 'createPage'])->name('purchases#create#page');
-        Route::get('grades/{crop}', [PurchaseController::class, 'getGrades'])->name('purchases#grades');
-        Route::get('reference-price', [PurchaseController::class, 'getReferencePrice'])->name('purchases#reference-price');
-
-        Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
-        Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
-
-        Route::get('/delete/{id}', [PurchaseController::class, 'delete'])->name('purchases#delete');
     });
 
     Route::group(['prefix' => 'DailyPrice'], function () {
@@ -124,12 +106,19 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::post('create', [CropDepositController::class, 'storeDeposit'])->name('crop#deposits#create');
         Route::get('convert-form/{purchaseId}', [CropDepositController::class, 'showConvertForm'])->name('crop#deposits#convert#form');
         Route::post('convert-to-purchase/{purchaseId}', [CropDepositController::class, 'convertToPurchase'])->name('crop#deposits#convert#purchase');
-        Route::get('/delete/{id}', [CropDepositController::class, 'delete'])->name('crop#deposits#delete');
+
     });
 
-    Route::group(['prefix' => 'Customer'], function () {
-        Route::post('create', [CustomerController::class, 'create'])->name('Customer#create');
-        Route::get('search', [CustomerController::class, 'search'])->name('Customer#search');
+    Route::group(['prefix' => 'purchases'], function () {
+        Route::get('list', [PurchaseController::class, 'index'])->name('purchases#index');
+        // ဝယ်ယူမှု ကျန်ငွေ ထပ်မံပေးချေရန် Route
+        Route::post('/{id}/pay-balance', [PurchaseController::class, 'payBalance'])->name('purchases#payBalance');
+        Route::get('create/page', [PurchaseController::class, 'createPage'])->name('purchases#create#page');
+        Route::get('grades/{crop}', [PurchaseController::class, 'getGrades'])->name('purchases#grades');
+        Route::get('reference-price', [PurchaseController::class, 'getReferencePrice'])->name('purchases#reference-price');
+        Route::post('/create', [PurchaseController::class, 'store'])->name('purchases#store');
+        Route::get('/{purchaseId}/voucher', [PurchaseController::class, 'voucher'])->whereNumber('purchaseId')->name('purchases#voucher');
+
     });
 
     Route::group(['prefix' => 'Sale'], function () {
@@ -141,7 +130,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('smallVoucher/{id}', [SaleController::class, 'smallVoucher'])->name('Sale#smallVoucher');
         Route::get('list', [SaleController::class, 'list'])->name('Sale#list');
         Route::post('payBalance/{sale_id}', [SaleController::class, 'payBalance'])->name('Sale#payBlance');
-        Route::get('delete/{id}', [SaleController::class, 'delete'])->name('Sale#delete');
+
     });
 
     Route::group(['prefix' => 'Leave'], function () {
@@ -162,40 +151,26 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('delete/{id}', [CarFeeController::class, 'delete'])->name('CarFee#delete');
     });
 
-    Route::group(['prefix' => 'Customer'], function () {
-        Route::get('list', [CustomerController::class, 'list'])->name('Customer#list');
-        Route::get('edit/{id}', [CustomerController::class, 'edit'])->name('Customer#edit');
-        Route::post('update/{id}', [CustomerController::class, 'update'])->name('Customer#update');
-        Route::get('delete/{id}', [CustomerController::class, 'delete'])->name('Customer#delete');
-        Route::get('history', [CustomerController::class, 'history'])->name('Customer#history');
-        Route::get('trashList', [CustomerController::class, 'trashList'])->name('Customer#trashList');
-        Route::get('restore/{id}', [CustomerController::class, 'restore'])->name('Customer#restore');
+    Route::group(['middleware' => ['role:admin,superadmin']], function () {
+        Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
+            Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
+            Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
+            Route::get('daily/profit', [ReportController::class, 'dailyProfitReport'])->name('reports#daily#profit');
+        });
+
+        Route::group(['prefix' => 'Backup'], function () {
+            Route::get('/backups', [BackupController::class, 'index'])->name('Backup#list');
+            Route::post('/backups/manual', [BackupController::class, 'manual'])->name('Backup#manual');
+            Route::post('/backups/{id}/retry-usb', [BackupController::class, 'retryUsb'])->name('Backup#retryUsb');
+            Route::post('/backups/restore-local', [BackupController::class, 'restoreLocal'])->name('Backup#restoreLocal');
+            Route::post('/backups/{id}/restore', [BackupController::class, 'restore'])->name('Backup#restore');
+            Route::delete('/backups/{id}', [BackupController::class, 'delete'])->name('Backup#delete');
+        });
     });
 
-    Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
-        Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
-        Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
-        Route::get('daily/profit', [ReportController::class, 'dailyProfitReport'])->name('reports#daily#profit');
+    Route::group(['middleware' => ['role:superadmin']], function(){
+        Route::get('purchases/delete/{id}', [PurchaseController::class, 'delete'])->name('purchases#delete');
+        Route::get('Sale/delete/{id}', [SaleController::class, 'delete'])->name('Sale#delete');
+        Route::get('crop-diposit/delete/{id}', [CropDepositController::class, 'delete'])->name('crop#deposits#delete');
     });
-
-    Route::group(['prefix' => 'Backup'], function () {
-        Route::get('/backups', [BackupController::class, 'index'])
-            ->name('Backup#list');
-
-        Route::post('/backups/manual', [BackupController::class, 'manual'])
-            ->name('Backup#manual');
-
-        Route::post('/backups/{id}/retry-usb', [BackupController::class, 'retryUsb'])
-            ->name('Backup#retryUsb');
-
-        Route::post('/backups/restore-local', [BackupController::class, 'restoreLocal'])
-            ->name('Backup#restoreLocal');
-
-        Route::post('/backups/{id}/restore', [BackupController::class, 'restore'])
-            ->name('Backup#restore');
-
-        Route::delete('/backups/{id}', [BackupController::class, 'delete'])
-            ->name('Backup#delete');
-    });
-
 });

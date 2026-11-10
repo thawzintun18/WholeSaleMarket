@@ -18,21 +18,21 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name'     => 'SuperAdministrator',
             'email'    => 'superadmin@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('superadmin@123'),
             'role'     => 'superadmin',
         ]);
         // Admin
         User::create([
             'name'     => 'Administrator',
             'email'    => 'admin@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('admin@123'),
             'role'     => 'admin',
         ]);
         // Staff
         User::create([
             'name'     => 'Staff User',
             'email'    => 'staff@gmail.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('staff@123'),
             'role'     => 'staff',
         ]);
     }

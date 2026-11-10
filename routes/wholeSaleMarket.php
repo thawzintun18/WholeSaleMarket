@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SaleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admin,superadmin']], function () {
@@ -151,6 +152,7 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('delete/{id}', [CarFeeController::class, 'delete'])->name('CarFee#delete');
     });
 
+    // admin / superadmin
     Route::group(['middleware' => ['role:admin,superadmin']], function () {
         Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
             Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
@@ -168,9 +170,20 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         });
     });
 
+    // superadmin Only
     Route::group(['middleware' => ['role:superadmin']], function(){
         Route::get('purchases/delete/{id}', [PurchaseController::class, 'delete'])->name('purchases#delete');
         Route::get('Sale/delete/{id}', [SaleController::class, 'delete'])->name('Sale#delete');
         Route::get('crop-diposit/delete/{id}', [CropDepositController::class, 'delete'])->name('crop#deposits#delete');
+
+        // User စာရင်းကြည့်ရန် နှင့် ဖန်တီးသည့် Page သို့သွားရန်
+        Route::group(['prefix' => 'users'], function(){
+            Route::get('list', [UserController::class, 'index'])->name('users#index');
+            Route::get('create/page', [UserController::class, 'createPage'])->name('users#create#page');
+            Route::post('create', [UserController::class, 'store'])->name('users#store');
+            Route::get('edit/{id}', [UserController::class, 'edit'])->name('users#edit');
+            Route::post('update/{id}', [UserController::class, 'update'])->name('users#update');
+            Route::get('delete/{id}', [UserController::class, 'delete'])->name('users#delete');
+        });
     });
 });

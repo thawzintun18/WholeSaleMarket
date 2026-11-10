@@ -19,14 +19,14 @@
 
         <button class="btn btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown"
             aria-expanded="false">
-
-            @if (auth()->user()->role === 'admin')
-                Admin
+            {{ auth()->user()->name }}
+            {{-- @if (auth()->user()->role === 'admin')
+                {{ auth()->user()->name }}
             @elseif (auth()->user()->role === 'staff')
-                စာရင်းကိုင်
+                {{ auth()->user()->name }}
             @elseif (auth()->user()->role === 'superadmin')
-                Super Admin
-            @endif
+                {{ auth()->user()->name }}
+            @endif --}}
         </button>
 
         <ul class="dropdown-menu dropdown-menu-end shadow-sm">
@@ -36,6 +36,15 @@
                     Setting
                 </h6>
             </li>
+
+            @if (auth()->user()->role === 'superadmin')
+                <li>
+                    <a class=" dropdown-item" href="{{ route('users#index') }}" class="{{ request()->routeIs('users#index') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i>
+                        <span>Staff / Admin စာရင်း</span>
+                    </a>
+                </li>
+            @endif
 
             <li><hr class="dropdown-divider"></li>
 

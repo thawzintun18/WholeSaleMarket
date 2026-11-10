@@ -278,10 +278,12 @@
                                             <i class="bi bi-clock-history"></i>
                                         </button>
 
-                                        <button type="button" onclick="DeleteData({{ $sale->id }})"
-                                            class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                            ဖျက်ရန်
-                                        </button>
+                                        @if (auth()->user()->role === 'superadmin')
+                                            <button type="button" onclick="DeleteData({{ $sale->id }})"
+                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                                ဖျက်ရန်
+                                            </button>
+                                        @endif
 
                                         {{-- ကျန်ငွေရှိမှ ငွေရှင်းရန်ပြမည် --}}
                                         @if ($sale->balance_amount > 0)

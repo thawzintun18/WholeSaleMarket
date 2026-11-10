@@ -1,4 +1,3 @@
-blade
 @extends('layouts.app')
 
 @section('page-title', 'Edit Farmer')

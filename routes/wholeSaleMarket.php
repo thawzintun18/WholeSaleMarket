@@ -147,6 +147,9 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
     Route::group(['prefix' => 'Leave'], function () {
         Route::post('create', [LeaveCountController::class, 'create'])->name('Leave#create');
         Route::get('list', [LeaveCountController::class, 'list'])->name('Leave#list');
+        Route::get('directPage', [LeaveCountController::class, 'directPage'])->name('Leave#directPage');
+        Route::post('existCreate', [LeaveCountController::class, 'existCreate'])->name('Leave#existCreate');
+        Route::get('checkCreate', [LeaveCountController::class, 'checkCreate'])->name('Leave#checkCreate');
     });
 
     Route::group(['prefix' => 'CarFee'], function () {
@@ -191,6 +194,8 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::post('/backups/{id}/restore', [BackupController::class, 'restore'])
             ->name('Backup#restore');
 
+        Route::delete('/backups/{id}', [BackupController::class, 'delete'])
+            ->name('Backup#delete');
     });
 
 });

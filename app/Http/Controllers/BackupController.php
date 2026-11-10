@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\BackupLog;
 use App\Services\BackupService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class BackupController extends Controller
 {
@@ -161,6 +162,76 @@ class BackupController extends Controller
                     'error',
                     'Database Restore မအောင်မြင်ပါ။ ' . $e->getMessage()
                 );
+        }
+    }
+
+    //delete
+    public function delete($id)
+    {
+        $backup = BackupLog::findOrFail($id);
+
+        // Restore record ဆိုရင် Log ပဲဖျက်မယ်
+        if ($backup->backup_type == 'Restore') {
+            $backup->delete();
+
+            return back()->with('success', 'Backup History ကို ဖျက်ပြီးပါပြီ။');
+        }
+
+        $localRoot = rtrim(config('backup.local_path'), '\\/');
+        $usbRoot   = rtrim(config('backup.usb_path'), '\\/');
+
+        // Local file path
+        $localPath = $backup->local_path ?: $backup->file_path;
+
+        if (! $localPath) {
+            return back()->with('error', 'Backup File Path မတွေ့ပါ။');
+        }
+
+        // Path separator တူညီအောင် ပြောင်းမယ်
+        $localRoot = str_replace('\\', '/', $localRoot);
+        $localPath = str_replace('\\', '/', $localPath);
+
+        // Local root အောက်မှာရှိတဲ့ file ဟုတ်မဟုတ် စစ်မယ်
+        if (! str_starts_with(
+            strtolower($localPath),
+            strtolower(rtrim($localRoot, '/') . '/')
+        )) {
+            return back()->with('error', 'Invalid Backup File Path ဖြစ်နေပါသည်။');
+        }
+
+        // Local path ကနေ relative path ထုတ်မယ်
+        $relativePath = substr($localPath, strlen(rtrim($localRoot, '/')) + 1);
+
+        // USB path တည်ဆောက်မယ်
+        $usbPath = $usbRoot . DIRECTORY_SEPARATOR .
+        str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+        // USB ထဲမှာ Backup ရှိတယ်လို့ မှတ်တမ်းတင်ထားပြီး
+        // USB မချိတ်ထားရင် မဖျက်သေးဘူး
+        if ($backup->usb_status == 'Success' && ! File::isDirectory($usbRoot)) {
+            return back()->with('error', 'USB Drive ကို ချိတ်ဆက်ပြီးမှ ဖျက်ပေးပါ။');
+        }
+
+        try {
+
+            // USB File ဖျက်မယ်
+            if (File::exists($usbPath)) {
+                File::delete($usbPath);
+            }
+
+            // Local File ဖျက်မယ်
+            if (File::exists($localPath)) {
+                File::delete($localPath);
+            }
+
+            // Database Record ဖျက်မယ်
+            $backup->delete();
+
+            return back()->with('success', 'Backup File နှင့် History ကို ဖျက်ပြီးပါပြီ။');
+
+        } catch (\Exception $e) {
+
+            return back()->with('error', 'Backup ဖျက်ရာတွင် အမှားဖြစ်နေပါသည်။');
         }
     }
 

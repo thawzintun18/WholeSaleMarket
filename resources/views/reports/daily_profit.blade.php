@@ -10,14 +10,11 @@
     @include('partials.report-purchase-sale-tabs')
 
     <!-- Header Title -->
-    <div class="d-flex align-items-center mb-4">
-        <div class="bg-primary-subtle text-primary p-3 rounded-4 me-3">
-            <i class="bi bi-wallet2 fs-4"></i>
-        </div>
-        <div>
-            <h4 class="fw-bold text-dark mb-1">သီးနှံအမြတ်အစွန်း စာရင်းချုပ်</h4>
-            <p class="text-muted small mb-0">ရွေးချယ်ထားသော ရက်စွဲအလိုက် စုစုပေါင်းရင်းနှီးငွေ၊ ရောင်းရငွေနှင့် အမြတ်အစွန်းများ တွက်ချက်မှု</p>
-        </div>
+    <div class="mb-4">
+        <h3 class="fw-bold text-dark mb-1">
+            <i class="bi bi-wallet me-1 text-primary"></i> သီးနှံအမြတ်အစွန်း စာရင်းချုပ်
+        </h3>
+        <p class="text-muted small mb-0">ရွေးချယ်ထားသော ရက်စွဲအလိုက် စုစုပေါင်းရင်းနှီးငွေ၊ ရောင်းရငွေနှင့် အမြတ်အစွန်းများ တွက်ချက်မှု</p>
     </div>
 
     <!-- Filter Card -->

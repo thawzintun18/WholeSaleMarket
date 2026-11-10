@@ -1355,11 +1355,8 @@
                         return;
                     }
 
-                    const averageBasketPrice =
-                        Math.floor(Number(data.reference_price || 0) / 1000) * 1000;
-
-                    referencePriceInput.value = averageBasketPrice;
-                    actualPriceInput.value = averageBasketPrice;
+                    referencePriceInput.value = data.reference_price || 0;
+                    actualPriceInput.value = data.reference_price || 0;
 
                 } catch (error) {
                     console.error(error);

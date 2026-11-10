@@ -115,14 +115,17 @@ class ReportController extends Controller
         $depositItems = $depositQuery->orderBy('crop_deposits.id', 'desc')->get();
 
 
-        // 5. စုစုပေါင်း တွက်ချက်မှုများ (သီးသန့်စီ)
+        // 5. စုစုပေါင်း တွက်ချက်မှုများ
         $totalAmount = $purchaseItems->sum('gross_amount');
         $totalPurchases = $purchaseItems->pluck('ref_id')->unique()->count();
         $totalDeposits = $depositItems->pluck('ref_id')->unique()->count();
 
-        // ဝယ်ယူမှု တင်းပေါင်း
+        // ဝယ်ယူမှု တင်းပေါင်း နှင့် ပိဿာပေါင်း တွက်ချက်ခြင်း
         $totalPurchaseBasket = 0;
         $totalVissQuantity = 0;
+        $hasVissItem = false; // ပိဿာပါ မပါ စစ်ရန်
+        $hasPoundItem = false; // ပေါင်ပါ မပါ စစ်ရန်
+
         foreach ($purchaseItems as $item) {
             $rawUnit = strtolower($item->unit ?? '');
             $qty = (float) $item->quantity;
@@ -131,18 +134,23 @@ class ReportController extends Controller
 
             if ($rawUnit === 'viss') {
                 $totalVissQuantity += $qty;
+                $hasVissItem = true;
+            }
+
+            if ($rawUnit === 'pound') {
+                $hasPoundItem = true;
             }
 
             if ($qtyPerBasket > 0) {
                 $calcQty = $qty;
                 if ($rawUnit === 'pound') {
-                    $calcQty = max(0, $qty - ($bagCount * 1));
+                    $calcQty = max(0, $qty - $bagCount);
                 }
                 $totalPurchaseBasket += ($calcQty / $qtyPerBasket);
             }
         }
 
-        // အပ်နှံမှု တင်းပေါင်း
+        // အပ်နှံမှု တင်းပေါင်း နှင့် ပိဿာပေါင်း တွက်ချက်ခြင်း
         $totalDepositBasket = 0;
         $totalDepositVissQuantity = 0;
         foreach ($depositItems as $item) {
@@ -151,12 +159,14 @@ class ReportController extends Controller
             $bagCount = (int) ($item->bag_count ?? 0);
             $qtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
 
-            $totalDepositVissQuantity += $qty;
+            if ($rawUnit === 'viss') {
+                $totalDepositVissQuantity += $qty;
+            }
 
             if ($qtyPerBasket > 0) {
                 $calcQty = $qty;
                 if ($rawUnit === 'pound') {
-                    $calcQty = max(0, $qty - ($bagCount * 1));
+                    $calcQty = max(0, $qty - $bagCount);
                 }
                 $totalDepositBasket += ($calcQty / $qtyPerBasket);
             }
@@ -167,7 +177,10 @@ class ReportController extends Controller
             'purchaseItems', 'depositItems', 'crops', 'grades',
             'startDate', 'endDate', 'cropId', 'gradeId',
             'totalAmount', 'totalPurchases', 'totalDeposits',
-            'totalPurchaseBasket', 'totalDepositBasket', 'openingBalance', 'openingAverageCost', 'totalVissQuantity', 'totalDepositVissQuantity'
+            'totalPurchaseBasket', 'totalDepositBasket', 'openingBalance',
+            'openingAverageCost','rawOpeningBalance', 'totalVissQuantity',
+            'totalDepositVissQuantity',
+            'selectedCrop', 'hasVissItem'
         ));
     }
 
@@ -208,6 +221,7 @@ class ReportController extends Controller
 
         // ၂။ ယနေ့ ဝယ်ယူမှု တင်းပေါင်း တွက်ချက်ရန် (Daily Purchases for this date range)
         $totalPurchaseBasket = 0;
+        $totalVissQuantity = 0;
         if ($cropId) {
             $purchaseItems = DB::table('purchase_items')
                 ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
@@ -223,6 +237,11 @@ class ReportController extends Controller
                 $pQty = (float) $pItem->quantity;
                 $pBag = (int) ($pItem->bag_count ?? 0);
                 $pQpb = (float) ($pItem->quantity_per_basket ?? 0);
+                
+                // ယူနစ်က ပိဿာ ဖြစ်ပါက ပိဿာ စုစုပေါင်းသို့ ပေါင်းထည့်ရန်
+                if ($rawUnit === 'viss') {
+                    $totalVissQuantity += $pQty;
+                }
 
                 if ($pQpb > 0) {
                     $calcPqty = $pQty;
@@ -264,10 +283,11 @@ class ReportController extends Controller
 
         $items = $query->orderBy('sales.id', 'desc')->get();
 
-        // ၄။ ရောင်းချမှု တင်းပေါင်း တွက်ချက်ခြင်း
+        // ၄။ ရောင်းချမှု တင်းပေါင်း နှင့် ပိဿာပေါင်း တွက်ချက်ခြင်း
         $totalSaleBasket = 0;
-        $totalVissQuantity = 0;
-        $items->transform(function ($item) use (&$totalSaleBasket, &$totalVissQuantity) {
+        $totalSaleVissQuantity = 0; // အရောင်း ပိဿာ စုစုပေါင်း အသစ်ထည့်ရန်
+
+        $items->transform(function ($item) use (&$totalSaleBasket, &$totalSaleVissQuantity) {
             $rawUnit = strtolower($item->unit ?? '');
             $item->display_unit = $rawUnit === 'viss' ? 'ပိဿာ' : ($rawUnit === 'pound' ? 'ပေါင်' : $item->unit);
 
@@ -276,12 +296,12 @@ class ReportController extends Controller
             $itemQtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
 
             if ($rawUnit === 'viss') {
-                $totalVissQuantity += $qty;
+                $totalSaleVissQuantity += $qty; // ပိဿာစုစုပေါင်း ထည့်ရန်
             }
 
             $calcQty = $qty;
             if ($rawUnit === 'pound') {
-                $calcQty = max(0, $qty - ($bagCount * 1));
+                $calcQty = max(0, $qty - $bagCount);
             }
 
             $item->basket_count = $itemQtyPerBasket > 0 ? ($calcQty / $itemQtyPerBasket) : 0;
@@ -299,7 +319,8 @@ class ReportController extends Controller
         return view('reports.daily_sale', compact(
             'items', 'crops', 'startDate', 'endDate', 'cropId',
             'totalAmount', 'totalSales', 'totalSaleBasket', 'totalPurchaseBasket',
-            'openingBalance', 'openingAverageCost', 'closingBalance', 'totalVissQuantity'
+            'openingBalance', 'openingAverageCost', 'closingBalance',
+            'totalVissQuantity', 'totalSaleVissQuantity', 'rawOpeningBalance', 'selectedCrop'
         ));
     }
 

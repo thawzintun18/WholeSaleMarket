@@ -224,11 +224,20 @@
                                             </form>
                                         @endif
 
-                                        @if (
-                                            $backup->backup_type == 'Restore' ||
-                                                $backup->local_status != 'Success' ||
-                                                ($backup->usb_status == 'Success' && !str_ends_with(strtolower($backup->file_name ?? ''), '.sql.gz')))
-                                            <span class="text-muted">-</span>
+                                        {{-- Delete Backup --}}
+                                        {{-- Today ထက်ငယ်ပြီး နောက်ဆုံး ၃ ရက်အတွင်းရှိတဲ့ Backup Data တွေအတွက် Delete Button ကို ဖျောက် --}}
+                                        @if (!$backup->created_at->between(now()->subDays(2)->startOfDay(), now()->endOfDay()))
+                                            <form action="{{ route('Backup#delete', $backup->id) }}" method="POST"
+                                                class="deleteBackupForm" data-filename="{{ $backup->file_name }}">
+
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                    Delete
+                                                </button>
+                                            </form>
                                         @endif
 
                                     </div>
@@ -529,5 +538,38 @@
                 });
 
             });
+
+        document.querySelectorAll('.deleteBackupForm').forEach(form => {
+
+            form.addEventListener('submit', function(e) {
+
+                e.preventDefault();
+
+                let fileName = this.dataset.filename;
+
+                Swal.fire({
+                    title: 'Backup ဖျက်မှာ သေချာပါသလား?',
+                    html: `
+                <strong>${fileName}</strong><br>
+                Local နှင့် USB ထဲရှိ Backup File များကိုပါ
+                ဖျက်သွားပါမည်။
+            `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'ဖျက်မည်',
+                    cancelButtonText: 'မဖျက်တော့ပါ',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                }).then((result) => {
+
+                    if (result.isConfirmed) {
+                        this.submit();
+                    }
+
+                });
+
+            });
+
+        });
     </script>
 @endpush

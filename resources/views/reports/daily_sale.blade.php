@@ -26,51 +26,66 @@
 
     <!-- Summary Cards -->
     <div class="row g-3 mb-4 d-print-none">
-        <!-- အရင်နေ့က လက်ကျန် -->
-        {{-- <div class="col-md-3">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">အရင်နေ့က လက်ကျန် (Opening)</div>
-                <h4 class="fw-bold text-secondary mb-0">{{ number_format($openingBalance, 2) }} တင်း</h4>
-                <div class="small text-muted">ပျမ်းမျှဈေး: {{ number_format($openingAverageCost, 2) }} ကျပ်</div>
-            </div>
-        </div> --}}
-
-        <!-- ယနေ့ ဝယ်ယူမှု (ဝင်ငွေစတော့) -->
-        {{-- <div class="col-md-3">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                <div class="text-muted small">ယနေ့ ဝယ်ယူမှု (Purchase)</div>
-                <h4 class="fw-bold text-success mb-0">{{ number_format($totalPurchaseBasket, 2) }} တင်း</h4>
-            </div>
-        </div> --}}
-
+        <!-- ပွဲရုံတွင်း စုစုပေါင်းလက်ကျန် -->
         <div class="col-md-4">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
+            <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
                 <div class="text-muted small">ပွဲရုံတွင်း စုစုပေါင်းလက်ကျန်</div>
-                <h4 class="fw-bold text-success my-1">
-                    {{ number_format($openingBalance + $totalPurchaseBasket , 2) }} တင်း {{-- + $totalDepositBasket --}}
-                </h4>
-                <div class="small text-muted">
+                @if(isset($selectedCrop) && strtolower($selectedCrop->unit) === 'viss')
+                    <!-- ပိဿာဆိုရင် ပိဿာရော တင်းရောပြမည် -->
+                    <h3 class="fw-bold text-success my-1">
+                        {{ number_format(($rawOpeningBalance ?? 0) + ($totalVissQuantity ?? 0), 2) }} <span class="fs-5 fw-semibold text-dark">ပိဿာ</span>
+                    </h3>
+                    <div class="badge bg-success-subtle text-success border border-success-subtle fw-normal mt-1">
+                        ≈ {{ number_format($openingBalance + $totalPurchaseBasket , 2) }} တင်း
+                    </div>
+                @else
+                    <!-- ပေါင်ဆိုရင် တင်း တစ်မျိုးတည်းသာပြမည် -->
+                    <h3 class="fw-bold text-success my-1">
+                        {{ number_format($openingBalance + $totalPurchaseBasket , 2) }} <span class="fs-5 fw-semibold text-dark">တင်း</span>
+                    </h3>
+                @endif
+
+                <div class="small text-muted mt-1">
                     * အပ်နှံစာရင်းမပါသေးပါ
                 </div>
             </div>
         </div>
-
-        <!-- ယနေ့ ရောင်းချမှု (ထွက်ငွေစတော့) -->
+        <!--ယနေ့ ရောင်းချမှု -->
         <div class="col-md-4">
-            <div class="p-3 border rounded-3 bg-white shadow-sm">
+            <div class="p-3 border rounded-3 bg-white shadow-sm h-100">
                 <div class="text-muted small">ယနေ့ ရောင်းချမှု</div>
-                <h4 class="fw-bold text-danger mb-0">{{ number_format($totalSaleBasket, 2) }} တင်း</h4>
-                {{-- <div class="small text-muted">ဘောင်ချာ {{ $totalSales }} ခု</div> --}}
+                @if(isset($selectedCrop) && strtolower($selectedCrop->unit) === 'viss')
+                    <h3 class="fw-bold text-danger my-1">
+                        {{ number_format($totalSaleVissQuantity ?? 0, 2) }} <span class="fs-5 fw-semibold text-dark">ပိဿာ</span>
+                    </h3>
+                    <div class="badge bg-danger-subtle text-danger border border-danger-subtle fw-normal mt-1">
+                        ≈ {{ number_format($totalSaleBasket, 2) }} တင်း
+                    </div>
+                @else
+                    <h3 class="fw-bold text-danger my-1">
+                        {{ number_format($totalSaleBasket, 2) }} <span class="fs-5 fw-semibold text-dark">တင်း</span>
+                    </h3>
+                @endif
             </div>
         </div>
-
-        <!-- ယနေ့ ကျန်ရှိလက်ကျန် (Closing Balance) -->
+        <!--ယနေ့ လက်ကျန် (Closing Balance = ရှေ့လက်ကျန် + ဝယ် - ရောင်း) -->
         <div class="col-md-4">
-            <div class="p-3 border rounded-3 bg-white shadow-sm bg-light">
+            <div class="p-3 border rounded-3 bg-white shadow-sm bg-light h-100">
                 <div class="text-muted small">ယနေ့ လက်ကျန်</div>
-                <h4 class="fw-bold text-primary mb-0">
-                    {{ number_format($closingBalance, 2) }} တင်း
-                </h4>
+                @if(isset($selectedCrop) && strtolower($selectedCrop->unit) === 'viss')
+                    <!-- ပိဿာအတွက် လက်ကျန်ကို View ထဲမှာ တိုက်ရိုက်တွက်ပြသည် -->
+                    <h3 class="fw-bold text-primary my-1">
+                        {{ number_format(($rawOpeningBalance ?? 0) + ($totalVissQuantity ?? 0) - ($totalSaleVissQuantity ?? 0), 2) }} <span class="fs-5 fw-semibold text-dark">ပိဿာ</span>
+                    </h3>
+                    <div class="badge bg-primary-subtle text-primary border border-primary-subtle fw-normal mt-1">
+                        ≈ {{ number_format($closingBalance, 2) }} တင်း
+                    </div>
+                @else
+                    <!-- ပေါင်အတွက် တင်းလက်ကျန်ကိုသာပြသည် -->
+                    <h3 class="fw-bold text-primary my-1">
+                        {{ number_format($closingBalance, 2) }} <span class="fs-5 fw-semibold text-dark">တင်း</span>
+                    </h3>
+                @endif
             </div>
         </div>
     </div>

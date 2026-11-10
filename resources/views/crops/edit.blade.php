@@ -5,35 +5,35 @@
 @section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံစာရင်း / သီးနှံအချက်အလက်များကိုပြင်ဆင်ရန်')
 
 @section('content')
-
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
 
         <div>
-            <h1 class="page-title mb-1">
+            <h1 class="page-title mb-1 fs-3 fs-md-2">
                 သီးနှံအချက်အလက်များကိုပြင်ဆင်ရန်
             </h1>
 
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+            <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
                 သီးနှံအမည်၊ ပွဲခနှင့် တစ်တင်းပါ အရေအတွက်တို့ကို လိုအပ်သလို ပြင်ဆင်နိုင်ပါသည်။
             </p>
         </div>
 
-        <div class=" d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
+        <div class="d-flex justify-content-end w-100 w-md-auto">
+            <a href="{{ route('Crop#list') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
         </div>
+
     </div>
 
-    <div class="row">
-        <div class="offset-lg-2 col-lg-8 col-12">
-            <div class="dashboard-card shadow-sm">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-12">
+            <div class="dashboard-card shadow-sm p-3 p-md-4">
                 <form id="editCropForm" action="{{ route('Crop#update', $crop->id) }}" method="POST">
                     @csrf
                     {{-- Crop Name --}}
                     <div class="mb-3">
-                        <label class="form-label">
+                        <label class="form-label mb-1">
                             သီးနှံအမည်
                             <span class="text-danger">*</span>
                         </label>
@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">
+                        <label class="form-label mb-1">
                             ပွဲခ
                             <span class="text-danger">*</span>
                         </label>
@@ -64,8 +64,8 @@
 
 
                     {{-- Quantity Per Basket --}}
-                    <div class="mb-4">
-                        <label class="form-label">
+                    <div class="mb-3">
+                        <label class="form-label mb-1">
                             တစ်တင်းပါ အရေအတွက်
                             <span class="text-danger">*</span>
                         </label>
@@ -78,15 +78,15 @@
                                 {{ $message }}
                             </div>
                         @enderror
-                        <div class="form-text">
+                        <div class="form-text mt-1">
                             တစ်တင်းတွင် ပါဝင်သည့် ပမာဏကို ထည့်သွင်းပါ။
                         </div>
                     </div>
 
 
                     {{-- Unit --}}
-                    <div class="mb-3">
-                        <label class="form-label">
+                    <div class="mb-4">
+                        <label class="form-label mb-1">
                             ယူနစ်
                             <span class="text-danger">*</span>
                         </label>
@@ -111,19 +111,16 @@
 
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end gap-2">
-
-                        <div class="">
-                            <button type="submit" class="btn btn-success" id="submitButton">
-                                <i class="bi bi-check-lg me-1"></i>
-                                သီးနှံအချက်အလက်ပြင်ဆင်မည်
-                            </button>
-                        </div>
-
+                        <button type="submit" class="btn rounded-pill px-4 shadow-sm btn-success" id="submitButton">
+                            <i class="bi bi-check-lg me-1"></i>
+                            သီးနှံအချက်အလက်ပြင်ဆင်မည်
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
 @endsection
 
 @push('scripts')

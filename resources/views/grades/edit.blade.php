@@ -5,19 +5,18 @@
 @section('breadcrumb', 'အခြေခံစာရင်းများ / သီးနှံ အရည်အသွေးစာရင်း / သီးနှံ အရည်အသွေးများကိုပြင်ဆင်ရန်')
 
 @section('content')
-
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
 
         <div>
-            <h1 class="page-title mb-1">သီးနှံ အရည်အသွေးများကိုပြင်ဆင်ရန်</h1>
+            <h1 class="page-title mb-1 fs-3 fs-md-2">သီးနှံ အရည်အသွေးများကိုပြင်ဆင်ရန်</h1>
 
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px;">
+            <p class="text-muted mb-0 mt-1" style="line-height: 1.5;">
                 သီးနှံအရည်အသွေးအမည်များကို လိုအပ်သလို ပြင်ဆင်နိုင်ပါသည်။
             </p>
         </div>
 
-        <div class="d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('Quality#list') }}" class="btn btn-outline-secondary mt-3">
+        <div class="d-flex justify-content-end w-100 w-md-auto">
+            <a href="{{ route('Quality#list') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
@@ -25,15 +24,15 @@
 
     </div>
 
-    <div class="dashboard-card shadow-sm">
+    <div class="dashboard-card shadow-sm p-3 p-md-4">
 
-        <div class="mb-4">
+        <div class="mb-3">
 
-            <h5 class="mb-1" style="line-height: 35px;">
+            <h5 class="mb-1 fw-bold" style="line-height: 1.4;">
                 {{ $grade->crop_name }}သီးနှံအတွက် အရည်အသွေးပြင်ဆင်ရန်
             </h5>
 
-            <small class="text-muted mt-2" style="line-height: 30px;">
+            <small class="text-muted d-block mt-1" style="line-height: 1.5;">
                 သတ်မှတ်ထားသော သီးနှံအရည်အသွေးအမည်ကို လိုအပ်သလို ပြင်ဆင်၊ ပြောင်းလဲနိုင်ပါသည်။
             </small>
 
@@ -42,10 +41,10 @@
         <form action="{{ route('Quality#update', $grade->id) }}" method="POST" id="editQualityForm">
             @csrf
             <input type="hidden" name="crop_id" value="{{ $grade->crop_id }}">
-            <div class="row g-3">
+            <div class="row align-items-end g-3">
                 {{-- Grade Name --}}
-                <div class="col-md-5 offset-md-2">
-                    <label for="grade_name" class="form-label">
+                <div class="col-12 col-md-6 offset-md-1">
+                    <label for="grade_name" class="form-label mb-1">
                         အရည်အသွေးအမည် <span class="text-danger">*</span>
                     </label>
                     <input type="text" name="grade_name" id="grade_name"
@@ -59,10 +58,10 @@
                     @enderror
                 </div>
 
-                <div class="col-md-3 d-flex justify-content-md-start justify-content-end pt-4">
-                    <button type="submit" class="btn btn-success" id="submitButton">
+                <div class="col-12 col-md-4 d-flex justify-content-start">
+                    <button type="submit" class="btn rounded-pill btn-success shadow-sm w-100 w-md-auto" id="submitButton">
                         <i class="bi bi-check-lg me-1"></i>
-                        သီးနှံအရည်အသွေးပြင်ဆင်မည်
+                        ပြင်ဆင်မည်
                     </button>
                 </div>
 

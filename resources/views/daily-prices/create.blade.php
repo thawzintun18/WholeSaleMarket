@@ -5,137 +5,140 @@
 @section('breadcrumb', 'ဈေးနှုန်းများ / နေ့စဉ်သီးနှံဈေးနှုန်းများ / နေ့စဉ်သီးနှံဈေးနှုန်းများ ထပ်မံထည့်သွင်းခြင်း')
 
 @section('content')
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="page-title mb-1" style="line-height: 35px">နေ့စဉ်သီးနှံဈေးနှုန်းများ ထပ်မံထည့်သွင်းခြင်း</h1>
+    <div class="container-fluid px-0">
+        <!-- Header Section -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div>
+                <h1 class="page-title mb-1 fs-3 fs-md-2" style="line-height: 1.4">နေ့စဉ်သီးနှံဈေးနှုန်းများ ထပ်မံထည့်သွင်းခြင်း</h1>
+                <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
+                    သီးနှံနှင့် အရည်အသွေးအဆင့်အလိုက် ရည်ညွှန်းဝယ်ဈေး သတ်မှတ်ပါ။
+                </p>
+            </div>
 
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
-                သီးနှံနှင့် အရည်အသွေးအဆင့်အလိုက် ရည်ညွှန်းဝယ်ဈေး သတ်မှတ်ပါ။
-            </p>
+            <div class="d-flex justify-content-end w-100 w-md-auto">
+                <a href="{{ route('DailyPrice#list') }}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
+                    <i class="bi bi-arrow-left me-1"></i>
+                    နောက်သို့
+                </a>
+            </div>
         </div>
 
-        <div class=" d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('DailyPrice#list') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left me-1"></i>
-                နောက်သို့
-            </a>
-        </div>
-    </div>
-    <div class="dashboard-card shadow-sm">
-        <div class="mb-4">
+        <!-- Form Card Section -->
+        <div class="dashboard-card shadow-sm p-3 p-md-4">
+            <div class="mb-4">
+                <h5 class="mb-1" style="line-height: 1.4">
+                    နေ့စဉ်သီးနှံဈေးနှုန်းများ ထည့်သွင်းရန်
+                </h5>
+                <small class="text-muted d-block mt-2" style="line-height: 1.5">
+                    သီးနှံအမည် နှင့် အရည်အသွေးအဆင့်အမည် ရွေးချယ်ပြီး နေ့စဉ်သီးနှံဈေးနှုန်းများကို လိုအပ်သလို ထပ်မံထည့်သွင်းနိုင်ပါသည်။
+                </small>
+            </div>
 
-            <h5 class="mb-1" style="line-height: 35px">
-                နေ့စဉ်သီးနှံဈေးနှုန်းများ ထည့်သွင်းရန်
-            </h5>
-            <small class="text-muted mt-2" style="line-height: 30px">
-                သီးနှံအမည် နှင့် အရည်အသွေးအဆင့်အမည် ရွေးချယ်ပြီး နေ့စဉ်သီးနှံဈေးနှုန်းများကို လိုအပ်သလို
-                ထပ်မံထည့်သွင်းနိုင်ပါသည်။
-            </small>
-        </div>
-        <form action="{{ route('DailyPrice#create') }}" method="POST" id="dailyPriceForm">
-            @csrf
+            <form action="{{ route('DailyPrice#create') }}" method="POST" id="dailyPriceForm">
+                @csrf
 
-            {{-- Price Date --}}
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label class="form-label">ဈေးနှုန်းသတ်မှတ်သည့်နေ့</label>
-                    <input type="date" name="price_date" class="form-control @error('price_date') is-invalid @enderror"
-                        value="{{ old('price_date', date('Y-m-d')) }}" required>
+                {{-- Price Date --}}
+                <div class="row mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">ဈေးနှုန်းသတ်မှတ်သည့်နေ့</label>
+                        <input type="date" name="price_date" class="form-control @error('price_date') is-invalid @enderror"
+                            value="{{ old('price_date', date('Y-m-d')) }}" required>
 
-                    @error('price_date')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
+                        @error('price_date')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
-            </div>
 
-            <div class="d-flex justify-content-end mb-3">
-                <button type="button" class="btn btn-primary" id="addRow">
-                    <i class="bi bi-plus-circle me-1"></i>
-                    Row ထပ်ထည့်မည်
-                </button>
-            </div>
-
-            <div id="gradeRows"></div>
-
-            {{-- Row Template --}}
-            <template id="rowTemplate">
-                <div class="grade-row border rounded-3 p-3 mb-3 bg-light">
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <strong class="row-title">အတန်း</strong>
-
-                        <button type="button" class="btn btn-sm btn-outline-danger delete-row">
-                            <i class="bi bi-trash"></i>
-                            အတန်းဖျက်မည်
-                        </button>
-                    </div>
-
-                    <div class="row g-3">
-                        {{-- Crop --}}
-                        <div class="col-md-4">
-                            <label class="form-label">သီးနှံအမည်</label>
-
-                            <select name="grades[__INDEX__][crop_id]"
-                                class="form-select crop-select @error('grades.*.crop_id') is-invalid @enderror">
-                                <option value="">သီးနှံရွေးချယ်ပါ</option>
-
-                                @foreach ($crops as $crop)
-                                    <option value="{{ $crop->id }}">
-                                        {{ $crop->crop_name }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            @error('grades.*.crop_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Grade --}}
-                        <div class="col-md-4">
-                            <label class="form-label">အရည်အသွေးအမည်</label>
-
-                            <select name="grades[__INDEX__][grade_id]"
-                                class="form-select grade-select @error('grades.*.grade_id') is-invalid @enderror">
-                                <option value="">သီးနှံအရည်အသွေးရွေးချယ်ပါ</option>
-                            </select>
-
-                            @error('grades.*.grade_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        {{-- Price --}}
-                        <div class="col-md-4">
-                            <label class="form-label">ရည်ညွှန်းဝယ်ဈေး (ကျပ်)</label>
-
-                            <input type="number" name="grades[__INDEX__][reference_buy_price]" id="price"
-                                class="form-control @error('grades.*.reference_buy_price') is-invalid @enderror"
-                                placeholder="ဥပမာ - 100000" min="0" max="9999999999999.99" step="0.01">
-
-                            @error('grades.*.reference_buy_price')
-                                <div class="text-danger small">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-outline-secondary btn-sm reset-row">
-                            <i class="bi bi-arrow-counterclockwise"></i>
-                            ပြန်လည်ရှင်းလင်းမည်
-                        </button>
-                    </div>
-
+                <div class="d-flex justify-content-end mb-3">
+                    <button type="button" class="btn btn-primary rounded-pill px-4 shadow-sm" id="addRow">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Row ထပ်ထည့်မည်
+                    </button>
                 </div>
-            </template>
 
-            <div class="d-flex justify-content-end mt-4">
-                <button type="submit" class="btn btn-success" id="submitButton">
-                    <i class="bi bi-check-lg me-1"></i>
-                    အားလုံး စာရင်းသွင်းမည်
-                </button>
-            </div>
-        </form>
+                <div id="gradeRows"></div>
+
+                {{-- Row Template --}}
+                <template id="rowTemplate">
+                    <div class="grade-row border rounded-3 p-3 mb-3 bg-light">
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <strong class="row-title">အတန်း</strong>
+
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-4 shadow-sm delete-row">
+                                <i class="bi bi-trash"></i>
+                                ဖျက်မည်
+                            </button>
+                        </div>
+
+                        <div class="row g-3">
+                            {{-- Crop --}}
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">သီးနှံအမည်</label>
+
+                                <select name="grades[__INDEX__][crop_id]"
+                                    class="form-select crop-select @error('grades.*.crop_id') is-invalid @enderror">
+                                    <option value="">သီးနှံရွေးချယ်ပါ</option>
+
+                                    @foreach ($crops as $crop)
+                                        <option value="{{ $crop->id }}">
+                                            {{ $crop->crop_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+
+                                @error('grades.*.crop_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Grade --}}
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">အရည်အသွေး</label>
+
+                                <select name="grades[__INDEX__][grade_id]"
+                                    class="form-select grade-select @error('grades.*.grade_id') is-invalid @enderror">
+                                    <option value="">သီးနှံအရည်အသွေးရွေးချယ်ပါ</option>
+                                </select>
+
+                                @error('grades.*.grade_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            {{-- Price --}}
+                            <div class="col-12 col-md-4">
+                                <label class="form-label">ရည်ညွှန်းဈေး (ကျပ်)</label>
+
+                                <input type="number" name="grades[__INDEX__][reference_buy_price]" id="price"
+                                    class="form-control @error('grades.*.reference_buy_price') is-invalid @enderror"
+                                    placeholder="ဥပမာ - 100000" min="0" max="9999999999999.99" step="0.01">
+
+                                @error('grades.*.reference_buy_price')
+                                    <div class="text-danger small">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm btn-sm reset-row">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                ပြန်လည်ရှင်းလင်းမည်
+                            </button>
+                        </div>
+
+                    </div>
+                </template>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-success rounded-pill px-4 shadow-sm" id="submitButton">
+                        <i class="bi bi-check-lg me-1"></i>
+                        အားလုံး စာရင်းသွင်းမည်
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 @endsection
 

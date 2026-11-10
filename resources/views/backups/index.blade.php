@@ -59,12 +59,14 @@
                 <div class="d-flex justify-content-end gap-2 mt-md-0 mt-3">
 
                     {{-- Database Restore --}}
-                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                        data-bs-target="#databaseRestoreModal">
+                    @if (auth()->user()->role === 'superadmin')
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                            data-bs-target="#databaseRestoreModal">
 
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                        Restore လုပ်ရန်
-                    </button>
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                            Restore လုပ်ရန်
+                            </button>
+                    @endif
 
                     {{-- Manual Backup --}}
                     <form action="{{ route('Backup#manual') }}" method="POST" id="manualBackupForm">
@@ -208,20 +210,22 @@
                                         @endif
 
                                         {{-- Restore --}}
-                                        @if (
-                                            $backup->backup_type != 'Restore' &&
-                                                $backup->local_status == 'Success' &&
-                                                str_ends_with(strtolower($backup->file_name ?? ''), '.sql.gz'))
-                                            <form action="{{ route('Backup#restore', $backup->id) }}" method="POST"
-                                                class="restoreForm" data-filename="{{ $backup->file_name }}">
+                                        @if (auth()->user()->role === 'superadmin')
+                                            @if (
+                                                $backup->backup_type != 'Restore' &&
+                                                    $backup->local_status == 'Success' &&
+                                                    str_ends_with(strtolower($backup->file_name ?? ''), '.sql.gz'))
+                                                <form action="{{ route('Backup#restore', $backup->id) }}" method="POST"
+                                                    class="restoreForm" data-filename="{{ $backup->file_name }}">
 
-                                                @csrf
+                                                    @csrf
 
-                                                <button type="submit" class="btn btn-sm btn-outline-danger restoreBtn">
-                                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                                    Restore
-                                                </button>
-                                            </form>
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger restoreBtn">
+                                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                                        Restore
+                                                    </button>
+                                                </form>
+                                            @endif
                                         @endif
 
                                         {{-- Delete Backup --}}

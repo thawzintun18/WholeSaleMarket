@@ -6,8 +6,7 @@
 
 @section('content')
 
-    <div class="d-md-flex justify-content-between align-items-center mb-4">
-
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
             <h1 class="page-title mb-1">
                 သီးနှံအသစ် ထပ်မံထည့်သွင်းခြင်း
@@ -19,20 +18,18 @@
             </p>
         </div>
 
-        <div class=" d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('Crop#list') }}" class="btn btn-outline-secondary">
+        <div class="d-flex justify-content-end">
+            <a href="{{ route('Crop#list') }}" class="btn rounded-pill px-4 shadow-sm btn-outline-secondary">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
         </div>
     </div>
 
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
 
-    <div class="row">
-
-        <div class="offset-lg-2 col-lg-8 col-12">
-
-            <div class="dashboard-card shadow-sm">
+            <div class="dashboard-card shadow-sm p-3 p-md-4">
 
                 <form id="cropForm" action="{{ route('Crop#create') }}" method="POST">
                     @csrf
@@ -67,7 +64,6 @@
                         @enderror
                     </div>
 
-
                     {{-- Quantity Per Basket --}}
                     <div class="mb-4">
                         <label class="form-label">
@@ -85,9 +81,7 @@
                         <div class="form-text">
                             တစ်တင်းတွင် ပါဝင်သည့် ပမာဏကို ထည့်သွင်းပါ။
                         </div>
-
                     </div>
-
 
                     {{-- Unit --}}
                     <div class="mb-3">
@@ -113,10 +107,9 @@
                         @enderror
                     </div>
 
-
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end gap-2">
-                        <button type="submit" class="btn btn-success">
+                        <button type="submit" class="btn rounded-pill px-4 shadow-sm btn-success">
                             <i class="bi bi-check-lg me-1"></i>
                             သီးနှံထည့်သွင်းမည်
                         </button>
@@ -128,7 +121,6 @@
         </div>
 
     </div>
-
 @endsection
 
 

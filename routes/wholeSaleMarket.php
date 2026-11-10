@@ -152,21 +152,21 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
         Route::get('delete/{id}', [CarFeeController::class, 'delete'])->name('CarFee#delete');
     });
 
-    // admin / superadmin
-    Route::group(['middleware' => ['role:admin,superadmin']], function () {
-        Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
-            Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
-            Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
-            Route::get('daily/profit', [ReportController::class, 'dailyProfitReport'])->name('reports#daily#profit');
-        });
-
-        Route::group(['prefix' => 'Backup'], function () {
+    Route::group(['prefix' => 'Backup'], function () {
             Route::get('/backups', [BackupController::class, 'index'])->name('Backup#list');
             Route::post('/backups/manual', [BackupController::class, 'manual'])->name('Backup#manual');
             Route::post('/backups/{id}/retry-usb', [BackupController::class, 'retryUsb'])->name('Backup#retryUsb');
             Route::post('/backups/restore-local', [BackupController::class, 'restoreLocal'])->name('Backup#restoreLocal');
             Route::post('/backups/{id}/restore', [BackupController::class, 'restore'])->name('Backup#restore');
             Route::delete('/backups/{id}', [BackupController::class, 'delete'])->name('Backup#delete');
+    });
+
+    // admin / superadmin
+    Route::group(['middleware' => ['role:admin,superadmin']], function () {
+        Route::group(['prefix' => 'reports', 'middleware' => ['role:admin,superadmin']], function () {
+            Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
+            Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
+            Route::get('daily/profit', [ReportController::class, 'dailyProfitReport'])->name('reports#daily#profit');
         });
     });
 

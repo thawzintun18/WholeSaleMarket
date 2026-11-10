@@ -21,7 +21,7 @@
             </div>
 
             <div class="d-flex justify-content-end">
-                <a href="{{ route('DailyPrice#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+                <a href="{{ route('DailyPrice#directPage') }}" class="btn btn-primary rounded-pill px-4 shadow-sm">
                     <i class="bi bi-plus-lg me-1"></i>
                     နေ့စဉ်သီးနှံဈေးနှုန်းများထပ်ထည့်ရန်
                 </a>
@@ -70,10 +70,8 @@
                     {{-- Grade --}}
                     <div class="col-md-3">
                         <label class="form-label">အရည်အသွေးအဆင့်</label>
-
                         <select name="grade_name" class="form-select">
                             <option value="">အဆင့်အားလုံး</option>
-
                             @foreach ($grade_names as $item)
                                 <option value="{{ $item->grade_name }}" @selected(request('grade_name') === $item->grade_name)>
                                     {{ $item->grade_name }}
@@ -84,12 +82,12 @@
 
                     {{-- Buttons --}}
                     <div class="col-12 d-md-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 shadow-sm">
                             <i class="bi bi-search me-1"></i>
                             ရှာဖွေရန်
                         </button>
 
-                        <a href="{{ route('DailyPrice#list') }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('DailyPrice#list') }}" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
                             <i class="bi bi-arrow-counterclockwise me-1"></i>
                             ပြန်လည်သတ်မှတ်ရန်
                         </a>
@@ -104,117 +102,66 @@
 
         {{-- Daily Price Table --}}
 
-        <div class="dashboard-card shadow-sm">
-            <div class="d-md-flex justify-content-between align-items-center mb-3">
-
-                <div>
-
-                    <h5 class="mb-1">
+        <div class="dashboard-card shadow-sm p-3 p-md-4">
+            <!-- Header Section -->
+            <div class="row align-items-center mb-3 g-3">
+                <!-- Title & Subtitle -->
+                <div class="col-12 col-lg-6">
+                    <h5 class="mb-1 fw-bold">
                         နေ့စဉ်သီးနှံဈေးနှုန်းများ
                     </h5>
-
-                    <small class="text-muted mt-2" style="line-height: 30px">
+                    <small class="text-muted d-block" style="line-height: 1.5;">
                         သီးနှံနှင့် အရည်အသွေးအဆင့်အလိုက် ရည်ညွှန်းဝယ်ယူဈေးနှုန်းများ
                     </small>
-
                 </div>
 
-                <div class="d-md-flex justify-content-end mt-md-0 mt-2">
-
-                    <div class="me-2">
-                        <span class="badge bg-light text-dark border">
+                <!-- Action Buttons & Badge -->
+                <div class="col-12 col-lg-6 d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
+                    <div>
+                        <span class="badge bg-light text-dark border px-3 py-2">
                             {{ $dailyPrice->count() }} နေ့စဉ်သီးနှံဈေးနှုန်း
                         </span>
                     </div>
-
-                    <div class="d-md-flex mt-md-0 mt-2">
-                        <div class=" me-2">
-                            <a href="{{ route('DailyPrice#history') }}"
-                                class=" btn btn-primary">သီးနှံဈေးနှုန်းပြင်ဆင်မှုစာရင်း</a>
-                        </div>
-
-                        <div class=" me-2">
-                            <a href="{{ route('DailyPrice#trashList') }}"
-                                class=" btn btn-primary mt-md-0 mt-2">ဖျက်ထားသောသီးနှံဈေးနှုန်းစာရင်း</a>
-                        </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{{ route('DailyPrice#history') }}"
+                            class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">ပြင်ထားသောဈေး</a>
+                        <a href="{{ route('DailyPrice#trashList') }}"
+                            class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm">ဖျက်ထားသောဈေး</a>
                     </div>
                 </div>
-
             </div>
 
-
+            <!-- Table Section -->
             <div class="table-responsive">
-
-                <table class="table table-hover align-middle mb-0">
-
-                    <thead>
-
+                <table class="table table-hover align-middle mb-0 text-nowrap">
+                    <thead class="table-light">
                         <tr>
-
-                            <th>
-                                စဉ်
-                            </th>
-
-                            <th>
-                                ဈေးနှုန်းသတ်မှတ်သည့်နေ့
-                            </th>
-
-                            <th>
-                                သီးနှံအမည်
-                            </th>
-
-                            <th>
-                                အရည်အသွေးအမည်
-                            </th>
-
-                            <th>
-                                ရည်ညွှန်းဝယ်ဈေး (ကျပ်)
-                            </th>
-
+                            <th>စဉ်</th>
+                            <th>ဈေးနှုန်းသတ်မှတ်သည့်နေ့</th>
+                            <th>သီးနှံအမည်</th>
+                            <th>အရည်အသွေးအမည်</th>
+                            <th>ရည်ညွှန်းဝယ်ဈေး (ကျပ်)</th>
                             <th>မနေ့ကဈေး (ကျပ်)</th>
-
                             <th>ဒီနေ့ဈေး (ကျပ်)</th>
-
                             <th>ဈေးနှုန်းပြောင်းလဲမှု</th>
-
-                            <th width="150" class="text-center">
-                                လုပ်ဆောင်ချက်
-                            </th>
-
+                            <th class="text-center">လုပ်ဆောင်ချက်</th>
                         </tr>
-
                     </thead>
-
-
                     <tbody>
-
                         @if ($dailyPrice->count() > 0)
-
                             @foreach ($dailyPrice as $item)
                                 <tr>
-
                                     <td>{{ $loop->iteration }}</td>
-
+                                    <td>{{ $item->price_date }}</td>
+                                    <td><strong>{{ $item->crop_name }}</strong></td>
                                     <td>
-                                        {{ $item->price_date }}
-                                    </td>
-
-                                    <td>
-                                        <strong> {{ $item->crop_name }} </strong>
-                                    </td>
-
-                                    <td>
-                                        <span class="fs-5">
+                                        <span class="fs-6">
                                             {{ $item->grade_name }}
                                         </span>
                                     </td>
+                                    <td>{{ $item->reference_buy_price }}</td>
 
-                                    <td>
-                                        {{ $item->reference_buy_price }}
-                                    </td>
-
-
-                                    {{-- မနေ့ကဈေး --}}
+                                    <!-- မနေ့ကဈေး -->
                                     <td>
                                         @if ($item->yesterday_price !== null)
                                             {{ number_format((float) $item->yesterday_price, 2) }}
@@ -223,7 +170,7 @@
                                         @endif
                                     </td>
 
-                                    {{-- ဒီနေ့ဈေး --}}
+                                    <!-- ဒီနေ့ဈေး -->
                                     <td>
                                         @if ($item->today_price !== null)
                                             {{ number_format((float) $item->today_price, 2) }}
@@ -232,17 +179,15 @@
                                         @endif
                                     </td>
 
-                                    {{-- ဈေးတက်၊ ဈေးကျ --}}
+                                    <!-- ဈေးတက်၊ ဈေးကျ -->
                                     <td>
                                         @if ($item->price_status === 'တက်')
                                             <span class="text-success fw-bold">
-                                                ▲ ဈေးတက်
-                                                (+{{ number_format($item->price_difference, 2) }} ကျပ်)
+                                                ▲ ဈေးတက် (+{{ number_format($item->price_difference, 2) }} ကျပ်)
                                             </span>
                                         @elseif ($item->price_status === 'ကျ')
                                             <span class="text-danger fw-bold">
-                                                ▼ ဈေးကျ
-                                                ({{ number_format($item->price_difference, 2) }} ကျပ်)
+                                                ▼ ဈေးကျ ({{ number_format($item->price_difference, 2) }} ကျပ်)
                                             </span>
                                         @elseif ($item->price_status === 'မပြောင်း')
                                             <span class="text-dark">
@@ -255,71 +200,53 @@
                                         @endif
                                     </td>
 
-
+                                    <!-- လုပ်ဆောင်ချက် -->
                                     <td class="text-center">
-
-                                        <div class=" d-flex mt-md-0">
+                                        <div class="d-inline-flex gap-1">
                                             <a href="{{ route('DailyPrice#edit', $item->id) }}"
-                                                class="btn btn-sm btn-outline-dark btn-edit me-1 " title="ပြင်ဆင်ရန်">
-                                                ပြင်ဆင်ရန်
+                                                class="btn btn-sm btn-outline-dark" title="ပြင်ဆင်ရန်">
+                                                ပြင်ရန်
                                             </a>
-
                                             <button type="button" onclick="DeleteData({{ $item->id }})"
-                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                                class="btn btn-sm btn-outline-danger" title="ဖျက်ရန်">
                                                 ဖျက်ရန်
                                             </button>
                                         </div>
-
                                     </td>
-
                                 </tr>
                             @endforeach
-                            
                         @else
                             <tr>
-                                <td colspan="9" class="empty-state-cell">
+                                <td colspan="9" class="text-center py-5">
+                                    <div class=" d-flex flex-column align-items-center justify-content-center">
 
-                                    <div class="empty-state">
-
-                                        <h5>နေ့စဉ်သီးနှံဈေးနှုန်းများ မရှိသေးပါ</h5>
-
-                                        <p>
+                                        <h5 class="mb-1 text-secondary fw-bold">နေ့စဉ်သီးနှံဈေးနှုန်းများ မရှိသေးပါ</h5>
+                                        <p class="text-muted mb-0">
                                             လက်ရှိတွင် နေ့စဉ်သီးနှံဈေးနှုန်းများ ထည့်သွင်းထားခြင်းမရှိသေးပါ။
                                         </p>
-
-                                <td>
+                                    </div>
+                                </td>
                             </tr>
                         @endif
-
                     </tbody>
-
                 </table>
-
             </div>
 
-
-            {{-- Pagination Example --}}
-            <div class="d-md-flex justify-content-between align-items-center mt-4">
-
-                <p class="text-muted">
+            <!-- Pagination Section -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-3">
+                <p class="text-muted mb-0 text-center text-md-start">
                     နေ့စဉ်သီးနှံဈေးနှုန်း {{ $dailyPrice->firstItem() ?? 0 }}
                     မှ {{ $dailyPrice->lastItem() ?? 0 }}
                     အထိ ပြသထားပြီး
                     စုစုပေါင်း {{ $dailyPrice->total() }} မျိုး ရှိပါသည်။
                 </p>
 
-                <nav class=" d-flex justify-content-end">
-
+                <nav>
                     <ul class="pagination pagination-sm mb-0">
-
-                        <span> {{ $dailyPrice->links() }} </span>
-
+                        {{ $dailyPrice->links() }}
                     </ul>
-
                 </nav>
-
             </div>
-
         </div>
 
     </div>

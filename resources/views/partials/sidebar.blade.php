@@ -79,14 +79,12 @@
             </a>
         @endif
 
-        @if (auth()->user()->role === 'superadmin')
-            <div class="menu-title">
-                Backup
-            </div>
-            <a href="{{ route('Backup#list') }}" class="{{ request()->routeIs('Backup#list') ? 'active' : '' }}">
-                <i class="bi bi-database-check"></i>
-                <span>Backup စာရင်း</span>
-            </a>
-        @endif
+        <div class="menu-title">
+            Backup
+        </div>
+        <a href="{{ route('Backup#list') }}" class="{{ request()->routeIs('Backup#list') ? 'active' : '' }}">
+            <i class="bi bi-database-check"></i>
+            <span>Backup စာရင်း</span>
+        </a>
     </div>
 </aside>

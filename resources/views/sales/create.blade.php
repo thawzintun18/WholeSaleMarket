@@ -19,11 +19,11 @@
                 </p>
             </div>
 
-            <div class=" d-flex justify-content-end">
+            {{-- <div class=" d-flex justify-content-end">
                 <a href="{{ route('Sale#directPage') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise"></i> အသစ်ပြန်စမည်
                 </a>
-            </div>
+            </div> --}}
         </div>
 
         @if ($errors->has('sale_items'))
@@ -48,10 +48,10 @@
                     </div>
 
                     <div class=" d-flex justify-content-end mt-md-0 mt-2">
-                        <button type="button" class=" btn btn-success my-1" style="height: 40px;" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-primary my-1 rounded-pill shadow-sm px-4" data-bs-toggle="modal"
                             data-bs-target="#newCustomerModal">
                             <i class="bi bi-person-plus me-1"></i>
-                            ဝယ်သူအသစ်ထည့်မည်
+                            ဝယ်သူအသစ်
                         </button>
                     </div>
                 </div>
@@ -189,7 +189,7 @@
 
                     <h5 class="mb-3">
                         ဒီနေ့ Average Price
-                        ({{ \Carbon\Carbon::parse($today)->format('d-m-Y') }})
+                        ({{ \Carbon\Carbon::parse($today)->format('d-M-Y') }})
                     </h5>
 
                     @if (!$isCalculated)
@@ -202,9 +202,9 @@
 
                             @csrf
 
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary rounded-pill shadow-sm px-4 py-2">
                                 <i class="bi bi-calculator me-1"></i>
-                                ဒီနေ့အတွက် သီးနှံအားလုံး၏ Average Price တွက်ရန်
+                                ယနေ့သီးနှံအားလုံး၏ Average Price တွက်ရန်
                             </button>
                         </form>
                     @else
@@ -289,7 +289,7 @@
                             </small>
                         </div>
 
-                        <span class="badge bg-primary fs-6" id="item_count">
+                        <span class="badge bg-light text-dark border px-3 py-2" id="item_count">
                             သီးနှံ ၀ မျိုး
                         </span>
 
@@ -408,7 +408,7 @@
 
                             {{-- သီးနှံထည့်ရန် --}}
                             <div class="col-12 text-center">
-                                <button type="button" id="add_crop_item" class="btn btn-success">
+                                <button type="button" id="add_crop_item" class="btn btn-success rounded-pill shadow-sm px-4 py-2">
                                     <i class="bi bi-plus-lg me-1"></i>
                                     သီးနှံစာရင်းထဲ ထည့်မည်
                                 </button>
@@ -502,7 +502,7 @@
 
                     {{-- Purchase သိမ်းဆည်းပြီး Voucher ကြည့်ရန် --}}
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" id="save_purchase_btn" class="btn btn-primary">
+                        <button type="submit" id="save_purchase_btn" class="btn btn-success rounded-pill shadow-sm px-4 py-2">
                             <i class="bi bi-save me-1"></i>
                             သိမ်းပြီး Voucher ထုတ်မည်
                         </button>

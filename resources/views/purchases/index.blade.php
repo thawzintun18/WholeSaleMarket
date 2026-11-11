@@ -17,8 +17,8 @@
                     စီမံခန့်ခွဲရန်။</p>
             </div>
             <div class=" d-flex justify-content-end mt-md-0 mt-3">
-                <a href="{{ route('purchases#create#page') }}" class="btn btn-primary shadow-sm">
-                <i class="bi bi-plus-circle me-1"></i> ဝယ်ယူမှုအသစ် ပြုလုပ်ရန်
+                <a href="{{ route('purchases#create#page') }}" class="btn btn-primary shadow-sm rounded-pill px-3">
+                <i class="bi bi-plus-circle me-1"></i> ဝယ်ယူမှုအသစ်
             </a>
             </div>
         </div>
@@ -457,7 +457,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center py-5 text-muted">
+                                <td colspan="10" class="text-center py-4 text-muted">
                                     <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
                                     ရှာဖွေထားသော ဝယ်ယူမှု စာရင်းများ မရှိပါ။
                                 </td>

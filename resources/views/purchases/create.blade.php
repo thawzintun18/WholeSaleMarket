@@ -20,11 +20,11 @@
                 </p>
             </div>
 
-            <div class=" d-flex justify-content-end my-md-0 my-2">
+            {{-- <div class=" d-flex justify-content-end my-md-0 my-2">
                 <a href="{{ route('purchases#create#page') }}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-clockwise"></i> အသစ်ပြန်စမည်
                 </a>
-            </div>
+            </div> --}}
         </div>
 
         {{-- Farmer Selection --}}
@@ -39,10 +39,10 @@
                     </div>
 
                     <div class=" d-flex justify-content-end">
-                        <button type="button" class="btn btn-success my-1" style="height: 40px;" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-primary my-1 rounded-pill shadow-sm px-4" data-bs-toggle="modal"
                             data-bs-target="#newFarmerModal">
                             <i class="bi bi-person-plus me-1"></i>
-                            တောင်သူအသစ်ထည့်မည်
+                            တောင်သူအသစ်
                         </button>
                     </div>
                 </div>
@@ -206,7 +206,7 @@
                             </small>
                         </div>
 
-                        <span class="badge bg-primary fs-6" id="item_count">
+                        <span class="badge bg-light text-dark border px-3 py-2" id="item_count">
                             သီးနှံ ၀ မျိုး
                         </span>
 
@@ -314,7 +314,7 @@
 
                             {{-- သီးနှံထည့်ရန် ခလုတ် --}}
                             <div class="col-12 text-center mt-4">
-                                <button type="button" id="add_crop_item" class="btn btn-success px-4 py-2">
+                                <button type="button" id="add_crop_item" class="btn btn-success px-4 py-2 rounded-pill shadow-sm">
                                     <i class="bi bi-plus-lg me-1"></i>
                                     သီးနှံစာရင်းထဲ ထည့်မည်
                                 </button>
@@ -475,7 +475,7 @@
 
                     {{-- Purchase သိမ်းဆည်းပြီး Voucher ကြည့်ရန် --}}
                     <div class="d-flex justify-content-end mt-4">
-                        <button type="submit" id="save_purchase_btn" class="btn btn-primary">
+                        <button type="submit" id="save_purchase_btn" class="btn btn-success rounded-pill shadow-sm px-4 py-2">
                             <i class="bi bi-save me-1"></i>
                             သိမ်းပြီး Voucher ထုတ်မည်
                         </button>

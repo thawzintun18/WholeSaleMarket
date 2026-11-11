@@ -60,11 +60,10 @@
 
                     {{-- Database Restore --}}
                     @if (auth()->user()->role === 'superadmin')
-                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
-                                            data-bs-target="#databaseRestoreModal">
-
-                                            <i class="bi bi-arrow-counterclockwise"></i>
-                                            Restore လုပ်ရန်
+                            <button type="button" class="btn btn-outline-danger rounded-pill shadow-sm px-4" data-bs-toggle="modal"
+                                    data-bs-target="#databaseRestoreModal">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                Restore လုပ်ရန်
                             </button>
                     @endif
 
@@ -73,7 +72,7 @@
 
                         @csrf
 
-                        <button type="submit" class="btn btn-primary" id="manualBackupBtn">
+                        <button type="submit" class="btn btn-dark rounded-pill shadow-sm px-4" id="manualBackupBtn">
                             <i class="bi bi-database"></i>
                             Backup လုပ်မည်
                         </button>

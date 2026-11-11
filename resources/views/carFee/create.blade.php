@@ -20,7 +20,7 @@
         </div>
 
         <div class=" d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('CarFee#list') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('CarFee#list') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
@@ -96,11 +96,11 @@
 
                         <div class=" d-flex justify-content-end col-12">
                             <div class=" d-flex">
-                                <a href="{{ route('CarFee#directPage') }}" class="btn btn-outline-danger me-2">
+                                <a href="{{ route('CarFee#directPage') }}" class="btn btn-outline-danger me-2 rounded-pill shadow-sm px-4 py-2">
                                     ပြန်လည်သတ်မှတ်မည်
                                 </a>
 
-                                <button type="submit" id="saveButton" class="btn btn-success" disabled>
+                                <button type="submit" id="saveButton" class="btn btn-success rounded-pill shadow-sm px-4 py-2" disabled>
                                     <i class="bi bi-save me-1"></i>
                                     တွက်ချက်ပြီး သိမ်းမည်
                                 </button>

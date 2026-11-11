@@ -20,7 +20,7 @@
         </div>
 
         <div class="col-md-4 d-flex justify-content-end">
-            <a href="{{ route('FarmerDebt#list') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('FarmerDebt#list') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>

@@ -10,14 +10,14 @@
 
         {{-- တောင်သူအသစ်ထည့်ခြင်း --}}
         <a href="{{ route('FarmerDebt#directPage') }}"
-            class="btn {{ request()->routeIs('FarmerDebt#directPage') ? 'btn-dark' : 'btn-outline-dark' }}">
+            class="btn rounded-pill shadow-sm px-4 {{ request()->routeIs('FarmerDebt#directPage') ? 'btn-dark' : 'btn-outline-dark' }}">
             <i class="bi bi-person-plus me-2"></i>
             တောင်သူအသစ်ထည့်ရန်
         </a>
 
         {{-- ရှိပြီးသားတောင်သူအတွက် ကြိုသုံးငွေ --}}
         <a href="{{ route('FarmerDebt#directPageSettlement') }}"
-            class="btn {{ request()->routeIs('FarmerDebt#directPageSettlement') ? 'btn-dark' : 'btn-outline-dark' }}">
+            class="btn rounded-pill shadow-sm px-4 {{ request()->routeIs('FarmerDebt#directPageSettlement') ? 'btn-dark' : 'btn-outline-dark' }} ">
             <i class="bi bi-cash-stack me-2"></i>
             ကြိုသုံးငွေထုတ်ပေးရန်
         </a>
@@ -38,7 +38,7 @@
         </div>
 
         <div class=" d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('FarmerDebt#list') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('FarmerDebt#list') }}" class="btn btn-outline-secondary rounded-pill shadow-sm px-4">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
@@ -160,7 +160,7 @@
 
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end mt-3 gap-2">
-                        <button type="submit" class="btn btn-success" id="submitButton">
+                        <button type="submit" class="btn btn-success rounded-pill shadow-sm px-4 py-2" id="submitButton">
                             <i class="bi bi-check-lg me-1"></i>
                             ကြိုသုံးငွေယူမည့် တောင်သူထည့်သွင်းမည်
                         </button>

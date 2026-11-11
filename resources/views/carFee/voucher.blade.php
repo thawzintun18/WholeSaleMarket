@@ -13,7 +13,7 @@
         <div class="d-flex justify-content-between align-items-center gap-2 mb-3 d-print-none">
 
             <div class="">
-                <a href="{{ url()->previous() }}" class="btn btn-outline-secondary me-2">
+                <a href="{{ url()->previous() }}" class="btn btn-outline-secondary me-2 rounded-pill shadow-sm">
                     <i class="bi bi-arrow-left me-1"></i>
                     {{-- Purchase အသစ် --}}
                     နောက်သို့
@@ -21,7 +21,7 @@
             </div>
 
 
-            <button type="button" class="btn btn-primary" onclick="window.print()">
+            <button type="button" class="btn btn-info rounded-pill shadow-sm px-4" onclick="window.print()">
                 <i class="bi bi-printer me-1"></i>
                 ဘောက်ချာထုတ်မည်
             </button>

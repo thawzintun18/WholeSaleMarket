@@ -17,7 +17,7 @@
         </div>
 
         <div class=" col-md-2 d-flex justify-content-end mt-md-0 mt-2">
-            <a href="{{ route('FarmerDebt#list') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('FarmerDebt#list') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
                 <i class="bi bi-arrow-left me-1"></i>
                 နောက်သို့
             </a>
@@ -54,7 +54,7 @@
                     </div>
                     {{-- Buttons --}}
                     <div class="d-flex justify-content-end mt-3 gap-2">
-                        <button type="submit" class="btn btn-success" id="submitButton">
+                        <button type="submit" class="btn btn-success rounded-pill shadow-sm px-4 py-2" id="submitButton">
                             <i class="bi bi-check-lg me-1"></i>
                             ငွေပမာဏထည့်သွင်းမည်
                         </button>

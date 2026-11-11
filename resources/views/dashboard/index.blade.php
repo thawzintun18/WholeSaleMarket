@@ -7,7 +7,7 @@
 @section('content')
     <div class="container-fluid p-0">
 
-        {{-- ၁။ အرحကြီးသော စာရင်းချုပ်ကတ်များ (Summary KPI Cards) --}}
+        {{-- စာရင်းချုပ်ကတ်များ (Summary KPI Cards) --}}
         <div class="row g-3 mb-4">
 
             {{-- ယနေ့ဝယ်အား --}}

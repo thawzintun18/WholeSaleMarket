@@ -8,21 +8,21 @@
 
 @section('content')
 
-    <div class=" d-md-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
 
         <div>
-            <h1 class="page-title mb-1">ကားဘောင်ချာစာရင်း</h1>
+            <h1 class="page-title mb-1 fs-3 fs-md-2">ကားဘောင်ချာစာရင်း</h1>
 
-            <p class="text-muted mb-0 mt-2" style="line-height: 30px">
+            <p class="text-muted mb-0 mt-1" style="line-height: 1.5">
                 ပွဲရုံမှ လက်ခံဝယ်ယူမည့် သီးနှံအမျိုးအစားများနှင့် သက်ဆိုင်သော အချက်အလက်များကို ဤစာရင်းတွင်
                 ကြည့်ရှုနိုင်ပါသည်။
             </p>
         </div>
 
-        <div class=" d-flex justify-content-end">
-            <a href="{{ route('CarFee#directPage') }}" class="btn btn-success mt-md-0 mt-3">
+        <div class="d-flex justify-content-end w-100 w-md-auto">
+            <a href="{{ route('CarFee#directPage') }}" class="btn btn-primary rounded-pill shadow-sm px-4">
                 <i class="bi bi-plus-lg me-1"></i>
-                ကားဘောင်ချာထပ်ထည့်ရန်
+                ကားဘောင်ချာသစ်
             </a>
         </div>
 
@@ -30,81 +30,70 @@
 
 
     {{-- Search --}}
-    <div class="dashboard-card mb-4 shadow-sm">
+    <div class="dashboard-card mb-3 shadow-sm p-3 p-md-4">
         <form action="{{ route('CarFee#list') }}" method="GET">
-            <div class="row g-3">
+            <div class="row align-items-end g-2">
 
                 <div class="col-12 col-md-4">
-
-                    <label class="form-label">
+                    <label class="form-label mb-1">
                         ကားသမားရှာဖွေရန်
                     </label>
 
                     <div class="input-group">
-
                         <span class="input-group-text">
                             <i class="bi bi-search"></i>
                         </span>
 
                         <input type="text" name="searchData" value="{{ request('searchData') }}" id="cropSearch"
-                            class="form-control p-2" placeholder="ကားသမားအမည် ရိုက်ထည့်ပါ...">
-
+                            class="form-control" placeholder="ကားသမားအမည် ရိုက်ထည့်ပါ...">
                     </div>
-
                 </div>
 
                 <!-- From Date -->
-                <div class="col-6 col-md-2">
-                    <label class="form-label small fw-semibold text-muted">မှ ရက်စွဲ (From)</label>
-                    <input type="date" name="from_date" class="form-control form-control-sm bg-light"
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold text-muted mb-1">မှ ရက်စွဲ (From)</label>
+                    <input type="date" name="from_date" class="form-control bg-light"
                         value="{{ request('from_date') }}">
                 </div>
 
                 <!-- To Date -->
-                <div class="col-6 col-md-2">
-                    <label class="form-label small fw-semibold text-muted">ထိ ရက်စွဲ (To)</label>
-                    <input type="date" name="to_date" class="form-control form-control-sm bg-light"
+                <div class="col-6 col-md-3">
+                    <label class="form-label small fw-semibold text-muted mb-1">ထိ ရက်စွဲ (To)</label>
+                    <input type="date" name="to_date" class="form-control bg-light"
                         value="{{ request('to_date') }}">
                 </div>
 
-                <div class="col-md-auto d-flex align-items-end">
-
-                    <button type="submit" class="btn btn-primary">
+                <div class="col-12 col-md-auto d-flex flex-wrap gap-2 mt-2 mt-md-0">
+                    <button type="submit" class="btn btn-primary flex-fill flex-md-grow-0">
                         <i class="bi bi-search me-1"></i>
                         ရှာဖွေမည်
                     </button>
 
-                </div>
-
-                <div class="col-md-auto d-flex align-items-end">
-
-                    <a href="{{ route('CarFee#list') }}" class="btn btn-outline-secondary">
+                    <a href="{{ route('CarFee#list') }}" class="btn btn-outline-secondary text-center flex-fill flex-md-grow-0">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         ပြန်လည်သတ်မှတ်မည်
                     </a>
-
                 </div>
 
             </div>
         </form>
-
     </div>
 
 
-    <div class="dashboard-card shadow-sm">
+    <div class="dashboard-card shadow-sm p-3 p-md-4">
 
-        <div class="d-md-flex justify-content-between align-items-center mb-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
 
             <div>
-                <h5 class="mb-1">
+                <h5 class="mb-1" style="line-height: 1.4">
                     ယနေ့ ကားခတွက်ချက်ပြီးစာရင်း
-                    <span class="float-end mx-2">{{ $today }}</span>
+                    <span class="badge bg-secondary ms-1 fw-normal">{{ $today }}</span>
                 </h5>
             </div>
 
-            <div class=" d-md-flex justify-content-end mt-md-0 mt-2">
-                <div class=" me-2">
-                    <span class="badge bg-light text-dark border">
+            <div class="d-flex justify-content-end">
+                <div>
+                    <span class="badge bg-light text-dark border px-3 py-2">
                         {{ $payments->count() }} မှတ်တမ်း
                     </span>
                 </div>
@@ -115,17 +104,17 @@
 
         <div class="table-responsive">
 
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
 
                 <thead>
 
                     <tr>
-                        <th>စဉ်</th>
+                        <th style="width: 60px;">စဉ်</th>
                         <th>ကားနံပါတ်</th>
                         <th>ကားသမားအမည်</th>
                         <th>စုစုပေါင်းငွေ</th>
                         <th>ရက်စွဲ</th>
-                        <th>လုပ်ဆောင်ချက်</th>
+                        <th class="text-center" style="width: 150px;">လုပ်ဆောင်ချက်</th>
                     </tr>
 
                 </thead>
@@ -139,7 +128,7 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
 
-                                <td>{{ $item->car_no }}</td>
+                                <td><strong>{{ $item->car_no }}</strong></td>
 
                                 <td>{{ $item->driver_name }}</td>
 
@@ -150,36 +139,36 @@
 
                                 <td>{{ $item->payment_date }}</td>
 
-                                <td>
-                                    {{-- ဘောင်ချာကြည့်ရန် --}}
-                                    <a href="{{ route('CarFee#voucher', $item->id) }}"
-                                        class="btn btn-sm btn-outline-secondary rounded-2" title="ဘောင်ချာကြည့်မည်"
-                                        aria-label="ဘောင်ချာကြည့်မည်">
-                                        <i class="bi bi-receipt"></i>
-                                    </a>
+                                <td class="text-center">
+                                    <div class="d-inline-flex gap-1 justify-content-center">
+                                        {{-- ဘောင်ချာကြည့်ရန် --}}
+                                        <a href="{{ route('CarFee#voucher', $item->id) }}"
+                                            class="btn btn-sm btn-outline-secondary rounded-2" title="ဘောင်ချာကြည့်မည်"
+                                            aria-label="ဘောင်ချာကြည့်မည်">
+                                            <i class="bi bi-receipt"></i>
+                                        </a>
 
-                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-2"
-                                        data-bs-toggle="modal" data-bs-target="#carFeeDetailModal"
-                                        data-url="{{ route('CarFee#detail', $item->id) }}">
+                                        <button type="button" class="btn btn-sm btn-outline-primary rounded-2"
+                                            data-bs-toggle="modal" data-bs-target="#carFeeDetailModal"
+                                            data-url="{{ route('CarFee#detail', $item->id) }}" title="အသေးစိတ်ကြည့်ရန်">
+                                            <i class="bi bi-list-ul"></i>
+                                        </button>
 
-                                        <i class="bi bi-list-ul"></i>
-                                    </button>
-
-                                    <button type="button" onclick="DeleteData({{ $item->id }})"
-                                        class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                        ဖျက်ရန်
-                                    </button>
+                                        <button type="button" onclick="DeleteData({{ $item->id }})"
+                                            class="btn btn-sm btn-outline-danger rounded-2" title="ဖျက်ရန်">
+                                            ဖျက်ရန်
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="6" class="empty-state-cell">
-                                <div class="empty-state">
+                            <td colspan="6" class="text-center py-5">
+                                <div class="d-flex flex-column align-items-center justify-content-center">
+                                    <h5 class="mb-1 text-secondary fw-bold">ကားဘောင်ချာစာရင်း မရှိသေးပါ</h5>
 
-                                    <h5>ကားဘောင်ချာစာရင်း မရှိသေးပါ</h5>
-
-                                    <p>
+                                    <p class="text-muted mb-0">
                                         ယနေ့ ကားခတွက်ချက်ထားသော စာရင်း မရှိသေးပါ။
                                     </p>
                                 </div>
@@ -266,23 +255,19 @@
         </div>
 
         {{-- Pagination Example --}}
-        <div class="d-md-flex justify-content-between align-items-center mt-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 gap-3">
 
-            <p class="text-muted">
+            <p class="text-muted mb-0 text-center text-md-start">
                 မှတ်တမ်း {{ $payments->firstItem() ?? 0 }}
                 မှ {{ $payments->lastItem() ?? 0 }}
                 အထိ ပြသထားပြီး
                 စုစုပေါင်း {{ $payments->total() }} မျိုး ရှိပါသည်။
             </p>
 
-            <nav class=" d-flex justify-content-end">
-
+            <nav class="d-flex justify-content-end">
                 <ul class="pagination pagination-sm mb-0">
-
                     <span> {{ $payments->links() }} </span>
-
                 </ul>
-
             </nav>
 
         </div>

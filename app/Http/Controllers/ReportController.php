@@ -237,7 +237,7 @@ class ReportController extends Controller
                 $pQty = (float) $pItem->quantity;
                 $pBag = (int) ($pItem->bag_count ?? 0);
                 $pQpb = (float) ($pItem->quantity_per_basket ?? 0);
-                
+
                 // ယူနစ်က ပိဿာ ဖြစ်ပါက ပိဿာ စုစုပေါင်းသို့ ပေါင်းထည့်ရန်
                 if ($rawUnit === 'viss') {
                     $totalVissQuantity += $pQty;
@@ -336,7 +336,7 @@ class ReportController extends Controller
         }
 
         $crops = DB::table('crops')->orderBy('crop_name')->get();
-        
+
         // ရွေးချယ်ထားသော သီးနှံ၏ တစ်တင်းဝင်ဆံ့ပမာဏ (quantity_per_basket) ကို ယူရန်
         $selectedCrop = $crops->where('id', $cropId)->first();
         $qtyPerBasket = (float) ($selectedCrop->quantity_per_basket ?? 0);
@@ -427,4 +427,201 @@ class ReportController extends Controller
             'netProfit'
         ));
     }
+
+
+    public function exportPExcel(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        $cropId = $request->input('crop_id');
+        if (!$cropId) {
+            $firstCrop = DB::table('crops')->orderBy('crop_name')->first();
+            $cropId = $firstCrop ? $firstCrop->id : null;
+        }
+
+        $gradeId = $request->input('grade_id');
+
+        $selectedCrop = DB::table('crops')->where('id', $cropId)->first();
+        $qtyPerBasket = (float) ($selectedCrop->quantity_per_basket ?? 0);
+
+        // နေ့စဉ်ဝယ်ယူထားသော စာရင်းများ (Purchase Items)
+        $purchaseQuery = DB::table('purchase_items')
+            ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
+            ->join('farmers', 'purchases.farmer_id', '=', 'farmers.id')
+            ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
+            ->join('grades', 'purchase_items.grade_id', '=', 'grades.id')
+            ->select(
+                'purchases.id as ref_id',
+                'purchases.purchase_date as date',
+                'farmers.name as farmer_name',
+                'farmers.village as farmer_village',
+                'crops.crop_name',
+                'crops.unit',
+                'crops.quantity_per_basket',
+                'grades.grade_name',
+                'purchase_items.quantity',
+                'purchase_items.bag_count',
+                'purchase_items.actual_buy_price',
+                'purchase_items.gross_amount',
+                'purchase_items.note'
+            );
+
+        if ($cropId) $purchaseQuery->where('purchase_items.crop_id', $cropId);
+        if ($gradeId) $purchaseQuery->where('purchase_items.grade_id', $gradeId);
+        $purchaseQuery->whereDate('purchases.purchase_date', '>=', $startDate)
+                    ->whereDate('purchases.purchase_date', '<=', $endDate);
+        $purchaseItems = $purchaseQuery->orderBy('purchases.id', 'desc')->get();
+
+        // အပ်နှံထားဆဲ စာရင်းများ (Crop Deposits)
+        $depositQuery = DB::table('crop_deposit_items')
+            ->join('crop_deposits', 'crop_deposit_items.crop_deposit_id', '=', 'crop_deposits.id')
+            ->join('farmers', 'crop_deposits.farmer_id', '=', 'farmers.id')
+            ->join('crops', 'crop_deposit_items.crop_id', '=', 'crops.id')
+            ->join('grades', 'crop_deposit_items.grade_id', '=', 'grades.id')
+            ->where('crop_deposits.status', 'Stored')
+            ->select(
+                'crop_deposits.id as ref_id',
+                'crop_deposits.deposit_date as date',
+                'farmers.name as farmer_name',
+                'farmers.village as farmer_village',
+                'crops.crop_name',
+                'crops.unit',
+                'crops.quantity_per_basket',
+                'grades.grade_name',
+                'crop_deposit_items.quantity',
+                'crop_deposit_items.bag_count',
+                'crop_deposit_items.actual_buy_price',
+                'crop_deposit_items.note'
+            );
+
+        if ($cropId) $depositQuery->where('crop_deposit_items.crop_id', $cropId);
+        if ($gradeId) $depositQuery->where('crop_deposit_items.grade_id', $gradeId);
+        $depositQuery->whereDate('crop_deposits.deposit_date', '>=', $startDate)
+                    ->whereDate('crop_deposits.deposit_date', '<=', $endDate);
+        $depositItems = $depositQuery->orderBy('crop_deposits.id', 'desc')->get();
+
+        // တွက်ချက်မှုများ
+        $totalAmount = $purchaseItems->sum('gross_amount');
+
+        $totalPurchaseBasket = 0;
+        $totalVissQuantity = 0;
+        foreach ($purchaseItems as $item) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $itemQtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            if ($rawUnit === 'viss') {
+                $totalVissQuantity += $qty;
+            }
+
+            if ($itemQtyPerBasket > 0) {
+                $calcQty = $qty;
+                if ($rawUnit === 'pound') {
+                    $calcQty = max(0, $qty - $bagCount);
+                }
+                $totalPurchaseBasket += ($calcQty / $itemQtyPerBasket);
+            }
+        }
+
+        $totalDepositBasket = 0;
+        $totalDepositVissQuantity = 0;
+        foreach ($depositItems as $item) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $itemQtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            if ($rawUnit === 'viss') {
+                $totalDepositVissQuantity += $qty;
+            }
+
+            if ($itemQtyPerBasket > 0) {
+                $calcQty = $qty;
+                if ($rawUnit === 'pound') {
+                    $calcQty = max(0, $qty - $bagCount);
+                }
+                $totalDepositBasket += ($calcQty / $itemQtyPerBasket);
+            }
+        }
+
+        // Excel View သို့ ပို့ဆောင်ပြီး Response ထုတ်ပေးခြင်း
+        return response()->view('reports.excel-daily-purchases', compact(
+            'purchaseItems', 'depositItems', 'startDate', 'endDate',
+            'selectedCrop', 'totalVissQuantity', 'totalPurchaseBasket',
+            'totalDepositVissQuantity', 'totalDepositBasket', 'totalAmount'
+        ))->header('Content-Type', 'application/vnd.ms-excel; charset=utf-8')
+        ->header('Content-Disposition', 'attachment; filename="Crop_Purchase_Report_' . $startDate . '_to_' . $endDate . '.xls"');
+    }
+
+    public function exportSExcel(Request $request)
+    {
+        $startDate = $request->input('start_date', now()->toDateString());
+        $endDate = $request->input('end_date', now()->toDateString());
+
+        $cropId = $request->input('crop_id');
+        if (!$cropId) {
+            $firstCrop = DB::table('crops')->orderBy('crop_name')->first();
+            $cropId = $firstCrop ? $firstCrop->id : null;
+        }
+
+        $selectedCrop = DB::table('crops')->where('id', $cropId)->first();
+
+        $query = DB::table('sale_items')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->join('customers', 'sales.customer_id', '=', 'customers.id')
+            ->join('crops', 'sale_items.crop_id', '=', 'crops.id')
+            ->select(
+                'sales.invoice_no',
+                'sales.sale_date',
+                'customers.name as customer_name',
+                'crops.crop_name',
+                'crops.unit',
+                'crops.quantity_per_basket',
+                'sale_items.quantity',
+                'sale_items.bag_count',
+                'sale_items.sale_price',
+                'sale_items.gross_amount',
+                'sale_items.note'
+            );
+
+        if ($cropId) {
+            $query->where('sale_items.crop_id', $cropId);
+        }
+
+        $query->whereDate('sales.sale_date', '>=', $startDate)
+            ->whereDate('sales.sale_date', '<=', $endDate);
+
+        $items = $query->orderBy('sales.id', 'desc')->get();
+
+        $totalSaleBasket = 0;
+        $totalSaleVissQuantity = 0;
+        foreach ($items as $item) {
+            $rawUnit = strtolower($item->unit ?? '');
+            $qty = (float) $item->quantity;
+            $bagCount = (int) ($item->bag_count ?? 0);
+            $itemQtyPerBasket = (float) ($item->quantity_per_basket ?? 0);
+
+            if ($rawUnit === 'viss') {
+                $totalSaleVissQuantity += $qty;
+            }
+
+            $calcQty = $qty;
+            if ($rawUnit === 'pound') {
+                $calcQty = max(0, $qty - $bagCount);
+            }
+
+            $totalSaleBasket += ($itemQtyPerBasket > 0 ? ($calcQty / $itemQtyPerBasket) : 0);
+        }
+
+        $totalAmount = $items->sum('gross_amount');
+
+        return response()->view('reports.excel-daily-sales', compact(
+            'items', 'startDate', 'endDate', 'selectedCrop',
+            'totalSaleBasket', 'totalSaleVissQuantity', 'totalAmount'
+        ))->header('Content-Type', 'application/vnd.ms-excel; charset=utf-8')
+        ->header('Content-Disposition', 'attachment; filename="Crop_Sale_Report_' . $startDate . '_to_' . $endDate . '.xls"');
+    }
+
 }

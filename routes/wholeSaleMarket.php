@@ -167,6 +167,12 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
             Route::get('daily/purchases', [ReportController::class, 'dailyPurchaseReport'])->name('reports#daily#purchases');
             Route::get('daily/sale', [ReportController::class, 'dailySaleReport'])->name('reports#daily#sales');
             Route::get('daily/profit', [ReportController::class, 'dailyProfitReport'])->name('reports#daily#profit');
+
+            // နေ့စဉ်ဝယ်ယူမှုနှင့် အပ်နှံစာရင်းချုပ် Excel Download Route
+            Route::get('/daily-purchases/excel', [ReportController::class, 'exportPExcel'])
+                ->name('reports#daily#purchases#excel');
+            Route::get('/daily-sales/excel', [ReportController::class, 'exportSExcel'])
+                ->name('reports#daily#sales#excel');
         });
     });
 

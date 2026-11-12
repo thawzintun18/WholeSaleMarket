@@ -22,7 +22,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card-body p-4">
                     <form action="{{ route('users#store') }}" method="POST">
                         @csrf
@@ -75,10 +75,10 @@
 
                         <!-- Buttons -->
                         <div class="d-flex gap-2 pt-2">
-                            <button type="submit" class="btn btn-success px-4 py-2 fw-semibold">
+                            <button type="submit" class="btn btn-success px-4 py-2 fw-semibold rounded-pill shadow-sm">
                                 <i class="bi bi-check-lg me-1"></i> Create
                             </button>
-                            <a href="{{ route('users#index') }}" class="btn btn-light border px-4 py-2 fw-semibold text-secondary">
+                            <a href="{{ route('users#index') }}" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-pill shadow-sm">
                                 Back
                             </a>
                         </div>

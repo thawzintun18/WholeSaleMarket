@@ -134,14 +134,6 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
 
     });
 
-    Route::group(['prefix' => 'Leave'], function () {
-        Route::post('create', [LeaveCountController::class, 'create'])->name('Leave#create');
-        Route::get('list', [LeaveCountController::class, 'list'])->name('Leave#list');
-        Route::get('directPage', [LeaveCountController::class, 'directPage'])->name('Leave#directPage');
-        Route::post('existCreate', [LeaveCountController::class, 'existCreate'])->name('Leave#existCreate');
-        Route::get('checkCreate', [LeaveCountController::class, 'checkCreate'])->name('Leave#checkCreate');
-    });
-
     Route::group(['prefix' => 'CarFee'], function () {
         Route::get('directPage', [CarFeeController::class, 'directPage'])->name('CarFee#directPage');
         Route::post('create', [CarFeeController::class, 'create'])->name('CarFee#create');
@@ -173,6 +165,15 @@ Route::group(['prefix' => 'whole-sale-market', 'middleware' => ['role:staff,admi
                 ->name('reports#daily#purchases#excel');
             Route::get('/daily-sales/excel', [ReportController::class, 'exportSExcel'])
                 ->name('reports#daily#sales#excel');
+        });
+
+
+        Route::group(['prefix' => 'Leave'], function () {
+            Route::post('create', [LeaveCountController::class, 'create'])->name('Leave#create');
+            Route::get('list', [LeaveCountController::class, 'list'])->name('Leave#list');
+            Route::get('directPage', [LeaveCountController::class, 'directPage'])->name('Leave#directPage');
+            Route::post('existCreate', [LeaveCountController::class, 'existCreate'])->name('Leave#existCreate');
+            Route::get('checkCreate', [LeaveCountController::class, 'checkCreate'])->name('Leave#checkCreate');
         });
     });
 

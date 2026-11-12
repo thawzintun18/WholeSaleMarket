@@ -27,7 +27,7 @@
                         </div>
                         {{-- အကောင့်အသစ်ဆောက်ရန် Page သို့သွားသော ခလုတ် --}}
                         <a href="{{ route('users#create#page') }}"
-                            class="btn btn-success px-3 py-2 fw-semibold rounded-3 shadow-sm">
+                            class="btn btn-dark px-4 py-2 fw-semibold rounded-pill shadow-sm">
                             <i class="bi bi-plus-circle me-1"></i> အကောင့်အသစ် ဖန်တီးမည်
                         </a>
                     </div>

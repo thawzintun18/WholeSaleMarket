@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-        
+
         // ဤနေရာတွင် တခြား Device များကို Logout ဖြစ်စေရန် ထည့်ပါ
         // User ရဲ့ လက်ရှိ password ကို ယူပြီး ကျန်တဲ့ Device တွေကနေ ဖြုတ်ချသည်
         Auth::logoutOtherDevices($request->getPassword());
@@ -39,7 +39,19 @@ class AuthenticatedSessionController extends Controller
             config(['session.lifetime' => 43200]);
         }
 
-        return redirect()->route('dashboard');
+        // Admin သို့မဟုတ် Superadmin ဖြစ်လျှင် dashboard သို့ ပို့မည်
+        if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin') {
+            return redirect()->route('dashboard');
+        }
+
+        // Staff ဖြစ်လျှင် DailyPrice#list သို့ ပို့မည်
+        if (auth()->user()->role === 'staff') {
+            return redirect()->route('DailyPrice#list');
+        }
+
+        // အခြားအခြေအနေများအတွက် default redirect
+        return redirect()->intended(route('DailyPrice#list'));
+        // return redirect()->route('dashboard');
     }
 
     /**

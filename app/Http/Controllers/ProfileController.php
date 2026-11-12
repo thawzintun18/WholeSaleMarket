@@ -13,12 +13,15 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // dd(auth()->user()->role);
+        if (auth()->user()->role === 'staff') {
+            return redirect()->route('DailyPrice#list');
+        }
+
         $today = Carbon::today();
 
-        // ၁။ ယနေ့ ဝယ်ယူငွေ (တောဘောင်ချာ) နှင့် ဘောင်ချာအရေအတွက်
+        // ၁။ ယနေ့ ဝယ်ယူငွေ (တောဘောင်ချာ)
         $todayPurchases = DB::table('purchases')
             ->whereDate('purchase_date', $today)
             ->get();
@@ -26,23 +29,21 @@ class ProfileController extends Controller
         $todayPurchaseTotal = $todayPurchases->sum('net_amount');
         $todayPurchaseCount = $todayPurchases->count();
 
-        // ၂။ ယနေ့ ရောင်းရငွေ (မြို့ဘောင်ချာ / စျေးအရောင်း)
-        // (Note: Your sale table name or column might differ, adjust as needed)
-        $todaySales = DB::table('sales') // သို့မဟုတ် 'Sale' model / table
+        // ၂။ ယနေ့ ရောင်းရငွေ (မြို့ဘောင်ချာ)
+        $todaySales = DB::table('sales')
             ->whereDate('sale_date', $today)
             ->get();
 
         $todaySaleTotal = $todaySales->sum('net_amount');
         $todaySaleCount = $todaySales->count();
 
-        // ၃။ တောင်သူများကို ပေးရန်ကျန်ငွေ စုစုပေါင်း (Pending Balance)
+        // ၃။ တောင်သူပေးရန်ကျန်ငွေ
         $totalPendingBalance = DB::table('purchases')
             ->sum('balance_amount');
 
-        // ၄။ တောင်သူကြိုသုံးငွေ (Advances) စုစုပေါင်း လက်ကျန်
-        // (Note: Adjust table name based on your database schema, e.g., 'farmer_debts' or 'advances')
-        $totalAdvanceDebt = DB::table('farmer_debts')
-            ->sum('balance_amount'); // သို့မဟုတ် sum('amount')
+        // ၄။ တောင်သူကြိုသုံးငွေ (Advances)
+        $totalSalePendingBalance = DB::table('sales')
+            ->sum('balance_amount');
 
         // ၅။ လတ်တလော တောဘောင်ချာများ (နောက်ဆုံး ၅ စောင်)
         $recentPurchases = DB::table('purchases')
@@ -58,30 +59,25 @@ class ProfileController extends Controller
             ->limit(5)
             ->get();
 
-        // ၇။ ၇ ရက်စာ ဂရပ်အတွက် အချက်အလက်များ (Weekly Chart Data)
+        // ၇။ ၇ ရက်စာ နေ့စဉ် အရောင်းအဝယ် ဂရပ်အချက်အလက်
         $chartLabels = [];
         $chartPurchaseData = [];
         $chartSaleData = [];
 
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
-            $chartLabels[] = $date->format('M d'); // ဥပမာ - Oct 24
+            $chartLabels[] = $date->format('M d');
 
-            // နေ့အလိုက် ဝယ်ယူငွေ
-            $dailyBuy = DB::table('purchases')
+            $chartPurchaseData[] = DB::table('purchases')
                 ->whereDate('purchase_date', $date)
                 ->sum('net_amount');
-            $chartPurchaseData[] = $dailyBuy;
 
-            // နေ့အလိုက် ရောင်းရငွေ
-            $dailySale = DB::table('sales')
+            $chartSaleData[] = DB::table('sales')
                 ->whereDate('sale_date', $date)
                 ->sum('net_amount');
-            $chartSaleData[] = $dailySale;
         }
 
-        // ၈။ သီးနှံအမျိုးအစားအလိုက် ဝယ်ယူမှုအချိုးအစား (Pie Chart အတွက်)
-        // (Note: Ensure your purchase items table has crop relationship or crop_name)
+        // ၈။ သီးနှံအမျိုးအစားအလိုက် ဝယ်ယူမှုအချိုးအစား (Pie/Doughnut Chart)
         $cropShares = DB::table('purchase_items')
             ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
             ->select('crops.crop_name', DB::raw('SUM(purchase_items.quantity) as total_qty'))
@@ -91,23 +87,72 @@ class ProfileController extends Controller
         $cropLabels = $cropShares->pluck('crop_name')->toArray();
         $cropData = $cropShares->pluck('total_qty')->toArray();
 
-        // View ဆီသို့ အချက်အလက်များ ပို့ပေးခြင်း
+        // ၉။ ယခုနှစ်အတွက် လစဉ် (1 မှ 12 လ) အရောင်းအဝယ် နှိုင်းယှဉ်ချက် (Monthly Performance)
+        $monthlyPurchaseData = [];
+        $monthlySaleData = [];
+        $currentYear = Carbon::now()->year;
+
+        for ($m = 1; $m <= 12; $m++) {
+            $monthlyPurchaseData[] = DB::table('purchases')
+                ->whereYear('purchase_date', $currentYear)
+                ->whereMonth('purchase_date', $m)
+                ->sum('net_amount');
+
+            $monthlySaleData[] = DB::table('sales')
+                ->whereYear('sale_date', $currentYear)
+                ->whereMonth('sale_date', $m)
+                ->sum('net_amount');
+        }
+        $monthlyLabels = ['ဇန်နဝါရီ', 'ဖေဖော်ဝါရီ', 'မတ်', 'ဧပြီ', 'မေ', 'ဇွန်', 'ဇူလိုင်', 'ဩဂုတ်', 'စက်တင်ဘာ', 'အောက်တိုဘာ', 'နိုဝင်ဘာ', 'ဒီဇင်ဘာ'];
+
+
+        // ၁၀။ ဝင်ငွေအကောင်းဆုံး သီးနှံစာရင်း (လနှင့် နှစ် အလိုက် စစ်ထုတ်ခြင်း)
+        $selectedMonth = $request->input('crop_month', Carbon::now()->month);
+        $selectedYear = $request->input('crop_year', Carbon::now()->year);
+
+        $topCropsQuery = DB::table('purchase_items')
+            ->join('purchases', 'purchase_items.purchase_id', '=', 'purchases.id')
+            ->join('crops', 'purchase_items.crop_id', '=', 'crops.id')
+            ->whereNull('purchase_items.deleted_at') // SoftDeletes သုံးထားလျှင် ဖျက်ပြီးသားများ မပါစေရန်
+            ->whereYear('purchases.purchase_date', $selectedYear);
+
+        // 'all' မဟုတ်မှသာ သတ်မှတ်ထားသော လအလိုက် စစ်ထုတ်မည်
+        if ($selectedMonth !== 'all') {
+            $topCropsQuery->whereMonth('purchases.purchase_date', $selectedMonth);
+        }
+
+        $topCrops = $topCropsQuery->select(
+                'crops.crop_name',
+                'crops.unit',
+                DB::raw('SUM(purchase_items.quantity) as total_qty'),
+                DB::raw('SUM(purchase_items.gross_amount) as total_amount')
+            )
+            ->groupBy('crops.crop_name', 'crops.unit')
+            ->orderByDesc('total_amount')
+            ->limit(5)
+            ->get();
+
         return view('dashboard.index', compact(
             'todayPurchaseTotal',
             'todayPurchaseCount',
             'todaySaleTotal',
             'todaySaleCount',
             'totalPendingBalance',
-            'totalAdvanceDebt',
+            'totalSalePendingBalance',
             'recentPurchases',
             'recentSales',
             'chartLabels',
             'chartPurchaseData',
             'chartSaleData',
             'cropLabels',
-            'cropData'
+            'cropData',
+            'monthlyLabels',
+            'monthlyPurchaseData',
+            'monthlySaleData',
+            'topCrops'
         ));
     }
+
     /**
      * Delete the user's account.
      */

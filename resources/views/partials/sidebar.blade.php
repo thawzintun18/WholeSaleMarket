@@ -8,15 +8,13 @@
 
 
     <div class="sidebar-menu">
-
-        {{-- Dashboard --}}
-        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-
-            <i class="bi bi-grid"></i>
-            <span>ပင်မစာမျက်နှာ</span>
-
-        </a>
-
+        @if (in_array(auth()->user()->role, ['admin', 'superadmin']))
+            {{-- Dashboard --}}
+            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="bi bi-grid"></i>
+                <span>ပင်မစာမျက်နှာ</span>
+            </a>
+        @endif
 
         {{-- Master --}}
         <div class="menu-title">
@@ -27,7 +25,6 @@
             <i class="bi bi-box-seam"></i>
             <span>သီးနှံနှင့် ဈေးနှုန်းများ</span>
         </a>
-
         <a href="{{ route('farmers#index') }}"
             class="{{ request()->routeIs('farmers#*', 'Customer#*') ? 'active' : '' }}">
             <i class="bi bi-people"></i>
@@ -57,17 +54,16 @@
             <span>ကားဘောင်ချာစာရင်း</span>
         </a>
 
-
-        {{-- Farmer Account --}}
-        <div class="menu-title">
-            Stock
-        </div>
-        <a href="{{ route('Leave#list') }}" class="{{ request()->routeIs('Leave#list') ? 'active' : '' }}">
-            <i class="bi bi-wallet2"></i>
-            <span>နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</span>
-        </a>
-
         @if (in_array(auth()->user()->role, ['admin', 'superadmin']))
+            {{-- Farmer Account --}}
+            <div class="menu-title">
+                Stock
+            </div>
+            <a href="{{ route('Leave#list') }}" class="{{ request()->routeIs('Leave#list') ? 'active' : '' }}">
+                <i class="bi bi-wallet2"></i>
+                <span>နေ့စဉ်သီးနှံလက်ကျန်စာရင်း</span>
+            </a>
+
             {{-- Reports --}}
             <div class="menu-title">
                 Reports

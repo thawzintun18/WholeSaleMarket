@@ -278,13 +278,6 @@
                                             <i class="bi bi-clock-history"></i>
                                         </button>
 
-                                        @if (auth()->user()->role === 'superadmin')
-                                            <button type="button" onclick="DeleteData({{ $sale->id }})"
-                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
-                                                ဖျက်ရန်
-                                            </button>
-                                        @endif
-
                                         {{-- ကျန်ငွေရှိမှ ငွေရှင်းရန်ပြမည် --}}
                                         @if ($sale->balance_amount > 0)
                                             <button type="button" class="btn btn-sm btn-outline-success rounded-2"
@@ -293,9 +286,14 @@
                                             </button>
                                         @endif
 
+                                        @if (auth()->user()->role === 'superadmin')
+                                            <button type="button" onclick="DeleteData({{ $sale->id }})"
+                                                class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">
+                                                ဖျက်ရန်
+                                            </button>
+                                        @endif
+
                                     </div>
-
-
 
                                     <!-- ငွေရှင်းမည် Modal -->
                                     <div class="modal fade" id="payModal{{ $sale->id }}" tabindex="-1"

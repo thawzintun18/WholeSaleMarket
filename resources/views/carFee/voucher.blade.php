@@ -136,16 +136,14 @@
                     </div>
 
                 </div>
-
-
                 {{-- 5. အောက်ခြေစာ --}}
-                <div class="text-center mt-3 pt-2 border-top small">
+                {{-- <div class="text-center mt-3 pt-2 border-top small">
                     <small class=" text-muted">
                         "ကုန်ပစ္စည်းများ အချိန်မီ၊ ဘေးကင်းစွာ ပို့ဆောင်ပေးနိုင်ပြီး စီးပွားရေးလုပ်ငန်းများ အစဉ်အမြဲ
                         အောင်မြင်တိုးတက်ကြပါစေ။"
                         ဒေါ်ဝင်းမြင့် (မြရတနာ) မှ ဆုမွန်ကောင်းတောင်းအပ်ပါသည်။
                     </small>
-                </div>
+                </div> --}}
 
             </div>
         </div>

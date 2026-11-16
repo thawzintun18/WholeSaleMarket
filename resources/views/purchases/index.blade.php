@@ -310,18 +310,19 @@
                                             <i class="bi bi-clock-history"></i>
                                         </button>
 
-                                        @if (auth()->user()->role === 'superadmin')
-                                            <button type="button" onclick="DeleteData({{ $purchase->id }})"
-                                                    class="btn btn-sm btn-outline-danger" title="ဖျက်ရန်">
-                                                ဖျက်ရန်
-                                            </button>
-                                        @endif
-
                                         {{-- ကျန်ငွေရှိမှ ငွေရှင်းရန်ပြမည် --}}
                                         @if ($purchase->balance_amount > 0)
                                             <button type="button" class="btn btn-sm btn-outline-success rounded-2"
                                                 data-bs-toggle="modal" data-bs-target="#payModal{{ $purchase->id }}">
                                                 <i class="bi bi-wallet2 me-1"></i> ငွေရှင်း
+                                            </button>
+                                        @endif
+
+
+                                        @if (auth()->user()->role === 'superadmin')
+                                            <button type="button" onclick="DeleteData({{ $purchase->id }})"
+                                                    class="btn btn-sm btn-outline-danger" title="ဖျက်ရန်">
+                                                ဖျက်ရန်
                                             </button>
                                         @endif
 

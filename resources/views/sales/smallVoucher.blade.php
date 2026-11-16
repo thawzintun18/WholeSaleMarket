@@ -55,8 +55,7 @@
                 </div>
 
                 {{-- 2. တောင်သူနှင့် ဘောက်ချာအချက်အလက် --}}
-                <div class="row g-2 mb-3">
-
+                {{-- <div class="row g-2 mb-3">
                     <div class="col-6">
                         <div class="border rounded p-2 h-100">
                             <div class="small mb-1">
@@ -72,7 +71,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-6">
                         <div class="border rounded p-2 h-100">
 
@@ -92,8 +90,30 @@
                             </div>
                         </div>
                     </div>
+                </div> --}}
 
-                </div>
+                    <div class=" d-flex justify-content-end mb-2">
+                        <div class="border rounded p-2 h-100">
+                            <div class="small mb-1">
+                                နေ့စွဲ -
+                                <span class="fw-semibold">
+                                    {{ \Carbon\Carbon::parse($sale->sale_date)->format('d-M-Y') }}
+                                    {{ \Carbon\Carbon::parse($sale->sale_date)->format('h:i A') }}
+                                </span>
+                            </div>
+                            <div class="small mb-1">
+                                ၀ယ်သူအမည် -
+                                <span class="fw-bold">
+                                    {{ $customer->name }}
+                                </span>
+                            </div>
+
+                            <div class="small">
+                                နေရပ်/ဖုန်း -
+                                <span class=" fw-bold">{{ $customer->address ?: '—' }} / {{ $customer->phone ?: '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
 
                 {{-- 3. သီးနှံစာရင်း --}}
                 <div class=" mb-5">
@@ -102,12 +122,12 @@
 
                         <thead class="table-light text-center">
                             <tr>
-                                <th style="width: 5%;">စဉ်</th>
-                                <th style="width: 25%;">သီးနှံ</th>
-                                <th style="width: 17%;">အလေးချိန်</th>
-                                <th style="width: 10%;">တင်း</th>
-                                <th style="width: 13%;">1တင်းဈေး</th>
-                                <th style="width: 18%;">သီးနှံတန်ဖိုး</th>
+                                {{-- <th>စဉ်</th> --}}
+                                <th>သီးနှံ</th>
+                                <th>အလေးချိန်</th>
+                                <th>တင်း</th>
+                                <th>1တင်းဈေး</th>
+                                <th>သီးနှံတန်ဖိုး</th>
                             </tr>
                         </thead>
 
@@ -137,9 +157,9 @@
                                 @endphp
 
                                 <tr>
-                                    <td class="text-center">
+                                    {{-- <td class="text-center">
                                         {{ $index + 1 }}
-                                    </td>
+                                    </td> --}}
 
                                     <td class="text-start">
                                         <div class="fw-bold">
@@ -176,9 +196,7 @@
                 </div>
 
                 {{-- 4. ငွေစာရင်းချုပ် --}}
-                <div class="row g-3">
-
-                    {{-- သတိပြုရန် --}}
+                {{-- <div class="row g-3">
                     <div class="col-5">
                         <div class="border rounded p-2 small">
                             <div class="mb-2 small text-muted">
@@ -190,8 +208,6 @@
                             </div>
                         </div>
                     </div>
-
-                    {{-- ငွေစာရင်း --}}
                     <div class="col-7">
                         <table class="table table-sm table-borderless mb-0" style="font-size: 15px;">
                             <tbody>
@@ -207,16 +223,14 @@
                         </table>
                     </div>
 
-                </div>
-
-
+                </div> --}}
                 {{-- 5. အောက်ခြေစာ --}}
-                <div class="text-center mt-3 pt-2 border-top small">
+                {{-- <div class="text-center mt-3 pt-2 border-top small">
                     <small class=" text-muted">
                         "ဝယ်သူမိတ်ဆွေများ ကုန်ပစ္စည်းကောင်းများ ဝယ်ယူရရှိပြီး စီးပွားရေးများ အောင်မြင်တိုးတက်ကြပါစေ။"
                         ဒေါ်ဝင်းမြင့် (မြရတနာ) မှ ဆုမွန်ကောင်းတောင်းအပ်ပါသည်။
                     </small>
-                </div>
+                </div> --}}
 
             </div>
         </div>

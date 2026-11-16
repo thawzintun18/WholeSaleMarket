@@ -183,7 +183,7 @@
                                                 class="btn btn-success btn-sm rounded-3 px-2 shadow-sm">အကြွေးဆပ်ရန်</a>
                                         @endif
 
-                                        @if ($item->debt_type == 'CashLoan' || $item->debt_type == 'BeanPayment')
+                                        @if ($item->debt_type == 'CashLoan' || $item->debt_type == 'BeanPayment'|| $item->debt_type == 'PurchaseAdvance')
                                             <a href="{{ route('FarmerDebt#settlementList', $item->id) }}"
                                                 class="btn btn-secondary btn-sm rounded-3 px-2 shadow-sm">အကြွေးပြန်ဆပ်မှုစာရင်း</a>
                                         @endif

@@ -126,7 +126,7 @@
     </div>
 
 
-    @if ($farmerDebt->debt_type == 'CashLoan' || $farmerDebt->debt_type == 'BeanPayment')
+    {{-- @if ($farmerDebt->debt_type == 'CashLoan' || $farmerDebt->debt_type == 'BeanPayment') --}}
 
         {{-- Grade Table --}}
         <div class="dashboard-card shadow-sm">
@@ -244,7 +244,7 @@
             </div>
         </div>
 
-    @endif
+    {{-- @endif --}}
 
 
 @endsection

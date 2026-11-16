@@ -30,8 +30,8 @@ class PurchaseController extends Controller
             $fromDate = now()->subDays(6)->toDateString();
             $toDate   = now()->toDateString();
         } elseif ($quickFilter === 'this_month') {
-            $fromDate = now()->startOfMonth()->toDateString();
-            $toDate   = now()->endOfMonth()->toDateString();
+            $fromDate = now()->subDays(29)->toDateString();
+            $toDate   = now()->toDateString();
         } else {
             $fromDate = $fromDate ?: now()->toDateString();
             $toDate   = $toDate ?: now()->toDateString();

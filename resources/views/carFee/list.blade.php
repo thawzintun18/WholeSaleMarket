@@ -123,7 +123,6 @@
                 <tbody>
 
                     @if ($payments->count() > 0)
-
                         @foreach ($payments as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>

@@ -71,11 +71,11 @@
                             class="btn btn-outline-secondary btn-sm rounded-pill px-3 {{ request('quick_filter') === 'today' ? 'active bg-dark text-white' : '' }}">ယနေ့
                             (Today)</button>
                         <button type="submit" name="quick_filter" value="this_week"
-                            class="btn btn-outline-secondary btn-sm rounded-pill px-3 {{ request('quick_filter') === 'this_week' ? 'active bg-dark text-white' : '' }}">ဒီအပတ်
-                            (This Week)</button>
+                            class="btn btn-outline-secondary btn-sm rounded-pill px-3 {{ request('quick_filter') === 'this_week' ? 'active bg-dark text-white' : '' }}">တစ်ပတ်
+                            (One Week)</button>
                         <button type="submit" name="quick_filter" value="this_month"
-                            class="btn btn-outline-secondary btn-sm rounded-pill px-3 {{ request('quick_filter') === 'this_month' ? 'active bg-dark text-white' : '' }}">ဒီလ
-                            (This Month)</button>
+                            class="btn btn-outline-secondary btn-sm rounded-pill px-3 {{ request('quick_filter') === 'this_month' ? 'active bg-dark text-white' : '' }}">တစ်လ
+                            (One Month)</button>
                         <span>
                             <a href="{{ route('Sale#list') }}" class="btn btn-primary btn-sm rounded-pill px-3"
                                 title="Reset လုပ်ရန်">

@@ -6,7 +6,7 @@ use App\Models\Purchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+// use Illuminate\Validation\ValidationException;
 
 class CropDepositController extends Controller
 {
@@ -21,27 +21,33 @@ class CropDepositController extends Controller
                 'farmers.village as farmer_village'
             );
 
-        // 1. Default (သို့) ရက်စွဲအလိုက် Filter လုပ်ခြင်း
-        // အကယ်၍ user က date ရွေးမထားဘူးဆိုရင် Default အနေနဲ့ ဒီတစ်ပတ်စာ (လွန်ခဲ့သော ၇ ရက်မှ ယနေ့အထိ) ကို ပြပါမည်
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereDate('crop_deposits.deposit_date', '>=', $request->input('start_date'))
-                ->whereDate('crop_deposits.deposit_date', '<=', $request->input('end_date'));
-        } elseif ($request->filled('date_filter')) {
-            $filter = $request->input('date_filter');
+        // 1. ရက်စွဲအလိုက် Filter လုပ်ခြင်း (Custom Start/End Date သို့မဟုတ် တစ်ရက်၊ တစ်ပတ်၊ တစ်လ)
+        if ($request->filled('start_date') || $request->filled('end_date')) {
+            if ($request->filled('start_date')) {
+                $query->whereDate('crop_deposits.deposit_date', '>=', $request->input('start_date'));
+            }
+            if ($request->filled('end_date')) {
+                $query->whereDate('crop_deposits.deposit_date', '<=', $request->input('end_date'));
+            }
+        } else {
+            // date_filter မပါလာရင်ပြီးခဲ့တဲ့ ရက် ၃၀ ကို ယူပါမယ်
+            $filter = $request->input('date_filter', 'this_month');
             if ($filter === 'today') {
+                // ယနေ့ တစ်ရက်စာ
                 $query->whereDate('crop_deposits.deposit_date', now()->toDateString());
             } elseif ($filter === 'this_week') {
+                // ပြီးခဲ့တဲ့ တစ်ပတ်စာ (ဒီနေ့အပါအဝင် ၇ ရက်)
                 $query->whereBetween('crop_deposits.deposit_date', [
                     now()->subDays(6)->startOfDay(),
                     now()->endOfDay()
                 ]);
             } elseif ($filter === 'this_month') {
-                $query->whereMonth('crop_deposits.deposit_date', now()->month)
-                    ->whereYear('crop_deposits.deposit_date', now()->year);
+                // ပြီးခဲ့တဲ့ တစ်လစာ (ဒီနေ့အပါအဝင် ရက် ၃၀)
+                $query->whereBetween('crop_deposits.deposit_date', [
+                    now()->subDays(29)->startOfDay(),
+                    now()->endOfDay()
+                ]);
             }
-        } else {
-            // Default: ဒီတစ်ပတ်စာ (လွန်ခဲ့သော ၇ ရက်)
-            $query->whereDate('crop_deposits.deposit_date', '>=', now()->subDays(30)->toDateString());
         }
 
         // 2. Search (ဘောင်ချာ၊ တောင်သူအမည်၊ ဖုန်း၊ ကားနံပါတ်)

@@ -89,11 +89,19 @@
                     <div class="col-md-2">
                         <label class="form-label small fw-semibold">အချိန်ကာလ</label>
                         <select name="date_filter" class="form-select">
+                            @if(request('start_date') || request('end_date'))
+                                <option value="" selected>စိတ်ကြိုက်ရက်စွဲ</option>
+                            @endif
                             <option value="this_month"
-                                {{ request('date_filter', 'this_month') === 'this_month' ? 'selected' : '' }}>ယခုလ</option>
+                                {{ !request('start_date') && !request('end_date') && request('date_filter', 'this_month') === 'this_month' ? 'selected' : '' }}>
+                                တစ်လ (One Month)
+                            </option>
                             <option value="this_week" {{ request('date_filter') === 'this_week' ? 'selected' : '' }}>
-                                ဒီတစ်ပတ်</option>
-                            <option value="today" {{ request('date_filter') === 'today' ? 'selected' : '' }}>ယနေ့</option>
+                                တစ်ပတ် (One Week)
+                            </option>
+                            <option value="today" {{ request('date_filter') === 'today' ? 'selected' : '' }}>
+                                ယနေ့ (Today)
+                            </option>
                         </select>
                     </div>
 
@@ -213,7 +221,7 @@
                                                     title="ဝယ်ယူမှုဘောင်ချာသို့ ပြောင်းရန်">
                                                     <i class="bi bi-arrow-repeat me-1"></i> ဘောင်ချာပြောင်းမည်
                                                 </a>
-                                                
+
                                                 @if (auth()->user()->role === 'superadmin')
                                                     <button type="button" onclick="DeleteData({{ $deposit->id }})"
                                                         class=" btn btn-sm btn-outline-danger " title="ဖျက်ရန်">

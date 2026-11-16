@@ -100,14 +100,18 @@ class CarFeeController extends Controller
             $payments->where('driver_name', 'like', '%' . $request->searchData . '%');
         }
 
-        // From Date
-        if ($request->filled('from_date')) {
-            $payments->whereDate('payment_date', '>=', $request->from_date);
-        }
+        // From Date နှင့် To Date စစ်ဆေးခြင်း
+        if ($request->filled('from_date') || $request->filled('to_date')) {
+            if ($request->filled('from_date')) {
+                $payments->whereDate('payment_date', '>=', $request->from_date);
+            }
 
-        // To Date
-        if ($request->filled('to_date')) {
-            $payments->whereDate('payment_date', '<=', $request->to_date);
+            if ($request->filled('to_date')) {
+                $payments->whereDate('payment_date', '<=', $request->to_date);
+            }
+        } else {
+            // From Date ရော To Date ရော မပါရင် ဒီနေ့စာပဲ ပြမယ်
+            $payments->whereDate('payment_date', $today);
         }
 
         $payments = $payments

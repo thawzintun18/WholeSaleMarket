@@ -694,8 +694,8 @@ class SaleController extends Controller
             $fromDate = now()->subDays(6)->toDateString();
             $toDate   = now()->toDateString();
         } elseif ($quickFilter === 'this_month') {
-            $fromDate = now()->startOfMonth()->toDateString();
-            $toDate   = now()->endOfMonth()->toDateString();
+            $fromDate = now()->subDays(29)->toDateString();
+            $toDate   = now()->toDateString();
         } else {
             // Default အနေဖြင့် မပါလာပါက ယနေ့ (သို့မဟုတ် လိုသလိုသတ်မှတ်နိုင်သည်)
             $fromDate = $fromDate ?: now()->toDateString();
